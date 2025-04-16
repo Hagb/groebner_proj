@@ -74,18 +74,17 @@ This project presents a formalization of Gröbner basis theory in the Lean 4 the
   \]
 \end{definition}
 
-\chapter{Lemmas}
-\begin{lemma}\label{f_generate_variety}
+\begin{definition}[Zero-dimensional Ideal]
   \uses{Variety}
-  \( \mathbf{V}(I) \) is an affine variety. In particular, if \( I = \langle f_1, \ldots, f_s \rangle \), then
+  Let \( I \subseteq k[x_1, \ldots, x_n] \) be a polynomial ideal over an algebraically closed field \( k \).
+  The ideal \( I \) is called \textbf{zero-dimensional} if the associated affine variety
   \[
-  \mathbf{V}(I) = \mathbf{V}(f_1, \ldots, f_s).
+  \mathbf{V}(I) = \{\mathbf{a} \in k^n \mid f(\mathbf{a}) = 0 \text{ for all } f \in I\}
   \]
-\end{lemma}
-\begin{proof}
-  By definition
-\end{proof}
+  is a finite set.
+  \end{definition}
 
+\chapter{Lemmas}
 \begin{lemma}\label{groebner_membership}
   \uses{Gröbner Basis}
   Let \( G = \{g_1, \dots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \dots, x_n] \) and let \( f \in k[x_1, \dots, x_n] \). Then \( f \in I \) if and only if the remainder on division of \( f \) by \( G \) is zero.
@@ -101,3 +100,27 @@ A basis \( G = \{ g_1, \ldots, g_t \} \) for an ideal \( I \) is a Gröbner basi
 \begin{proof}
  UTM P86
 \end{proof}
+
+\begin{lemma}\label{verify_zero_dim_ideal}
+  \uses{Zero-dimensional Ideal}
+  Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal and fix a monomial ordering on \( k[x_1, \ldots, x_n] \). For each \( i \), \( 1 \leq i \leq n \), there exists some \( m_i \geq 0 \) such that \( x_i^{m_i} \in \langle \mathrm{LT}(I)\rangle \). Then I is Zero-dimensional Ideal.
+\end{lemma}
+
+\begin{lemma}\label{V_I_equal_V_F}
+  \uses{Variety}
+  \( \mathbf{V}(I) \) is an affine variety. In particular, if \( I = \langle f_1, \ldots, f_s \rangle \), then
+  \[
+  \mathbf{V}(I) = \mathbf{V}(f_1, \ldots, f_s).
+  \]
+\end{lemma}
+\begin{proof}
+  By definition
+\end{proof}
+
+\begin{lemma}\label{V_G_equal_V_I}
+  \uses{Variety, V_I_equal_V_F, Zero-dimensional Ideal}
+  Let $I \subseteq k[x_1,\ldots,x_n]$ be a zero-dimensional ideal and $G = \{g_1,\ldots,g_t\}$ a Gröbner Basis for $I$. Then the affine variety defined by $G$ equals the variety of $I$:
+  \[
+  \mathbf{V}(G) = \mathbf{V}(I)
+  \]
+\end{lemma}
