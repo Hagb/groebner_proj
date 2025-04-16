@@ -17,7 +17,6 @@ variable {s : σ →₀ ℕ} {k : Type _} [Field k]
 variable (p : MvPolynomial σ k)
 variable (G': Finset (MvPolynomial σ k)) (I : Ideal (MvPolynomial σ k))
 
-set_option diagnostics true
 theorem exists_groebner_basis [Finite σ]:
   ∃ G' : Finset (MvPolynomial σ k), IsGroebnerBasis m G' ↑I := by
   have key : (Ideal.span (α:=MvPolynomial σ k) (m.leadingTerm '' ↑I)).FG :=

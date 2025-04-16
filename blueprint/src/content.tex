@@ -55,15 +55,8 @@ This project presents a formalization of Gröbner basis theory in the Lean 4 the
   Using the convention that $\langle \emptyset \rangle = \{0\}$, we define the empty set $\emptyset$ to be the Gröbner basis of the zero ideal $\{0\}$.
 \end{definition}
 
-\begin{definition}\label{LCM}
-  If $\operatorname{multideg}(f) = \alpha$ and $\operatorname{multideg}(g) = \beta$, then let $\gamma = (\gamma_1, \ldots, \gamma_n)$, where $\gamma_i = \max(\alpha_i, \beta_i)$ for each $i$. We call $x^\gamma$ the \textbf{least common multiple} of $\operatorname{LM}(f)$ and $\operatorname{LM}(g)$, written
-  \[
-  x^\gamma = \operatorname{lcm}(\operatorname{LM}(f), \operatorname{LM}(g)).
-  \]
-\end{definition}
-
 \begin{definition}\label{S Polynomial}
-  \uses{LCM}
+  \leanok
   The $S$-polynomial of $f$ and $g$ is the combination
   \[
   S(f, g) = \frac{x^\gamma}{\mathrm{LT}(f)} \cdot f - \frac{x^\gamma}{\mathrm{LT}(g)} \cdot g.
