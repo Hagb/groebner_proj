@@ -31,7 +31,8 @@ This project presents a formalization of Gröbner basis theory in the Lean 4 the
 
 \begin{definition}\label{Gröbner Basis}
   \leanok
-  Fix a monomial order on the polynomial ring $k[x_1, \ldots, x_n]$.A finite subset $G = \{g_1, \ldots, g_t\}$ of an ideal $I \subseteq k[x_1, \ldots, x_n]$, with $I \ne \{0\}$, is said to be a **Gröbner basis** (or **standard basis**) if
+  \uses{Leading Term}
+  Fix a monomial order on the polynomial ring $k[x_1, \ldots, x_n]$.A finite subset $G = \{g_1, \ldots, g_t\}$ of an ideal $I \subseteq k[x_1, \ldots, x_n]$, with $I \ne \{0\}$, is said to be a \textbf{Gröbner basis} (or standard basis) if
   \[
   \langle \operatorname{LT}(g_1), \ldots, \operatorname{LT}(g_t) \rangle = \langle \operatorname{LT}(I) \rangle.
   \]
@@ -42,6 +43,27 @@ This project presents a formalization of Gröbner basis theory in the Lean 4 the
 
 \end{definition}
 
+\begin{definition}\label{Variety}
+  Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal. We will denote by \( \mathbf{V}(I) \) the set
+  \[
+  \mathbf{V}(I) = \{(a_1, \ldots, a_n) \in k^n \mid f(a_1, \ldots, a_n) = 0 \text{ for all } f \in I\}.
+  \]
+\end{definition}
+
 
 \chapter{Lemmas}
+\begin{proposition}\label{f_generate_variety}
+  \uses{Variety}
+  \( \mathbf{V}(I) \) is an affine variety. In particular, if \( I = \langle f_1, \ldots, f_s \rangle \), then
+  \[
+  \mathbf{V}(I) = \mathbf{V}(f_1, \ldots, f_s).
+  \]
+\end{proposition}
 
+\begin{lemma}\label{Buchberger Criteria}
+\uses{S Polynomial}
+A basis \( G = \{ g_1, \ldots, g_t \} \) for an ideal \( I \) is a Gröbner basis if and only if \( S(g_i, g_j) \to_G 0 \) for all \( i \neq j \).
+\end{lemma}
+\begin{proof}
+
+\end{proof}
