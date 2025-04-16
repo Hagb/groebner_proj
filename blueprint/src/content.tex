@@ -29,9 +29,22 @@ This project presents a formalization of Gröbner basis theory in the Lean 4 the
   \]
 \end{definition}
 
+\begin{definition}\label{monomial order}
+  \leanok
+  \( > \) on \( k[x_1, \ldots, x_n] \) is a relation \( > \) on \( \mathbb{Z}_{\geq 0}^n \), or equivalently, a relation on the set of monomials \( x^\alpha \), \( \alpha \in \mathbb{Z}_{\geq 0}^n \), satisfying:
+
+  \begin{enumerate}
+      \item[(i)] \( > \) is a \textbf{total (or linear) ordering} on \( \mathbb{Z}_{\geq 0}^n \).
+
+      \item[(ii)] If \( \alpha > \beta \) and \( \gamma \in \mathbb{Z}_{\geq 0}^n \), then \( \alpha + \gamma > \beta + \gamma \).
+
+      \item[(iii)] \( > \) is a \textbf{well-ordering} on \( \mathbb{Z}_{\geq 0}^n \). This means that every nonempty subset of \( \mathbb{Z}_{\geq 0}^n \) has a smallest element under \( > \). In other words, if \( A \subseteq \mathbb{Z}_{\geq 0}^n \) is nonempty, then there is \( \alpha \in A \) such that \( \beta > \alpha \) for every \( \beta \neq \alpha \) in \( A \).
+  \end{enumerate}
+\end{definition}
+
 \begin{definition}\label{Gröbner Basis}
   \leanok
-  \uses{Leading Term}
+  \uses{Leading Term, monomial order}
   Fix a monomial order on the polynomial ring $k[x_1, \ldots, x_n]$.A finite subset $G = \{g_1, \ldots, g_t\}$ of an ideal $I \subseteq k[x_1, \ldots, x_n]$, with $I \ne \{0\}$, is said to be a \textbf{Gröbner basis} (or standard basis) if
   \[
   \langle \operatorname{LT}(g_1), \ldots, \operatorname{LT}(g_t) \rangle = \langle \operatorname{LT}(I) \rangle.
@@ -40,7 +53,7 @@ This project presents a formalization of Gröbner basis theory in the Lean 4 the
 \end{definition}
 
 \begin{definition}\label{LCM}
-  If $\operatorname{multideg}(f) = \alpha$ and $\operatorname{multideg}(g) = \beta$, then let $\gamma = (\gamma_1, \ldots, \gamma_n)$, where $\gamma_i = \max(\alpha_i, \beta_i)$ for each $i$. We call $x^\gamma$ the \textbf{least common multiple} of $\operatorname{LM}(f)$ and $\operatorname{LM}(g))$, written
+  If $\operatorname{multideg}(f) = \alpha$ and $\operatorname{multideg}(g) = \beta$, then let $\gamma = (\gamma_1, \ldots, \gamma_n)$, where $\gamma_i = \max(\alpha_i, \beta_i)$ for each $i$. We call $x^\gamma$ the \textbf{least common multiple} of $\operatorname{LM}(f)$ and $\operatorname{LM}(g)$, written
   \[
   x^\gamma = \operatorname{lcm}(\operatorname{LM}(f), \operatorname{LM}(g)).
   \]
@@ -48,7 +61,10 @@ This project presents a formalization of Gröbner basis theory in the Lean 4 the
 
 \begin{definition}\label{S Polynomial}
   \uses{LCM}
-
+  The $S$-polynomial of $f$ and $g$ is the combination
+  \[
+  S(f, g) = \frac{x^\gamma}{\mathrm{LT}(f)} \cdot f - \frac{x^\gamma}{\mathrm{LT}(g)} \cdot g.
+  \]
 \end{definition}
 
 \begin{definition}\label{Variety}
@@ -57,7 +73,6 @@ This project presents a formalization of Gröbner basis theory in the Lean 4 the
   \mathbf{V}(I) = \{(a_1, \ldots, a_n) \in k^n \mid f(a_1, \ldots, a_n) = 0 \text{ for all } f \in I\}.
   \]
 \end{definition}
-
 
 \chapter{Lemmas}
 \begin{lemma}\label{f_generate_variety}
