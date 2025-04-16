@@ -12,13 +12,19 @@ namespace MonomialOrder
 open MvPolynomial
 variable {σ : Type*} {m : MonomialOrder σ}
 
-section Semiring
-variable {R : Type*} [CommSemiring R]
+section Field
+
+variable {R : Type*} [Field R]
 
 variable (m) in
 noncomputable def leadingTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree f) (m.leadingCoeff f)
-end Semiring
+
+variable (m) in
+noncomputable def SPolynomial (f g : MvPolynomial σ R) : MvPolynomial σ R :=
+  monomial (m.degree g - m.degree f) ((m.leadingCoeff f)⁻¹) * f -
+  monomial (m.degree f - m.degree g) ((m.leadingCoeff g)⁻¹) * g
+end Field
 
 
 section Field
@@ -33,7 +39,6 @@ def is_groebner_basis : Prop :=
   Ideal.span (m.leadingTerm '' ↑I)
     = Ideal.span (m.leadingTerm '' G'.toSet)
 
-set_option diagnostics true
 theorem exists_groebner_basis [Finite σ]:
   ∃ G' : Finset (MvPolynomial σ k), is_groebner_basis m G' ↑I := by
   have key : (Ideal.span (α:=MvPolynomial σ k) (m.leadingTerm '' ↑I)).FG :=
