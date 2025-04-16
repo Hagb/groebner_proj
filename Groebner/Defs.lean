@@ -24,6 +24,11 @@ variable (p : MvPolynomial σ k)
 variable (G': Finset (MvPolynomial σ k)) (I : Ideal (MvPolynomial σ k))
 
 variable (m) in
+noncomputable def SPolynomial (f g : MvPolynomial σ k) : MvPolynomial σ k :=
+  monomial (m.degree g - m.degree f) ((m.leadingCoeff f)⁻¹) * f -
+  monomial (m.degree f - m.degree g) ((m.leadingCoeff g)⁻¹) * g
+
+variable (m) in
 def IsGroebnerBasis : Prop :=
   G'.toSet ⊆ I ∧
   Ideal.span (m.leadingTerm '' ↑I)
