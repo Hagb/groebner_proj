@@ -17,10 +17,31 @@
 This project presents a formalization of Gröbner basis theory in the Lean 4 theorem prover, establishing the mathematical infrastructure required for automated algebraic reasoning. By constructing certified implementations of fundamental algorithms and theorems, we aim to bridge the gap between computational algebra and interactive theorem proving.
 
 \chapter{Definitions}
-\begin{definition}
+\begin{definition}\label{Leading Term}
   \leanok
-  
+  Given a nonzero polynomial \( f \in k[x] \), let
+  \[
+  f = c_0 x^m + c_1 x^{m-1} + \cdots + c_m,
+  \]
+  where \( c_i \in k \) and \( c_0 \neq 0 \) [thus, \( m = \deg(f) \)]. Then we say that \( c_0 x^m \) is the \textbf{leading term} of \( f \), written
+  \[
+  \operatorname{LT}(f) = c_0 x^m.
+  \]
+\end{definition}
+
+\begin{definition}\label{Gröbner Basis}
+  \leanok
+  Fix a monomial order on the polynomial ring $k[x_1, \ldots, x_n]$.A finite subset $G = \{g_1, \ldots, g_t\}$ of an ideal $I \subseteq k[x_1, \ldots, x_n]$, with $I \ne \{0\}$, is said to be a **Gröbner basis** (or **standard basis**) if
+  \[
+  \langle \operatorname{LT}(g_1), \ldots, \operatorname{LT}(g_t) \rangle = \langle \operatorname{LT}(I) \rangle.
+  \]
+  Using the convention that $\langle \emptyset \rangle = \{0\}$, we define the empty set $\emptyset$ to be the Gröbner basis of the zero ideal $\{0\}$.
+\end{definition}
+
+\begin{definition}\label{S Polynomial}
+
 \end{definition}
 
 
 \chapter{Lemmas}
+

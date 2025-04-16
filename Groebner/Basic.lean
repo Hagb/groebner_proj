@@ -1,4 +1,3 @@
-import Mathlib
 import Mathlib.RingTheory.MvPolynomial.Groebner
 import Mathlib.RingTheory.MvPolynomial.Basic
 
@@ -17,7 +16,6 @@ variable {R : Type*} [CommSemiring R]
 variable (m) in
 noncomputable def leadingTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree f) (m.leadingCoeff f)
-
 end Semiring
 
 end MonomialOrder
