@@ -121,8 +121,6 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        environment:
-          name: github-pages
 
       - name: Make sure the API documentation cache works
         run: mv home_page/docs .lake/build/doc
