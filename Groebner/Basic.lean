@@ -17,7 +17,7 @@ variable {s : σ →₀ ℕ} {k : Type _} [Field k]
 variable (p : MvPolynomial σ k)
 variable (G': Finset (MvPolynomial σ k)) (I : Ideal (MvPolynomial σ k))
 
-theorem exists_groebner_basis [Finite σ]:
+theorem exists_groebner_basis [Finite σ] :
   ∃ G' : Finset (MvPolynomial σ k), IsGroebnerBasis m G' ↑I := by
   have key : (Ideal.span (α:=MvPolynomial σ k) (m.leadingTerm '' ↑I)).FG :=
     (inferInstance : IsNoetherian _ _).noetherian _
@@ -35,3 +35,21 @@ theorem groebner_basis_reminder_zero_iff_mem_span {p : MvPolynomial σ k}
   (h : m.IsGroebnerBasis G' I)
   (hr : m.IsReminder p G' r)
   : r = 0 ↔ p ∈ I := by sorry
+
+theorem is_groebner_basis_iff :
+  m.IsGroebnerBasis G' I ↔ G'.toSet ⊆ I ∧ ∀ p ∈ I, m.IsReminder p G' 0 := by
+  -- uses groebner_basis_reminder_zero_iff_mem_span
+  sorry
+
+-- theorem is_groebner_basis_iff' :
+--   m.IsGroebnerBasis G' I ↔
+--   G'.toSet ⊆ I ∧ ∀ p ∈ I, ∀ r, m.IsReminder p G' r → r = 0 := by
+--   sorry
+
+theorem groebner_basis_is_basis (h : m.IsGroebnerBasis G' I) : I = Ideal.span G' := by
+  -- uses is_groebner_basis_iff
+  sorry
+
+theorem buchberger_criterion (hG: ∀ (g₁ g₂: G'), m.IsReminder (m.SPolynomial g₁ g₂) G' 0) :
+  m.IsGroebnerBasis G' (Ideal.span G') :=
+  sorry
