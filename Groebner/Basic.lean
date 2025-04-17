@@ -29,27 +29,27 @@ theorem exists_groebner_basis [Finite σ] :
   · exact hG'.trans hGI
   · rw [hIs, hG'G, hGs]
 
-theorem groebner_basis_reminder_zero_iff_mem_span {p : MvPolynomial σ k}
+theorem groebner_basis_remainder_zero_iff_mem_span {p : MvPolynomial σ k}
   {G' : Finset (MvPolynomial σ k)} {I : Ideal (MvPolynomial σ k)}
   {r : MvPolynomial σ k}
   (h : m.IsGroebnerBasis G' I)
-  (hr : m.IsReminder p G' r)
+  (hr : m.IsRemainder p G' r)
   : r = 0 ↔ p ∈ I := by sorry
 
 theorem is_groebner_basis_iff :
-  m.IsGroebnerBasis G' I ↔ G'.toSet ⊆ I ∧ ∀ p ∈ I, m.IsReminder p G' 0 := by
-  -- uses groebner_basis_reminder_zero_iff_mem_span
+  m.IsGroebnerBasis G' I ↔ G'.toSet ⊆ I ∧ ∀ p ∈ I, m.IsRemainder p G' 0 := by
+  -- uses groebner_basis_remainder_zero_iff_mem_span
   sorry
 
 -- theorem is_groebner_basis_iff' :
 --   m.IsGroebnerBasis G' I ↔
---   G'.toSet ⊆ I ∧ ∀ p ∈ I, ∀ r, m.IsReminder p G' r → r = 0 := by
+--   G'.toSet ⊆ I ∧ ∀ p ∈ I, ∀ r, m.IsRemainder p G' r → r = 0 := by
 --   sorry
 
 theorem groebner_basis_is_basis (h : m.IsGroebnerBasis G' I) : I = Ideal.span G' := by
   -- uses is_groebner_basis_iff
   sorry
 
-theorem buchberger_criterion (hG: ∀ (g₁ g₂: G'), m.IsReminder (m.SPolynomial g₁ g₂) G' 0) :
+theorem buchberger_criterion (hG: ∀ (g₁ g₂: G'), m.IsRemainder (m.SPolynomial g₁ g₂) G' 0) :
   m.IsGroebnerBasis G' (Ideal.span G') :=
   sorry
