@@ -20,6 +20,8 @@ def IsRemainder (p : MvPolynomial σ R) (G' : Finset (MvPolynomial σ R)) (r : M
       (∀ (g' : G'), m.degree ((g' : MvPolynomial σ R) * (g g')) ≼[m] m.degree p) ∧
       (∀ c ∈ r.support, ∀ g' ∈ G', ¬ (m.degree g' ≤ c))
 
+lemma lm_eq_zero_iff (p : MvPolynomial σ R): m.leadingTerm p = 0 ↔ p = 0 := by
+  simp only [leadingTerm, monomial_eq_zero, leadingCoeff_eq_zero_iff]
 
 end Semiring
 
