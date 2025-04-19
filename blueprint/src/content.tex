@@ -82,8 +82,8 @@ This project presents a formalization of Gröbner basis theory in the Lean 4 the
   \end{definition}
 
 \chapter{Lemmas}
-\begin{lemma}\label{groebner_basis_reminder_zero_iff_mem_span}
-  \lean{MonomialOrder.groebner_basis_reminder_zero_iff_mem_span}
+\begin{lemma}\label{groebner_basis_remainder_zero_iff_mem_span}
+  \lean{MonomialOrder.groebner_basis_remainder_zero_iff_mem_span}
   \uses{IsGroebnerBasis}
   Let \( G = \{g_1, \dots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \dots, x_n] \) and let \( f \in k[x_1, \dots, x_n] \). Then \( f \in I \) if and only if the remainder on division of \( f \) by \( G \) is zero.
 \end{lemma}
@@ -92,7 +92,7 @@ This project presents a formalization of Gröbner basis theory in the Lean 4 the
 \end{proof}
 
 \begin{lemma}\label{Buchberger Criteria}
-\uses{S Polynomial, groebner_basis_reminder_zero_iff_mem_span}
+\uses{S Polynomial, groebner_basis_remainder_zero_iff_mem_span}
 A basis \( G = \{ g_1, \ldots, g_t \} \) for an ideal \( I \) is a Gröbner basis if and only if \( S(g_i, g_j) \to_G 0 \) for all \( i \neq j \).
 \end{lemma}
 \begin{proof}
