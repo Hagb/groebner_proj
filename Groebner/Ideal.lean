@@ -8,10 +8,9 @@ import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 import Mathlib.RingTheory.MvPolynomial.Groebner
 import Mathlib.Data.Set.Finite.Basic
 import Groebner.Defs
+import Groebner.MonomialOrder
 import Mathlib.Tactic.RewriteSearch
 -- import Mathlib.Data.Set.Basic
-
-
 
 namespace Ideal
 

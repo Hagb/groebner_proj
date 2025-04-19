@@ -109,11 +109,6 @@ This project presents a formalization of Gröbner basis theory in the Lean 4 the
   Let \( G = \{g_1, \ldots, g_t\} \) be a finite subset of \( k[x_1, \ldots, x_n] \). Then \( G \) is a Gröbner basis for the ideal \( I = \langle G \rangle \) if and only if  for every \( f \in I \), the remainder of \( f \) on division by \( G \) is zero.
 \end{lemma}
 
-\begin{lemma}\label{groebner_basis_is_ideal}
-  \lean{MonomialOrder.groebner_basis_is_ideal}
-  \uses{IsGroebnerBasis}
-  Let \( G = \{g_1, \ldots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \ldots, x_n] \). Then \( I = \langle G \rangle \).
-\end{lemma}
 
 \begin{lemma}\label{groebner_basis_remainder_zero_iff_mem_span}
   \lean{MonomialOrder.groebner_basis_remainder_zero_iff_mem_span}
@@ -124,6 +119,12 @@ This project presents a formalization of Gröbner basis theory in the Lean 4 the
   UTM P84
 \end{proof}
 
+\begin{lemma}\label{groebner_basis_is_basis}
+  \lean{MonomialOrder.groebner_basis_is_basis}
+  \uses{IsGroebnerBasis}
+  Let \( G = \{g_1, \ldots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \ldots, x_n] \). Then \( G \) is a basis for the vector space \( I \) over \( k \).
+\end{lemma}
+
 \begin{lemma}\label{Buchberger Criteria}
 \uses{S Polynomial, groebner_basis_remainder_zero_iff_mem_span}
 A basis \( G = \{ g_1, \ldots, g_t \} \) for an ideal \( I \) is a Gröbner basis if and only if \( S(g_i, g_j) \to_G 0 \) for all \( i \neq j \).
@@ -133,6 +134,35 @@ A basis \( G = \{ g_1, \ldots, g_t \} \) for an ideal \( I \) is a Gröbner basi
 \end{proof}
 
 \subsection{Zero-dimensional Ideal}
+\begin{lemma}\label{fg_span_iff_fg_span_finset_subset}
+  \lean{Ideal.fg_span_iff_fg_span_finset_subset}
+  Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal. Then \( I \) is finitely generated if and only if there exists a finite subset \( F \subseteq I \) such that \( I = \langle F \rangle \).
+\end{lemma}
+
+\begin{lemma}\label{leading_term_ideal_span_monomial}
+  \lean{MonomialOrder.leading_term_ideal_span_monomial}
+  \uses{leadingTerm, MonomialOrder}
+  \[
+  \langle \operatorname{lt}(G) \rangle = \left\langle \{ x^t : t \in \{ \operatorname{multideg}(p) : p \in G \setminus \{0\} \} \right\rangle
+  \]
+\end{lemma}
+
+\begin{lemma}\label{remainder_mem_ideal_iff}
+  \lean{MonomialOrder.remainder_mem_ideal_iff}
+  \uses{IsRemainder, IsGroebnerBasis}
+  Let \( I \subseteq k[x_i : i \in \sigma] \) be an ideal, and let \( G \subseteq I \) be a finite subset.
+  If \( r \) is a generalized remainder of \( p \) upon division by \( G \),
+  then \( r \in I \) if and only if \( p \in I \)
+\end{lemma}
+
+\begin{lemma}\label{rem_sub_rem_mem_ideal}
+  \lean{MonomialOrder.rem_sub_rem_mem_ideal}
+  \uses{IsRemainder, IsGroebnerBasis}
+  Let \( I \subseteq k[x_i : i \in \sigma] \) be an ideal, and let \( G \subseteq I \) be a finite subset.
+  Suppose \( r_1 \) and \( r_2 \) are generalized remainders of a polynomial \( p \) upon division by \( G \).
+  Then \( r_1 - r_2 \in I \).
+\end{lemma}
+
 \begin{lemma}\label{verify_zero_dim_ideal}
   \uses{Zero-dimensional Ideal}
   Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal and fix a monomial ordering on \( k[x_1, \ldots, x_n] \). For each \( i \), \( 1 \leq i \leq n \), there exists some \( m_i \geq 0 \) such that \( x_i^{m_i} \in \langle \mathrm{LT}(I)\rangle \). Then I is Zero-dimensional Ideal.
