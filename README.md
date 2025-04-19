@@ -30,12 +30,12 @@ To use this project, you’ll need to have Lean 4 and its package manager `lake`
 Once Lean is installed, you can clone this repository and build the project:
 
 ```bash
-git clone https://github.com/your-username/groebner.git
-cd groebner
+git https://github.com/WuProver/groebner_proj.git
+cd groebner_proj
 lake exe cache get
 lake build
 ```
 
 ## Reference
 This project draws heavily from the following reference:
--[Ideals, Varieties, and Algorithms](https://link.springer.com/book/10.1007/978-3-319-16721-3)
+[Ideals, Varieties, and Algorithms](https://link.springer.com/book/10.1007/978-3-319-16721-3)
