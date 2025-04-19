@@ -55,6 +55,20 @@ This project presents a formalization of Gröbner basis theory in the Lean 4 the
   Using the convention that $\langle \emptyset \rangle = \{0\}$, we define the empty set $\emptyset$ to be the Gröbner basis of the zero ideal $\{0\}$.
 \end{definition}
 
+\begin{definition}\label{IsRemainder}
+  \lean{MonomialOrder.IsRemainder}
+  \uses{leadingTerm, MonomialOrder}
+  \leanok
+  Fix a monomial order \(>\) on \(\mathbb{Z}_{\geq 0}^n\), and let
+  \(F = (f_1, \ldots, f_s)\) be an ordered \(s\)-tuple of polynomials in \(k[x_1, \ldots, x_n]\).
+  Then every \(f \in k[x_1, \ldots, x_n]\) can be written as
+  \[
+  f = a_1 f_1 + \cdots + a_s f_s + r,
+  \]
+  where \(a_i, r \in k[x_1, \ldots, x_n]\), and either \(r = 0\) or \(r\) is a linear combination, with coefficients in \(k\), of monomials, none of which is divisible by any of \(\mathrm{LT}(f_1), \ldots, \mathrm{LT}(f_s)\).
+  We will call \(r\) a \textbf{remainder} of \(f\) on division by \(F\).
+\end{definition}
+
 \begin{definition}\label{S Polynomial}
   \lean{MonomialOrder.SPolynomial}
   \leanok
@@ -82,6 +96,25 @@ This project presents a formalization of Gröbner basis theory in the Lean 4 the
   \end{definition}
 
 \chapter{Lemmas}
+\subsection{Gröbner Basis}
+\begin{lemma}\label{exists_groebner_basis}
+  \lean{MonomialOrder.exists_groebner_basis}
+  \uses{IsGroebnerBasis}
+  Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal. Then there exists a finite subset \( G = \{g_1, \ldots, g_t\} \) of \( I \) such that \( G \) is a Gröbner basis for \( I \).
+\end{lemma}
+
+\begin{lemma}\label{is_groebner_basis_iff}
+  \lean{MonomialOrder.is_groebner_basis_iff}
+  \uses{IsGroebnerBasis}
+  Let \( G = \{g_1, \ldots, g_t\} \) be a finite subset of \( k[x_1, \ldots, x_n] \). Then \( G \) is a Gröbner basis for the ideal \( I = \langle G \rangle \) if and only if  for every \( f \in I \), the remainder of \( f \) on division by \( G \) is zero.
+\end{lemma}
+
+\begin{lemma}\label{groebner_basis_is_ideal}
+  \lean{MonomialOrder.groebner_basis_is_ideal}
+  \uses{IsGroebnerBasis}
+  Let \( G = \{g_1, \ldots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \ldots, x_n] \). Then \( I = \langle G \rangle \).
+\end{lemma}
+
 \begin{lemma}\label{groebner_basis_remainder_zero_iff_mem_span}
   \lean{MonomialOrder.groebner_basis_remainder_zero_iff_mem_span}
   \uses{IsGroebnerBasis}
@@ -99,6 +132,7 @@ A basis \( G = \{ g_1, \ldots, g_t \} \) for an ideal \( I \) is a Gröbner basi
  UTM P86
 \end{proof}
 
+\subsection{Zero-dimensional Ideal}
 \begin{lemma}\label{verify_zero_dim_ideal}
   \uses{Zero-dimensional Ideal}
   Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal and fix a monomial ordering on \( k[x_1, \ldots, x_n] \). For each \( i \), \( 1 \leq i \leq n \), there exists some \( m_i \geq 0 \) such that \( x_i^{m_i} \in \langle \mathrm{LT}(I)\rangle \). Then I is Zero-dimensional Ideal.
