@@ -8,7 +8,7 @@ import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 import Mathlib.RingTheory.MvPolynomial.Groebner
 import Mathlib.Data.Set.Finite.Basic
 import Groebner.Defs
-import Groebner.MonomialOrder
+-- import Groebner.MonomialOrder
 import Mathlib.Tactic.RewriteSearch
 -- import Mathlib.Data.Set.Basic
 import Groebner.Submodule
@@ -102,16 +102,37 @@ lemma leadingTerm_ideal_span_monomial' : span (m.leadingTerm '' G'') =
       apply leadingTerm_ideal_span_monomial
       simp
 
-lemma remainder_mem_ideal_iff {G': Finset (MvPolynomial σ k)} {r : MvPolynomial σ k}
-  {I : Ideal (MvPolynomial σ k)}
-  (h : G'.toSet ⊆ I) (hG' : m.IsRemainder p G' r) :
+lemma remainder_mem_ideal_iff {G'': Set (MvPolynomial σ R)} {r : MvPolynomial σ R}
+  {I : Ideal (MvPolynomial σ R)} {p : MvPolynomial σ R}
+  (hG'' : ∀ g ∈ G'', IsUnit (m.leadingCoeff g))
+  (hG''I : G'' ⊆ I) (hpG''r : m.IsRemainder p G'' r) :
   r ∈ I ↔ p ∈ I := by
-  sorry
+  sorry -- easy or normal
 
-lemma rem_sub_rem_mem_ideal {G': Finset (MvPolynomial σ k)} {p r₁ r₂ : MvPolynomial σ k}
-  (hG' : G'.toSet ⊆ I) (hr₁ : m.IsRemainder p G' r₁) (hr₂ : m.IsRemainder p G' r₂) :
-  r₁-r₂ ∈ I :=
-  sorry
+lemma remainder_mem_ideal_iff' {G'': Set (MvPolynomial σ k)} {r : MvPolynomial σ k}
+  {I : Ideal (MvPolynomial σ k)} {p : MvPolynomial σ k}
+  (h : G'' ⊆ I) (hpG''r : m.IsRemainder p G'' r) :
+  r ∈ I ↔ p ∈ I := by
+  refine remainder_mem_ideal_iff (G'':=G''\{0}) (m:=m) ?_ ?_ ?_
+  ·sorry -- easy
+  ·sorry -- easy
+  ·sorry -- easy
+
+lemma remainder_sub_remainder_mem_ideal {R : Type _} [CommRing R]
+  {G'': Set (MvPolynomial σ R)} {I : Ideal (MvPolynomial σ R)} {p r₁ r₂ : MvPolynomial σ R}
+  (hG'' : ∀ g ∈ G'', IsUnit (m.leadingCoeff g))
+  (hG''I : G'' ⊆ I) (hr₁ : m.IsRemainder p G'' r₁) (hr₂ : m.IsRemainder p G'' r₂) :
+  r₁-r₂ ∈ I := by
+  sorry -- normal
+
+lemma remainder_sub_remainder_mem_ideal' {G'': Set (MvPolynomial σ k)} {p r₁ r₂ : MvPolynomial σ k}
+  (hG'' : G'' ⊆ I) (hr₁ : m.IsRemainder p G'' r₁) (hr₂ : m.IsRemainder p G'' r₂) :
+  r₁-r₂ ∈ I := by
+  refine remainder_sub_remainder_mem_ideal (G'':=G''\{0}) (m:=m) (p:=p) (r₁:=r₁) (r₂:=r₂) ?_ ?_ ?_ ?_
+  · sorry --easy
+  · sorry --easy
+  · sorry --easy
+  · sorry --easy
 
 
 end MvPolynomial
