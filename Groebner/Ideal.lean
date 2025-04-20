@@ -56,7 +56,7 @@ open Submodule
 open Ideal
 open Field
 
-lemma leading_term_ideal_span_monomial {G'': Set (MvPolynomial σ R)}
+lemma leadingTerm_ideal_span_monomial {G'': Set (MvPolynomial σ R)}
   (hG'' : ∀ p ∈ G'', IsUnit (m.leadingCoeff p)) :
   span (m.leadingTerm '' G'') = span ((fun p => MvPolynomial.monomial (m.degree p) (1 : R)) '' G'') := by
   apply le_antisymm
@@ -91,30 +91,16 @@ lemma leading_term_ideal_span_monomial {G'': Set (MvPolynomial σ R)}
           Subtype.forall]
         intro a ha
         simp [Set.mem_of_mem_of_subset ha ht]
-        generalize_proofs h
-        -- have := mul_comm {A:=R}
         rw [smul_mul_assoc, ←mul_smul_comm, MvPolynomial.smul_monomial, IsUnit.inv_smul]
 
-lemma leading_term_ideal_span_monomial' : span (m.leadingTerm '' G'') =
+lemma leadingTerm_ideal_span_monomial' : span (m.leadingTerm '' G'') =
   span ((fun p => MvPolynomial.monomial (m.degree p) (1 : k)) '' (G'' \ {(0 : MvPolynomial σ k)})) := by
   calc
     _ = span (m.leadingTerm '' G'' \ {0}) := (span_sdiff_singleton_zero _).symm
-    _ = span (m.leadingTerm '' (G'' \ {0})) := by
-      congr 2
-      apply subset_antisymm
-      · intro p
-        simp
-        intro q hq hpq hp
-        rw [←hpq, MonomialOrder.lm_eq_zero_iff] at hp
-        exact ⟨q, ⟨hq, hp⟩, hpq⟩
-      · intro p
-        simp
-        intro q hq hq' hpq
-        exact ⟨⟨q, hq, hpq⟩, hpq ▸ (m.lm_eq_zero_iff _).not.mpr hq'⟩
+    _ = span (m.leadingTerm '' (G'' \ {0})) := by rw [m.leadingTerm_image_sdiff_singleton_zero]
     _ = _ := by
-      apply leading_term_ideal_span_monomial
+      apply leadingTerm_ideal_span_monomial
       simp
-
 
 lemma remainder_mem_ideal_iff {G': Finset (MvPolynomial σ k)} {r : MvPolynomial σ k}
   {I : Ideal (MvPolynomial σ k)}
