@@ -139,8 +139,9 @@ A basis \( G = \{ g_1, \ldots, g_t \} \) for an ideal \( I \) is a Gröbner basi
   Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal. Then \( I \) is finitely generated if and only if there exists a finite subset \( F \subseteq I \) such that \( I = \langle F \rangle \).
 \end{lemma}
 
-\begin{lemma}\label{leading_term_ideal_span_monomial}
-  \lean{Ideal.leading_term_ideal_span_monomial}
+\begin{lemma}\label{leadingTerm_ideal_span_monomial}
+  \lean{Ideal.leadingTerm_ideal_span_monomial}
+  \leanok
   \uses{leadingTerm, MonomialOrder}
   \[
   \langle \operatorname{lt}(G) \rangle = \left\langle \{ x^t : t \in \{ \operatorname{multideg}(p) : p \in G \setminus \{0\} \} \right\rangle
