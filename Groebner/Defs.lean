@@ -45,7 +45,7 @@ lemma isRemainder_of_singleton_zero_iff_isRemainder (p : MvPolynomial σ R)
   (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
   m.IsRemainder p (G'' \ {0}) r ↔ m.IsRemainder p G'' r := by
   -- easy.
-  -- tips: refer to `Submodule.span_sdiff_singleton_zero` in `Submodule.lean`,
+  -- tips: refer to the proof of `Submodule.span_sdiff_singleton_zero` in `Submodule.lean`,
   -- and use `isRemainder_of_insert_zero_iff_isRemainder`.
   sorry
 

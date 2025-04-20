@@ -15,7 +15,6 @@ import Groebner.Submodule
 
 namespace Ideal
 
-section Ideal
 variable {R : Type _} [Semiring R]
 
 theorem fg_span_iff_fg_span_finset_subset (s : Set R) :
@@ -38,8 +37,7 @@ lemma span_sdiff_singleton_zero (s : Set R): span (s \ {0}) = span s := Submodul
 
 end Ideal
 
-
-section MvPolynomial
+namespace MonomialOrder
 open Ideal
 open MvPolynomial
 open Classical
@@ -96,7 +94,7 @@ lemma leadingTerm_ideal_span_monomial {G'': Set (MvPolynomial σ R)}
 lemma leadingTerm_ideal_span_monomial' : span (m.leadingTerm '' G'') =
   span ((fun p => MvPolynomial.monomial (m.degree p) (1 : k)) '' (G'' \ {(0 : MvPolynomial σ k)})) := by
   calc
-    _ = span (m.leadingTerm '' G'' \ {0}) := (span_sdiff_singleton_zero _).symm
+    _ = span (m.leadingTerm '' G'' \ {0}) := (Ideal.span_sdiff_singleton_zero _).symm
     _ = span (m.leadingTerm '' (G'' \ {0})) := by rw [m.leadingTerm_image_sdiff_singleton_zero]
     _ = _ := by
       apply leadingTerm_ideal_span_monomial
@@ -134,6 +132,4 @@ lemma remainder_sub_remainder_mem_ideal' {G'': Set (MvPolynomial σ k)} {p r₁ 
   · sorry --easy
   · sorry --easy
 
-
-end MvPolynomial
-end Ideal
+end MonomialOrder
