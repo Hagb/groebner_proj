@@ -96,7 +96,7 @@ This project presents a formalization of Gröbner basis theory in the Lean 4 the
   \end{definition}
 
 \chapter{Lemmas}
-\subsection{Gröbner Basis}
+\section{Gröbner Basis}
 \begin{lemma}\label{exists_groebner_basis}
   \lean{MonomialOrder.exists_groebner_basis}
   \uses{IsGroebnerBasis}
@@ -133,7 +133,7 @@ A basis \( G = \{ g_1, \ldots, g_t \} \) for an ideal \( I \) is a Gröbner basi
  UTM P86
 \end{proof}
 
-\subsection{Zero-dimensional Ideal}
+\section{Zero-dimensional Ideal}
 \begin{lemma}\label{fg_span_iff_fg_span_finset_subset}
   \lean{Ideal.fg_span_iff_fg_span_finset_subset}
   Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal. Then \( I \) is finitely generated if and only if there exists a finite subset \( F \subseteq I \) such that \( I = \langle F \rangle \).
