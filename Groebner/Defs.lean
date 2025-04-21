@@ -84,6 +84,7 @@ theorem div_set' {G'' : Set (MvPolynomial σ R)}
     ∃ (r : MvPolynomial σ R), m.IsRemainder p G'' r := by
   -- easy
   -- tips: use `isRemainder_of_singleton_zero_iff_isRemainder` and `MonomialOrder.div_set`
+  -- 首先对 G'' \ {0} 应用 MonomialOrder.div_set
   sorry
 
 end CommRing

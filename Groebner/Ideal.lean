@@ -112,9 +112,16 @@ lemma remainder_mem_ideal_iff' {G'': Set (MvPolynomial σ k)} {r : MvPolynomial 
   (h : G'' ⊆ I) (hpG''r : m.IsRemainder p G'' r) :
   r ∈ I ↔ p ∈ I := by
   refine remainder_mem_ideal_iff (G'':=G''\{0}) (m:=m) ?_ ?_ ?_
-  ·sorry -- easy
-  ·sorry -- easy
-  ·sorry -- easy
+  · intro g hg
+    refine isUnit_leadingCoeff.mpr ?_
+    by_contra g'
+    have: 0 ∈ G'' \ {0} := by
+      exact Set.mem_of_eq_of_mem (id (Eq.symm g')) hg
+    simp at this
+  · intro g hg
+    exact h (Set.mem_of_mem_diff hg)
+  · exact (isRemainder_of_singleton_zero_iff_isRemainder m p G'' r).mpr hpG''r
+
 
 lemma remainder_sub_remainder_mem_ideal {R : Type _} [CommRing R]
   {G'': Set (MvPolynomial σ R)} {I : Ideal (MvPolynomial σ R)} {p r₁ r₂ : MvPolynomial σ R}
