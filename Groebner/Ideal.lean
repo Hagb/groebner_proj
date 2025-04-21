@@ -145,10 +145,14 @@ lemma remainder_sub_remainder_mem_ideal' {G'': Set (MvPolynomial σ k)} {p r₁ 
   r₁-r₂ ∈ I := by
   refine remainder_sub_remainder_mem_ideal (G'':=G''\{0}) (m:=m) (p:=p) (r₁:=r₁) (r₂:=r₂) ?_ ?_ ?_ ?_
   · intro g hg
-    sorry
- --easy
-  · sorry --easy
-  · sorry --easy
-  · sorry --easy
+    refine isUnit_leadingCoeff.mpr ?_
+    by_contra g'
+    have: 0 ∈ G'' \ {0} := by
+      exact Set.mem_of_eq_of_mem (id (Eq.symm g')) hg
+    simp at this
+  · intro g hg
+    exact hG'' hg.1
+  · exact (isRemainder_of_singleton_zero_iff_isRemainder m p G'' r₁).mpr hr₁
+  · exact (isRemainder_of_singleton_zero_iff_isRemainder m p G'' r₂).mpr hr₂
 
 end MonomialOrder

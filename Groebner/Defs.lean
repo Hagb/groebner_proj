@@ -1,3 +1,4 @@
+import Mathlib
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 import Mathlib.RingTheory.Ideal.Span
@@ -39,12 +40,11 @@ lemma leadingTerm_image_sdiff_singleton_zero (G'' : Set (MvPolynomial σ R)) :
 lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
   (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
   m.IsRemainder p (insert 0 G'') r ↔ m.IsRemainder p G'' r := by
-  sorry  -- normal
+  sorry
 
 lemma isRemainder_of_singleton_zero_iff_isRemainder (p : MvPolynomial σ R)
   (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
   m.IsRemainder p (G'' \ {0}) r ↔ m.IsRemainder p G'' r := by
-  -- easy.
   -- tips: refer to the proof of `Submodule.span_sdiff_singleton_zero` in `Submodule.lean`,
   -- and use `isRemainder_of_insert_zero_iff_isRemainder`.
   by_cases h : 0 ∈ G''
@@ -92,11 +92,34 @@ lemma sPolynomial_eq_zero_of_right_eq_zero' (f : MvPolynomial σ R) :
 theorem div_set' {G'' : Set (MvPolynomial σ R)}
     (hG : ∀ g ∈ G'', (IsUnit (m.leadingCoeff g) ∨ g = 0)) (p : MvPolynomial σ R) :
     ∃ (r : MvPolynomial σ R), m.IsRemainder p G'' r := by
-  -- easy
   -- tips: use `isRemainder_of_singleton_zero_iff_isRemainder` and `MonomialOrder.div_set`
-  -- 首先对 G'' \ {0} 应用 MonomialOrder.div_set
-  sorry
+  let G := G'' \ {0}
 
+  have hG' : ∀ g ∈ G, IsUnit (m.leadingCoeff g) := by
+    intro g hg
+    obtain ⟨hg₁, hg₂⟩ := hg  -- hg₁: g ∈ G'', hg₂: g ≠ 0
+    obtain (h1 | h2) := hG g hg₁
+    · exact h1
+    · contradiction
+  obtain ⟨g, r, h⟩ := MonomialOrder.div_set hG' p
+  exists r
+  refine (isRemainder_of_singleton_zero_iff_isRemainder m p G'' r).mp ?_
+  rcases h with ⟨h₁, h₂, h₃⟩
+  simp at *
+  unfold IsRemainder
+  use g
+  split_ands
+  · exact h₁
+  · exact fun g' ↦ h₂ (↑g') g'.property
+  · intro c hc g hg g_neq0
+    have hg' : g ∈ G := by
+      obtain ⟨hg₁, hg₂⟩ := hg
+      exact ⟨hg₁, hg₂⟩
+    have hc': ¬coeff c r = 0 := by
+      exact mem_support_iff.mp hc
+    have h₃_applied := h₃ c hc'
+    have h₃_g := h₃_applied g hg'
+    exact h₃_g
 end CommRing
 
 section Field

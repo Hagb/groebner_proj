@@ -16,5 +16,5 @@ lemma span_sdiff_singleton_zero:
   ·rw [←span_insert_zero, (by simp [h] : insert 0 (s \ {0}) = s)]
   ·simp [h]
 
-
+  
 end Submodule
