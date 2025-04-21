@@ -71,13 +71,23 @@ def IsGroebnerBasis (G': Finset (MvPolynomial σ R)) (I : Ideal (MvPolynomial σ
     = Ideal.span (m.leadingTerm '' G'.toSet)
 
 lemma sPolynomial_antisymm (f g : MvPolynomial σ R) :
-   m.sPolynomial f g = - m.sPolynomial g f := by sorry -- easy
+   m.sPolynomial f g = - m.sPolynomial g f := by
+   unfold sPolynomial
+   exact
+     Eq.symm
+       (neg_sub ((monomial (m.degree f - m.degree g)) (m.leadingCoeff f) * g)
+         ((monomial (m.degree g - m.degree f)) (m.leadingCoeff g) * f))
+
 
 lemma sPolynomial_eq_zero_of_left_eq_zero (g : MvPolynomial σ R) :
-  m.sPolynomial 0 g = 0 := by sorry -- easy
+  m.sPolynomial 0 g = 0 := by
+  unfold sPolynomial
+  simp only [zero_mul, sub_zero, leadingCoeff_zero, monomial_zero]
+  exact CommMonoidWithZero.mul_zero ((monomial (m.degree g - m.degree 0)) (m.leadingCoeff g))
 
 lemma sPolynomial_eq_zero_of_right_eq_zero' (f : MvPolynomial σ R) :
-  m.sPolynomial f 0 = 0 := by sorry -- easy
+  m.sPolynomial f 0 = 0 := by
+  rw [sPolynomial_antisymm, sPolynomial_eq_zero_of_left_eq_zero, neg_zero]
 
 theorem div_set' {G'' : Set (MvPolynomial σ R)}
     (hG : ∀ g ∈ G'', (IsUnit (m.leadingCoeff g) ∨ g = 0)) (p : MvPolynomial σ R) :

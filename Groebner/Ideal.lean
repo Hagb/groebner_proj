@@ -105,7 +105,17 @@ lemma remainder_mem_ideal_iff {G'': Set (MvPolynomial σ R)} {r : MvPolynomial �
   (hG'' : ∀ g ∈ G'', IsUnit (m.leadingCoeff g))
   (hG''I : G'' ⊆ I) (hpG''r : m.IsRemainder p G'' r) :
   r ∈ I ↔ p ∈ I := by
-  sorry -- easy or normal
+  constructor
+  · intro hr
+    obtain ⟨p, h_eq, h_deg, h_remain⟩ := hpG''r
+    rw[h_eq]
+    refine Ideal.add_mem _ ?_ ?_
+    · sorry
+    · exact hr
+  · intro hp
+    obtain ⟨q, h_eq, h_deg, h_remain⟩ := hpG''r
+    rw [h_eq] at hp
+    sorry
 
 lemma remainder_mem_ideal_iff' {G'': Set (MvPolynomial σ k)} {r : MvPolynomial σ k}
   {I : Ideal (MvPolynomial σ k)} {p : MvPolynomial σ k}
@@ -134,7 +144,9 @@ lemma remainder_sub_remainder_mem_ideal' {G'': Set (MvPolynomial σ k)} {p r₁ 
   (hG'' : G'' ⊆ I) (hr₁ : m.IsRemainder p G'' r₁) (hr₂ : m.IsRemainder p G'' r₂) :
   r₁-r₂ ∈ I := by
   refine remainder_sub_remainder_mem_ideal (G'':=G''\{0}) (m:=m) (p:=p) (r₁:=r₁) (r₂:=r₂) ?_ ?_ ?_ ?_
-  · sorry --easy
+  · intro g hg
+    sorry
+ --easy
   · sorry --easy
   · sorry --easy
   · sorry --easy
