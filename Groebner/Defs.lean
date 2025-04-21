@@ -47,7 +47,13 @@ lemma isRemainder_of_singleton_zero_iff_isRemainder (p : MvPolynomial σ R)
   -- easy.
   -- tips: refer to the proof of `Submodule.span_sdiff_singleton_zero` in `Submodule.lean`,
   -- and use `isRemainder_of_insert_zero_iff_isRemainder`.
-  sorry
+  by_cases h : 0 ∈ G''
+  · rw[←isRemainder_of_insert_zero_iff_isRemainder,
+        (by simp [h] : insert 0 (G'' \ {0}) = G'')]
+  · have h' : G'' \ {0} = G'' := by
+      ext x
+      simp [h]
+    rw [h']
 
 end CommSemiring
 
