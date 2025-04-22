@@ -40,7 +40,15 @@ lemma leadingTerm_image_sdiff_singleton_zero (G'' : Set (MvPolynomial σ R)) :
 lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
   (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
   m.IsRemainder p (insert 0 G'') r ↔ m.IsRemainder p G'' r := by
-  sorry
+  constructor
+  · intro h
+    obtain ⟨g, hp, hg, hr⟩ := h
+    unfold IsRemainder
+    sorry
+  · intro h
+    obtain ⟨g, hp, hg, hr⟩ := h
+    unfold IsRemainder
+    sorry
 
 lemma isRemainder_of_singleton_zero_iff_isRemainder (p : MvPolynomial σ R)
   (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :

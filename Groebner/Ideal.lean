@@ -19,7 +19,17 @@ variable {R : Type _} [Semiring R]
 
 theorem fg_span_iff_fg_span_finset_subset (s : Set R) :
   (span s).FG ↔ ∃ (s' : Finset R), s'.toSet ⊆ s ∧ span s = span s' := by
-  sorry
+  constructor
+  ·
+    intro h
+    rcases h with ⟨t, ht⟩
+    have : ∀ x ∈ t, x ∈ span s := by
+      sorry
+    sorry
+  ·
+    rintro ⟨s', hsub, heq⟩
+    exact ⟨s', heq.symm⟩
+
 
 -- to Mathlib
 @[simp]
