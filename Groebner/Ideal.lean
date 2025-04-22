@@ -58,12 +58,12 @@ lemma leadingTerm_ideal_span_monomial {G'': Set (MvPolynomial σ R)}
   (hG'' : ∀ p ∈ G'', IsUnit (m.leadingCoeff p)) :
   span (m.leadingTerm '' G'') = span ((fun p => MvPolynomial.monomial (m.degree p) (1 : R)) '' G'') := by
   apply le_antisymm
-  · rintro p hl
-    simp only [MonomialOrder.leadingTerm, ← submodule_span_eq, mem_span_image_iff_exists_fun] at *
-    rcases hl with ⟨t, ht, c, hc⟩
-    rw [←hc]
-    use t
-    split_ands
+  <;> rintro p hl
+  <;> simp only [MonomialOrder.leadingTerm, ← submodule_span_eq, mem_span_image_iff_exists_fun] at *
+  <;> rcases hl with ⟨t, ht, c, hc⟩
+  <;> rw [←hc]
+  <;> use t
+  · split_ands
     · exact ht
     ·
       use fun (p : _) => (MvPolynomial.C (m.leadingCoeff ↑p : R) : MvPolynomial σ R) • c ↑p
@@ -72,13 +72,7 @@ lemma leadingTerm_ideal_span_monomial {G'': Set (MvPolynomial σ R)}
       simp
       intro a ha
       rw [mul_assoc, mul_left_comm, MvPolynomial.C_mul_monomial, mul_one]
-  ·
-    rintro p hl
-    simp only [MonomialOrder.leadingTerm, ← submodule_span_eq, mem_span_image_iff_exists_fun] at *
-    rcases hl with ⟨t, ht, c, hc⟩
-    rw [←hc]
-    use t
-    split_ands
+  · split_ands
     · exact ht
     ·
       use fun (p : _) => if hp : ↑p ∈ G'' then ((hG'' (↑p) (hp)).unit)⁻¹ • c ↑p else 0
@@ -100,59 +94,46 @@ lemma leadingTerm_ideal_span_monomial' : span (m.leadingTerm '' G'') =
       apply leadingTerm_ideal_span_monomial
       simp
 
-lemma remainder_mem_ideal_iff {G'': Set (MvPolynomial σ R)} {r : MvPolynomial σ R}
+lemma mem_ideal_of_remainder_mem_ideal {G'': Set (MvPolynomial σ R)} {r : MvPolynomial σ R}
   {I : Ideal (MvPolynomial σ R)} {p : MvPolynomial σ R}
-  (hG'' : ∀ g ∈ G'', IsUnit (m.leadingCoeff g))
+  (hG''I : G'' ⊆ I) (hpG''r : m.IsRemainder p G'' r) (hr : r ∈ I) :
+  p ∈ I := by
+  obtain ⟨f, h_eq, h_deg, h_remain⟩ := hpG''r
+  rw[h_eq]
+  refine Ideal.add_mem _ ?_ ?_
+  ·
+    rw [Finsupp.linearCombination_apply]
+    apply Ideal.sum_mem
+    intro g hg
+    exact mul_mem_left _ _ (Set.mem_of_mem_of_subset (by simp) hG''I)
+  · exact hr
+
+lemma remainder_mem_ideal_iff {R : Type*} [CommRing R] {G'': Set (MvPolynomial σ R)}
+  {r : MvPolynomial σ R} {I : Ideal (MvPolynomial σ R)} {p : MvPolynomial σ R}
   (hG''I : G'' ⊆ I) (hpG''r : m.IsRemainder p G'' r) :
   r ∈ I ↔ p ∈ I := by
-  constructor
-  · intro hr
-    obtain ⟨p, h_eq, h_deg, h_remain⟩ := hpG''r
-    rw[h_eq]
-    refine Ideal.add_mem _ ?_ ?_
-    · sorry
-    · exact hr
-  · intro hp
-    obtain ⟨q, h_eq, h_deg, h_remain⟩ := hpG''r
-    rw [h_eq] at hp
-    sorry
-
-lemma remainder_mem_ideal_iff' {G'': Set (MvPolynomial σ k)} {r : MvPolynomial σ k}
-  {I : Ideal (MvPolynomial σ k)} {p : MvPolynomial σ k}
-  (h : G'' ⊆ I) (hpG''r : m.IsRemainder p G'' r) :
-  r ∈ I ↔ p ∈ I := by
-  refine remainder_mem_ideal_iff (G'':=G''\{0}) (m:=m) ?_ ?_ ?_
-  · intro g hg
-    refine isUnit_leadingCoeff.mpr ?_
-    by_contra g'
-    have: 0 ∈ G'' \ {0} := by
-      exact Set.mem_of_eq_of_mem (id (Eq.symm g')) hg
-    simp at this
-  · intro g hg
-    exact h (Set.mem_of_mem_diff hg)
-  · exact (isRemainder_of_singleton_zero_iff_isRemainder m p G'' r).mpr hpG''r
+  refine ⟨mem_ideal_of_remainder_mem_ideal hG''I hpG''r, ?_⟩
+  obtain ⟨f, h_eq, h_deg, h_remain⟩ := hpG''r
+  intro hp
+  rw [← sub_eq_of_eq_add' h_eq]
+  apply Ideal.sub_mem I hp
+  -- (optional) to make it clearer: `rw [Finsupp.linearCombination_apply]`
+  apply Ideal.sum_mem
+  intro g hg
+  exact mul_mem_left I _ (Set.mem_of_mem_of_subset (by simp) hG''I)
 
 
 lemma remainder_sub_remainder_mem_ideal {R : Type _} [CommRing R]
   {G'': Set (MvPolynomial σ R)} {I : Ideal (MvPolynomial σ R)} {p r₁ r₂ : MvPolynomial σ R}
-  (hG'' : ∀ g ∈ G'', IsUnit (m.leadingCoeff g))
   (hG''I : G'' ⊆ I) (hr₁ : m.IsRemainder p G'' r₁) (hr₂ : m.IsRemainder p G'' r₂) :
   r₁-r₂ ∈ I := by
-  sorry -- normal
-
-lemma remainder_sub_remainder_mem_ideal' {G'': Set (MvPolynomial σ k)} {p r₁ r₂ : MvPolynomial σ k}
-  (hG'' : G'' ⊆ I) (hr₁ : m.IsRemainder p G'' r₁) (hr₂ : m.IsRemainder p G'' r₂) :
-  r₁-r₂ ∈ I := by
-  refine remainder_sub_remainder_mem_ideal (G'':=G''\{0}) (m:=m) (p:=p) (r₁:=r₁) (r₂:=r₂) ?_ ?_ ?_ ?_
-  · intro g hg
-    refine isUnit_leadingCoeff.mpr ?_
-    by_contra g'
-    have: 0 ∈ G'' \ {0} := by
-      exact Set.mem_of_eq_of_mem (id (Eq.symm g')) hg
-    simp at this
-  · intro g hg
-    exact hG'' hg.1
-  · exact (isRemainder_of_singleton_zero_iff_isRemainder m p G'' r₁).mpr hr₁
-  · exact (isRemainder_of_singleton_zero_iff_isRemainder m p G'' r₂).mpr hr₂
+  obtain ⟨f₁, h_eq₁, h_deg₁, h_remain₁⟩ := hr₁
+  obtain ⟨f₂, h_eq₂, h_deg₂, h_remain₂⟩ := hr₂
+  rw [← sub_eq_of_eq_add' h_eq₁, ← sub_eq_of_eq_add' h_eq₂]
+  simp
+  apply Ideal.sub_mem I
+  <;> apply Ideal.sum_mem
+  <;> intro g hg
+  <;> exact mul_mem_left I _ (Set.mem_of_mem_of_subset (by simp) hG''I)
 
 end MonomialOrder

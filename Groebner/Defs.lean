@@ -21,6 +21,31 @@ def IsRemainder (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvP
       (∀ (g' : G''), m.degree ((g' : MvPolynomial σ R) * (g g')) ≼[m] m.degree p) ∧
       (∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c))
 
+-- it may free you from coercion between different kinds of "sets",
+-- "finite subsets", "finite subsets" of "sets", ...,
+-- when you are dealing with different G''
+lemma IsRemainder_def' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
+  : m.IsRemainder p G'' r ↔ ∃ (g : (MvPolynomial σ R) →₀ (MvPolynomial σ R)),
+      ↑g.support ⊆ G'' ∧
+      p = Finsupp.linearCombination _ id g + r ∧
+      (∀ g' ∈ G'', m.degree ((g' : MvPolynomial σ R) * (g g')) ≼[m] m.degree p) ∧
+      (∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c)) := by
+  -- probably many tech details
+  -- (technologically but not mathematically) normal or hard
+  sorry
+
+lemma IsRemainder_def'' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
+  : m.IsRemainder p G'' r ↔
+  ∃ (g : (MvPolynomial σ R) → (MvPolynomial σ R))(G' : Finset (MvPolynomial σ R)),
+      ↑G' ⊆ G'' ∧
+      p = G'.sum (fun x => x * g x) + r ∧
+      (∀ g' ∈ G', m.degree ((g' : MvPolynomial σ R) * (g g')) ≼[m] m.degree p) ∧
+      (∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c)) := by
+  -- probably many tech details
+  -- (technologically but not mathematically) normal
+  rw [IsRemainder_def']
+  sorry
+
 lemma lm_eq_zero_iff (p : MvPolynomial σ R): m.leadingTerm p = 0 ↔ p = 0 := by
   simp only [leadingTerm, monomial_eq_zero, leadingCoeff_eq_zero_iff]
 
@@ -37,10 +62,120 @@ lemma leadingTerm_image_sdiff_singleton_zero (G'' : Set (MvPolynomial σ R)) :
     rw [←hpq, MonomialOrder.lm_eq_zero_iff] at hp
     exact ⟨q, ⟨hq, hp⟩, hpq⟩
 
+open Classical
+
+@[simp]
+lemma zero_le (a : m.syn) : 0 ≤ a := by
+  exact bot_le
+
+  -- sorry
+
 lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
   (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
   m.IsRemainder p (insert 0 G'') r ↔ m.IsRemainder p G'' r := by
-  sorry
+  constructor
+  ·
+    by_cases hG'' : 0 ∈ G''; simp only [Set.insert_eq_of_mem hG'', imp_self]
+    rw [IsRemainder_def'', IsRemainder_def'']
+    intro ⟨g, G', hG', h₁, h₂, h₃⟩
+    use g, (G'.erase 0)
+    split_ands
+    · simp [hG']
+    ·
+      rw [h₁]
+      congr 1
+      by_cases hG'0 : 0 ∈ G'
+      ·
+        nth_rw 1 [← Finset.insert_erase hG'0]
+        rw [Finset.sum_insert_zero (a:=0)]
+        simp
+      ·
+        rw [Finset.erase_eq_self.mpr hG'0]
+
+    ·
+      intro g' hg'
+      simp at hg'
+      exact h₂ g' hg'.2
+    ·
+      intro n hn g' hg'G' hg'
+      exact h₃ n hn g' (by simp [hg'G']) hg'
+
+    -- -- original partial proof without IsRemainder_def''. i keep it at this time in case i need it again elsewhere.
+    -- by_cases hG'' : 0 ∈ G''; simp only [Set.insert_eq_of_mem hG'', imp_self]
+    -- rw [IsRemainder_def', IsRemainder_def']
+    -- intro ⟨g, hg, h₁, h₂, h₃⟩
+    -- by_cases hg' : 0 ∈ g.support
+    -- ·
+    --   use g.filter (·≠ 0)
+    --   -- use f
+    --   -- rw [this]
+
+    --   -- have := Finset.sum_insert_zero (a:=0) (s:=f.support) (by simp : (fun (x : MvPolynomial σ R) => (g x • id x)) 0 = 0)
+
+    --   -- rw []
+    --   split_ands
+    --   ·
+    --     simp
+    --     intro x
+    --     simp
+    --     intro hgx hx
+    --     apply (Finsupp.mem_support_toFun g x).mpr at hgx
+    --     exact (Set.mem_insert_iff.mp (Set.mem_of_mem_of_subset hgx hg)).resolve_left hx
+    --   ·
+    --     rw [h₁, Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, Finsupp.sum, Finsupp.sum]
+    --     congr 1
+    --     have : g.support = insert 0 (g.filter (·≠ 0)).support := by
+    --       simp [hg']
+    --       apply subset_antisymm
+    --       · intro x hx
+    --         -- ↓ WHY doesn't it give me a simple `p = 0 ∨ ¬ p = 0` if i don't feed it `or_not` the law of excluded middle????
+    --         simp [hx, or_not]
+    --       · intro x hx
+    --         simp at hx
+    --         simp only [Finsupp.mem_support_iff, ne_eq]
+    --         cases' hx with hx hx
+    --         ·exact hx.symm ▸ Finsupp.mem_support_iff.mp hg'
+    --         ·exact hx.1
+
+    --     rw [this]
+    --     generalize hgxx : (fun (x : MvPolynomial σ R) => (g x * id x)) = gx_mul_x at *
+    --     rw [Finset.sum_insert_zero (a:=0) (s:=(g.filter (·≠ 0)).support) (by simp [←hgxx]: gx_mul_x 0 = 0)]
+    --     apply Finset.sum_congr rfl
+    --     simp [←hgxx]
+    --     intro x _ hx
+    --     simp [hx]
+    --   ·
+    --     intro g'' hg''
+    --     simp [(ne_of_mem_of_not_mem hg'' hG'' : g'' ≠ 0)]
+    --     exact h₂ g'' (by simp [hg''])
+    --   ·
+    --     intro n hn g'' hg''G hg''
+    --     exact h₃ n hn
+    --     sorry
+    -- ·
+    --   -- rw [IsRemainder_def', IsRemainder_def']
+    --   use g
+    --   split_ands
+    --   · exact (Set.subset_insert_iff_of_not_mem hg').mp hg
+    --   · exact h₁
+    --   · intro g'' hg''
+    --     exact h₂ g'' (by simp[hg''])
+    --   · intro n hn g'' hg''G hg''
+    --     exact h₃ n hn g'' (by simp [hg''G]) hg''
+  ·
+    rw [IsRemainder_def', IsRemainder_def']
+    intro ⟨g, hg, h₁, h₂, h₃⟩
+    use g
+    split_ands
+    · exact subset_trans hg (Set.subset_insert _ _)
+    · exact h₁
+    · intro g' hg'
+      by_cases hg'₁ : g' = 0
+      · simp only [hg'₁, zero_mul, degree_zero, map_zero, zero_le]
+      · exact h₂ g' ((Set.mem_insert_iff.mp hg').resolve_left hg'₁)
+    ·
+      intro c hc g' hg' hg'₁
+      exact h₃ c hc g' ((Set.mem_insert_iff.mp hg').resolve_left hg'₁) hg'₁
 
 lemma isRemainder_of_singleton_zero_iff_isRemainder (p : MvPolynomial σ R)
   (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
