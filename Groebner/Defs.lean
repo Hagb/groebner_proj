@@ -12,6 +12,10 @@ variable {σ : Type*} (m : MonomialOrder σ)
 section CommSemiring
 variable {R : Type*} [CommSemiring R]
 
+@[simp]
+lemma zero_le (a : m.syn) : 0 ≤ a := by
+  exact bot_le
+
 noncomputable def leadingTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree f) (m.leadingCoeff f)
 
@@ -20,6 +24,8 @@ def IsRemainder (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvP
       p = Finsupp.linearCombination _ (fun (g' : G'') ↦ (g' : MvPolynomial σ R)) g + r ∧
       (∀ (g' : G''), m.degree ((g' : MvPolynomial σ R) * (g g')) ≼[m] m.degree p) ∧
       (∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c))
+
+open Classical
 
 -- it may free you from coercion between different kinds of "sets",
 -- "finite subsets", "finite subsets" of "sets", ...,
@@ -32,19 +38,67 @@ lemma IsRemainder_def' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (
       (∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c)) := by
   -- probably many tech details
   -- (technologically but not mathematically) normal or hard
+
+
   sorry
 
 lemma IsRemainder_def'' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
   : m.IsRemainder p G'' r ↔
   ∃ (g : (MvPolynomial σ R) → (MvPolynomial σ R))(G' : Finset (MvPolynomial σ R)),
       ↑G' ⊆ G'' ∧
-      p = G'.sum (fun x => x * g x) + r ∧
+      p = G'.sum (fun x => g x * x) + r ∧
       (∀ g' ∈ G', m.degree ((g' : MvPolynomial σ R) * (g g')) ≼[m] m.degree p) ∧
       (∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c)) := by
-  -- probably many tech details
-  -- (technologically but not mathematically) normal
+  classical
   rw [IsRemainder_def']
-  sorry
+  constructor
+  · intro ⟨g, h₁, h₂, h₃, h₄⟩
+    use g.toFun, g.support
+    refine ⟨h₁, by rwa [Finsupp.linearCombination_apply, Finsupp.sum] at h₂, ?_, h₄⟩
+    intro g' hg'
+    exact h₃ g' (Set.mem_of_mem_of_subset hg' h₁)
+  · intro ⟨g, G', h₁, h₂, h₃, h₄⟩
+    -- let g₁ := fun x => if x ∈ G' then g x else 0
+    use Finsupp.onFinset G' (fun x => if x ∈ G' then g x else 0) (by simp; intro _ ha _; exact ha)
+    split_ands
+    · intro x hx
+      simp at hx
+      exact Set.mem_of_mem_of_subset hx.1 h₁
+    · rw [Finsupp.linearCombination_apply, Finsupp.sum, h₂, Finsupp.support_onFinset]
+      congr 1
+      simp
+      have h : G' = ({a ∈ G' | a ∈ G' ∧ ¬g a = 0} ∩ G') ∪ ({a ∈ G' | g a = 0}) := by
+        apply subset_antisymm
+        · intro x
+          simp
+          intro hx
+          simp [hx, em'] -- why `simp [hx]` doesn't use the law of excluded middle
+        · intro x
+          simp
+          rintro (⟨_, hx⟩ | ⟨hx,_⟩) <;> exact hx
+      have h' : Disjoint ({a ∈ G' | a ∈ G' ∧ ¬g a = 0} ∩ G')  ({a ∈ G' | g a = 0}) := by
+        unfold Disjoint
+        simp
+        intro s hs hs'
+        by_contra h
+        obtain ⟨x, hx⟩ := Finset.nonempty_iff_ne_empty.mpr h
+        have hs := Finset.mem_of_subset hs hx
+        have hs' := Finset.mem_of_subset hs' hx
+        simp at hs hs'
+        exact hs.1.2 hs'.2
+      nth_rewrite 1 [h]
+      rw [Finset.sum_union h']
+      convert add_zero _
+      convert Finset.sum_const_zero
+      expose_names
+      simp at h_1
+      simp [h_1.2]
+    ·
+      intro g'' hg''
+      by_cases hg''G' : g'' ∈ G'
+      · simp [hg''G', h₃]
+      · simp [hg''G']
+    · exact h₄
 
 lemma lm_eq_zero_iff (p : MvPolynomial σ R): m.leadingTerm p = 0 ↔ p = 0 := by
   simp only [leadingTerm, monomial_eq_zero, leadingCoeff_eq_zero_iff]
@@ -61,14 +115,6 @@ lemma leadingTerm_image_sdiff_singleton_zero (G'' : Set (MvPolynomial σ R)) :
     intro q hq hpq hp
     rw [←hpq, MonomialOrder.lm_eq_zero_iff] at hp
     exact ⟨q, ⟨hq, hp⟩, hpq⟩
-
-open Classical
-
-@[simp]
-lemma zero_le (a : m.syn) : 0 ≤ a := by
-  exact bot_le
-
-  -- sorry
 
 lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
   (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
