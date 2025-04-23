@@ -34,7 +34,18 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span {p : MvPolynomial σ k}
   {r : MvPolynomial σ k}
   (h : m.IsGroebnerBasis G' I)
   (hr : m.IsRemainder p G' r)
-  : r = 0 ↔ p ∈ I := by sorry
+  : r = 0 ↔ p ∈ I := by
+  constructor
+  · intro h_zero
+    rw[h_zero] at hr
+    obtain ⟨g, h_p, -⟩ := hr
+    rw [h_p]
+    have h_span : Ideal.span (G' : Set (MvPolynomial σ k)) = I := by
+      sorry
+    rw [← h_span]
+    sorry
+  · intro h_p_mem
+    sorry
 
 theorem is_groebner_basis_iff :
   m.IsGroebnerBasis G' I ↔ G'.toSet ⊆ I ∧ ∀ p ∈ I, m.IsRemainder p G' 0 := by

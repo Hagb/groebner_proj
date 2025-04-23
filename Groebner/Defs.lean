@@ -32,7 +32,17 @@ lemma IsRemainder_def' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (
       (∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c)) := by
   -- probably many tech details
   -- (technologically but not mathematically) normal or hard
+  unfold IsRemainder
+  constructor
+  ·
+   rintro ⟨g, h₁, h₂⟩
+   sorry
   sorry
+
+
+
+
+
 
 lemma IsRemainder_def'' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
   : m.IsRemainder p G'' r ↔
