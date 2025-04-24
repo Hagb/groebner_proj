@@ -1,2 +1,6 @@
 /.lake
 .DS_Store
+curl
+*.txt
+*.json
+*.ipynb
