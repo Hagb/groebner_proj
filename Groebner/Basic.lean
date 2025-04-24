@@ -1,4 +1,4 @@
-import Mathlib -- should be removed later
+import Mathlib-- should be removed later
 import Mathlib.RingTheory.MvPolynomial.Groebner
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.Noetherian.Basic
@@ -11,6 +11,8 @@ import Groebner.Defs
 namespace MonomialOrder
 open MvPolynomial
 section Field
+
+set_option linter.unusedTactic false
 
 variable {σ : Type*} {m : MonomialOrder σ}
 variable {s : σ →₀ ℕ} {k : Type _} [Field k]
@@ -40,10 +42,8 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span {p : MvPolynomial σ k}
     rw[h_zero] at hr
     obtain ⟨g, h_p, -⟩ := hr
     rw [h_p]
-    have h_span : Ideal.span (G' : Set (MvPolynomial σ k)) = I := by
-      sorry
-    rw [← h_span]
     sorry
+
   · intro h_p_mem
     sorry
 

@@ -11,10 +11,10 @@ variable {σ : Type*} (m : MonomialOrder σ)
 
 section CommSemiring
 variable {R : Type*} [CommSemiring R]
+variable (G': Set (MvPolynomial σ R))
 
 @[simp]
-lemma zero_le (a : m.syn) : 0 ≤ a := by
-  exact bot_le
+lemma zero_le (a : m.syn) : 0 ≤ a := bot_le
 
 noncomputable def leadingTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree f) (m.leadingCoeff f)
@@ -38,13 +38,7 @@ lemma IsRemainder_def' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (
       (∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c)) := by
   -- probably many tech details
   -- (technologically but not mathematically) normal or hard
-
-
   sorry
-
-
-
-
 
 
 lemma IsRemainder_def'' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
@@ -240,6 +234,9 @@ lemma isRemainder_of_singleton_zero_iff_isRemainder (p : MvPolynomial σ R)
       ext x
       simp [h]
     rw [h']
+
+@[reducible]
+def leading_term_ideal : Ideal (MvPolynomial σ R) := Ideal.span (leadingTerm m '' (G' : Set (MvPolynomial σ R)))
 
 end CommSemiring
 
