@@ -72,20 +72,81 @@ lemma IsRemainder_def' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (
       (∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c)) := by
   -- probably many tech details
   -- (technologically but not mathematically) normal or hard
-  sorry
+  unfold IsRemainder
+  constructor
+  ·
+    intro ⟨g, h₁, h₂, h₃⟩
+    use {
+      support := g.support,
+      toFun := fun x => if hx : x ∈ G'' then g.toFun (⟨x, hx⟩) else 0,
+      mem_support_toFun := by intro; simp; rfl
+    }
+    split_ands
+    · simp
+    · simp [h₁]
+      congr 1
+      simp [Finsupp.linearCombination_apply, Finsupp.sum]
+      rfl
+    · intro g' hg'
+      simp [hg']
+      convert h₂ ⟨g', hg'⟩
+    · exact h₃
+  ·
+    intro ⟨g, hg, h₁, h₂, h₃⟩
+    -- let g' :=
+    let g' := g.support.filterMap
+        (fun x => if hx : x ∈ G'' then some (⟨x, hx⟩ : ↑G'') else none)
+        (by simp; intro _ _ _ _ h' h''; rw [h', h''])
+    use {
+      support := g.support.filterMap
+        (fun x => if hx : x ∈ G'' then some (⟨x, hx⟩ : ↑G'') else none)
+        (by simp; intro _ _ _ _ h' h''; rw [h', h'']),
+      toFun := (g.toFun ·),
+      mem_support_toFun := by intro; simp; rfl
+    }
+    split_ands
+    · rw [h₁, eq_comm]
+      congr 1
+      simp [Finsupp.linearCombination_apply, Finsupp.sum]
+      apply Finset.sum_nbij (↑·)
+      · intro q hq
+        simp at hq
+        simp [hq]
+      · intro q
+        simp
+        intro _ _ _ _ hqs
+        simp [←hqs]
+      · intro q hq
+        simp
+        exact ⟨Finsupp.mem_support_iff.mp hq, Set.mem_of_subset_of_mem hg hq⟩
+      · simp [DFunLike.coe]
+    · simp
+      exact h₂
+    · exact h₃
 
 /--
-Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set of polynomials,
-  and $r \in R[\mathbf{X}]$ a remainder. We say $r$ is a remainder of $p$ modulo $G''$
-  with respect to monomial order $m$ if and only if there exists a coefficient map
-  $g : R[\mathbf{X}] \to R[\mathbf{X}]$ and a finite subset $G' \subseteq_{\mathrm{fin}} G''$ satisfying:
-  \begin{enumerate}
-    \item  $G' \subseteq G''$
-    \item  $p = \sum_{x \in G'} g(x) \cdot x + r$
-    \item  $\forall x \in G',\ \deg_m(x \cdot g(x)) \preceq \deg_m(p)$
-    \item  No term of $r$ is divisible by the leading term of any non-zero element in $G''$
-  \end{enumerate}
---/
+Let \( p, r \in k[x_i : i \in \sigma] \), and let \( G' \subseteq k[x_i : i \in \sigma] \) be a finite set.
+We say that \( r \) is a \emph{generalized remainder} of \( p \) upon division by \( G' \) if the following two conditions hold:
+
+\begin{enumerate}
+  \item For every nonzero \( g \in G' \) and every monomial \( x^s \in \operatorname{supp}(r) \),
+        there exists some component \( j \in \sigma \) such that
+        \[
+        \operatorname{multideg}(g)_j > s_j.
+        \]
+  \item There exists a function \( q : G' \to k[x_i : i \in \sigma] \) such that:
+  \begin{itemize}
+    \item For every \( g \in G' \),
+          \[
+          \operatorname{multideg}''(q(g)g) \leq \operatorname{multideg}''(p);
+          \]
+    \item The decomposition holds:
+          \[
+          p = \sum_{g \in G'} q(g)g + r.
+          \]
+  \end{itemize}
+\end{enumerate}
+-/
 lemma IsRemainder_def'' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
   : m.IsRemainder p G'' r ↔
   ∃ (g : (MvPolynomial σ R) → (MvPolynomial σ R))(G' : Finset (MvPolynomial σ R)),
@@ -93,7 +154,6 @@ lemma IsRemainder_def'' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) 
       p = G'.sum (fun x => g x * x) + r ∧
       (∀ g' ∈ G', m.degree ((g' : MvPolynomial σ R) * (g g')) ≼[m] m.degree p) ∧
       (∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c)) := by
-  classical
   rw [IsRemainder_def']
   constructor
   · intro ⟨g, h₁, h₂, h₃, h₄⟩
@@ -212,69 +272,6 @@ lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
     ·
       intro n hn g' hg'G' hg'
       exact h₃ n hn g' (by simp [hg'G']) hg'
-
-    -- -- original partial proof without IsRemainder_def''. i keep it at this time in case i need it again elsewhere.
-    -- by_cases hG'' : 0 ∈ G''; simp only [Set.insert_eq_of_mem hG'', imp_self]
-    -- rw [IsRemainder_def', IsRemainder_def']
-    -- intro ⟨g, hg, h₁, h₂, h₃⟩
-    -- by_cases hg' : 0 ∈ g.support
-    -- ·
-    --   use g.filter (·≠ 0)
-    --   -- use f
-    --   -- rw [this]
-
-    --   -- have := Finset.sum_insert_zero (a:=0) (s:=f.support) (by simp : (fun (x : MvPolynomial σ R) => (g x • id x)) 0 = 0)
-
-    --   -- rw []
-    --   split_ands
-    --   ·
-    --     simp
-    --     intro x
-    --     simp
-    --     intro hgx hx
-    --     apply (Finsupp.mem_support_toFun g x).mpr at hgx
-    --     exact (Set.mem_insert_iff.mp (Set.mem_of_mem_of_subset hgx hg)).resolve_left hx
-    --   ·
-    --     rw [h₁, Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, Finsupp.sum, Finsupp.sum]
-    --     congr 1
-    --     have : g.support = insert 0 (g.filter (·≠ 0)).support := by
-    --       simp [hg']
-    --       apply subset_antisymm
-    --       · intro x hx
-    --         -- ↓ WHY doesn't it give me a simple `p = 0 ∨ ¬ p = 0` if i don't feed it `or_not` the law of excluded middle????
-    --         simp [hx, or_not]
-    --       · intro x hx
-    --         simp at hx
-    --         simp only [Finsupp.mem_support_iff, ne_eq]
-    --         cases' hx with hx hx
-    --         ·exact hx.symm ▸ Finsupp.mem_support_iff.mp hg'
-    --         ·exact hx.1
-
-    --     rw [this]
-    --     generalize hgxx : (fun (x : MvPolynomial σ R) => (g x * id x)) = gx_mul_x at *
-    --     rw [Finset.sum_insert_zero (a:=0) (s:=(g.filter (·≠ 0)).support) (by simp [←hgxx]: gx_mul_x 0 = 0)]
-    --     apply Finset.sum_congr rfl
-    --     simp [←hgxx]
-    --     intro x _ hx
-    --     simp [hx]
-    --   ·
-    --     intro g'' hg''
-    --     simp [(ne_of_mem_of_not_mem hg'' hG'' : g'' ≠ 0)]
-    --     exact h₂ g'' (by simp [hg''])
-    --   ·
-    --     intro n hn g'' hg''G hg''
-    --     exact h₃ n hn
-    --     sorry
-    -- ·
-    --   -- rw [IsRemainder_def', IsRemainder_def']
-    --   use g
-    --   split_ands
-    --   · exact (Set.subset_insert_iff_of_not_mem hg').mp hg
-    --   · exact h₁
-    --   · intro g'' hg''
-    --     exact h₂ g'' (by simp[hg''])
-    --   · intro n hn g'' hg''G hg''
-    --     exact h₃ n hn g'' (by simp [hg''G]) hg''
   ·
     rw [IsRemainder_def', IsRemainder_def']
     intro ⟨g, hg, h₁, h₂, h₃⟩
@@ -426,13 +423,9 @@ end CommRing
 section Field
 
 /--
-  Let $k$ be a field and $m$ a monomial order on $\sigma \to \mathbb{N}$.
-  For any finite set of polynomials $G'' \subseteq k[\mathbf{X}]$ and
-  polynomial $p \in k[\mathbf{X}]$, there exists a remainder $r$ satisfying:
-  \[
-    \mathsf{IsRemainder}_m\,p\,G''\,r
-  \]
---/
+Let \( k \) be a field, and let \( G'' \subseteq k[x_i : i \in \sigma] \) be a set of polynomials.
+Then for any \( p \in k[x_i : i \in \sigma] \), there exists a generalized remainder \( r \) of \( p \) upon division by \( G'' \).
+-/
 theorem div_set'' {k : Type*} [Field k] {s : σ →₀ ℕ} {G'' : Set (MvPolynomial σ k)}
     (p : MvPolynomial σ k) :
     ∃ (r : MvPolynomial σ k), m.IsRemainder p G'' r := by
