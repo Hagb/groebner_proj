@@ -107,10 +107,6 @@ run_meta do
     ]
 
   println! defInfosJson
-<<<<<<< HEAD
-
-=======
   IO.FS.writeFile "defInfos.json" (toString defInfosJson)
->>>>>>> 6caf977cabe35ded956af765a333267d9614905f
 
 #check ``sorryAx
