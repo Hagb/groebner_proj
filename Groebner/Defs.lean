@@ -16,9 +16,29 @@ variable (G': Set (MvPolynomial σ R))
 @[simp]
 lemma zero_le (a : m.syn) : 0 ≤ a := bot_le
 
+/--
+Given a nonzero polynomial \( f \in k[x] \), let
+  \[
+  f = c_0 x^m + c_1 x^{m-1} + \cdots + c_m,
+  \]
+  where \( c_i \in k \) and \( c_0 \neq 0 \) [thus, \( m = \deg(f) \)]. Then we say that \( c_0 x^m \) is the \textbf{leading term} of \( f \), written
+  \[
+  \operatorname{LT}(f) = c_0 x^m.
+  \]
+--/
 noncomputable def leadingTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree f) (m.leadingCoeff f)
 
+/--
+Fix a monomial order \(>\) on \(\mathbb{Z}_{\geq 0}^n\), and let
+  \(F = (f_1, \ldots, f_s)\) be an ordered \(s\)-tuple of polynomials in \(k[x_1, \ldots, x_n]\).
+  Then every \(f \in k[x_1, \ldots, x_n]\) can be written as
+  \[
+  f = a_1 f_1 + \cdots + a_s f_s + r,
+  \]
+  where \(a_i, r \in k[x_1, \ldots, x_n]\), and either \(r = 0\) or \(r\) is a linear combination, with coefficients in \(k\), of monomials, none of which is divisible by any of \(\mathrm{LT}(f_1), \ldots, \mathrm{LT}(f_s)\).
+  We will call \(r\) a \textbf{remainder} of \(f\) on division by \(F\).
+--/
 def IsRemainder (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
   := ∃ (g : G'' →₀ (MvPolynomial σ R)),
       p = Finsupp.linearCombination _ (fun (g' : G'') ↦ (g' : MvPolynomial σ R)) g + r ∧
@@ -30,6 +50,20 @@ open Classical
 -- it may free you from coercion between different kinds of "sets",
 -- "finite subsets", "finite subsets" of "sets", ...,
 -- when you are dealing with different G''
+
+/--
+Let $p \in R[\mathbf{X}]$, $G'' \subseteq R[\mathbf{X}]$ be a set of polynomials,
+  and $r \in R[\mathbf{X}]$. Then $r$ is a remainder of $p$ modulo $G''$ with respect to
+  monomial order $m$ if and only if there exists a finite linear combination from $G''$
+  such that:
+  \begin{enumerate}
+    \item The support of the combination is contained in $G''$
+    \item $p$ decomposes as the sum of this combination and $r$
+    \item For each $g' \in G''$, the degree of $g' \cdot (coefficient\ of\ g')$
+          is bounded by $\deg_m(p)$
+    \item No term of $r$ is divisible by any leading term of non-zero elements in $G''$
+  \end{enumerate}
+--/
 lemma IsRemainder_def' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
   : m.IsRemainder p G'' r ↔ ∃ (g : (MvPolynomial σ R) →₀ (MvPolynomial σ R)),
       ↑g.support ⊆ G'' ∧
@@ -38,9 +72,81 @@ lemma IsRemainder_def' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (
       (∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c)) := by
   -- probably many tech details
   -- (technologically but not mathematically) normal or hard
-  sorry
+  unfold IsRemainder
+  constructor
+  ·
+    intro ⟨g, h₁, h₂, h₃⟩
+    use {
+      support := g.support,
+      toFun := fun x => if hx : x ∈ G'' then g.toFun (⟨x, hx⟩) else 0,
+      mem_support_toFun := by intro; simp; rfl
+    }
+    split_ands
+    · simp
+    · simp [h₁]
+      congr 1
+      simp [Finsupp.linearCombination_apply, Finsupp.sum]
+      rfl
+    · intro g' hg'
+      simp [hg']
+      convert h₂ ⟨g', hg'⟩
+    · exact h₃
+  ·
+    intro ⟨g, hg, h₁, h₂, h₃⟩
+    -- let g' :=
+    let g' := g.support.filterMap
+        (fun x => if hx : x ∈ G'' then some (⟨x, hx⟩ : ↑G'') else none)
+        (by simp; intro _ _ _ _ h' h''; rw [h', h''])
+    use {
+      support := g.support.filterMap
+        (fun x => if hx : x ∈ G'' then some (⟨x, hx⟩ : ↑G'') else none)
+        (by simp; intro _ _ _ _ h' h''; rw [h', h'']),
+      toFun := (g.toFun ·),
+      mem_support_toFun := by intro; simp; rfl
+    }
+    split_ands
+    · rw [h₁, eq_comm]
+      congr 1
+      simp [Finsupp.linearCombination_apply, Finsupp.sum]
+      apply Finset.sum_nbij (↑·)
+      · intro q hq
+        simp at hq
+        simp [hq]
+      · intro q
+        simp
+        intro _ _ _ _ hqs
+        simp [←hqs]
+      · intro q hq
+        simp
+        exact ⟨Finsupp.mem_support_iff.mp hq, Set.mem_of_subset_of_mem hg hq⟩
+      · simp [DFunLike.coe]
+    · simp
+      exact h₂
+    · exact h₃
 
+/--
+Let \( p, r \in k[x_i : i \in \sigma] \), and let \( G' \subseteq k[x_i : i \in \sigma] \) be a finite set.
+We say that \( r \) is a \emph{generalized remainder} of \( p \) upon division by \( G' \) if the following two conditions hold:
 
+\begin{enumerate}
+  \item For every nonzero \( g \in G' \) and every monomial \( x^s \in \operatorname{supp}(r) \),
+        there exists some component \( j \in \sigma \) such that
+        \[
+        \operatorname{multideg}(g)_j > s_j.
+        \]
+  \item There exists a function \( q : G' \to k[x_i : i \in \sigma] \) such that:
+  \begin{itemize}
+    \item For every \( g \in G' \),
+          \[
+          \operatorname{multideg}''(q(g)g) \leq \operatorname{multideg}''(p);
+          \]
+    \item The decomposition holds:
+          \[
+          p = \sum_{g \in G'} q(g)g + r.
+          \]
+  \end{itemize}
+\end{enumerate}
+-/
 lemma IsRemainder_def'' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
   : m.IsRemainder p G'' r ↔
   ∃ (g : (MvPolynomial σ R) → (MvPolynomial σ R))(G' : Finset (MvPolynomial σ R)),
@@ -48,7 +154,6 @@ lemma IsRemainder_def'' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) 
       p = G'.sum (fun x => g x * x) + r ∧
       (∀ g' ∈ G', m.degree ((g' : MvPolynomial σ R) * (g g')) ≼[m] m.degree p) ∧
       (∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c)) := by
-  classical
   rw [IsRemainder_def']
   constructor
   · intro ⟨g, h₁, h₂, h₃, h₄⟩
@@ -99,9 +204,24 @@ lemma IsRemainder_def'' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) 
       · simp [hg''G']
     · exact h₄
 
+/--
+Let $p \in R[\mathbf{X}]$ be a multivariate polynomial. Then the leading term of $p$
+  vanishes with respect to monomial order $m$ if and only if $p$ is the zero polynomial:
+  \[
+    \LT_m(p) = 0 \iff p = 0
+  \]
+--/
 lemma lm_eq_zero_iff (p : MvPolynomial σ R): m.leadingTerm p = 0 ↔ p = 0 := by
   simp only [leadingTerm, monomial_eq_zero, leadingCoeff_eq_zero_iff]
 
+/--
+For any set of polynomials $G'' \subseteq R[\mathbf{X}]$ and monomial order $m$,
+  the image of leading terms on the nonzero elements of $G''$ equals the image on all
+  elements minus zero:
+  \[
+    \LT_m(G'' \setminus \{0\}) = \LT_m(G'') \setminus \{0\}
+  \]
+--/
 lemma leadingTerm_image_sdiff_singleton_zero (G'' : Set (MvPolynomial σ R)) :
   m.leadingTerm '' (G''\ {0}) = (m.leadingTerm '' G'') \ {0} := by
   apply subset_antisymm
@@ -115,6 +235,14 @@ lemma leadingTerm_image_sdiff_singleton_zero (G'' : Set (MvPolynomial σ R)) :
     rw [←hpq, MonomialOrder.lm_eq_zero_iff] at hp
     exact ⟨q, ⟨hq, hp⟩, hpq⟩
 
+/--
+Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set of polynomials,
+  and $r \in R[\mathbf{X}]$ a remainder. Then the remainder property is invariant under
+  inserting the zero polynomial:
+  \[
+    \mathsf{IsRemainder}_m\,p\,(G'' \cup \{0\})\,r \iff \mathsf{IsRemainder}_m\,p\,G''\,r
+  \]
+--/
 lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
   (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
   m.IsRemainder p (insert 0 G'') r ↔ m.IsRemainder p G'' r := by
@@ -144,69 +272,6 @@ lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
     ·
       intro n hn g' hg'G' hg'
       exact h₃ n hn g' (by simp [hg'G']) hg'
-
-    -- -- original partial proof without IsRemainder_def''. i keep it at this time in case i need it again elsewhere.
-    -- by_cases hG'' : 0 ∈ G''; simp only [Set.insert_eq_of_mem hG'', imp_self]
-    -- rw [IsRemainder_def', IsRemainder_def']
-    -- intro ⟨g, hg, h₁, h₂, h₃⟩
-    -- by_cases hg' : 0 ∈ g.support
-    -- ·
-    --   use g.filter (·≠ 0)
-    --   -- use f
-    --   -- rw [this]
-
-    --   -- have := Finset.sum_insert_zero (a:=0) (s:=f.support) (by simp : (fun (x : MvPolynomial σ R) => (g x • id x)) 0 = 0)
-
-    --   -- rw []
-    --   split_ands
-    --   ·
-    --     simp
-    --     intro x
-    --     simp
-    --     intro hgx hx
-    --     apply (Finsupp.mem_support_toFun g x).mpr at hgx
-    --     exact (Set.mem_insert_iff.mp (Set.mem_of_mem_of_subset hgx hg)).resolve_left hx
-    --   ·
-    --     rw [h₁, Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, Finsupp.sum, Finsupp.sum]
-    --     congr 1
-    --     have : g.support = insert 0 (g.filter (·≠ 0)).support := by
-    --       simp [hg']
-    --       apply subset_antisymm
-    --       · intro x hx
-    --         -- ↓ WHY doesn't it give me a simple `p = 0 ∨ ¬ p = 0` if i don't feed it `or_not` the law of excluded middle????
-    --         simp [hx, or_not]
-    --       · intro x hx
-    --         simp at hx
-    --         simp only [Finsupp.mem_support_iff, ne_eq]
-    --         cases' hx with hx hx
-    --         ·exact hx.symm ▸ Finsupp.mem_support_iff.mp hg'
-    --         ·exact hx.1
-
-    --     rw [this]
-    --     generalize hgxx : (fun (x : MvPolynomial σ R) => (g x * id x)) = gx_mul_x at *
-    --     rw [Finset.sum_insert_zero (a:=0) (s:=(g.filter (·≠ 0)).support) (by simp [←hgxx]: gx_mul_x 0 = 0)]
-    --     apply Finset.sum_congr rfl
-    --     simp [←hgxx]
-    --     intro x _ hx
-    --     simp [hx]
-    --   ·
-    --     intro g'' hg''
-    --     simp [(ne_of_mem_of_not_mem hg'' hG'' : g'' ≠ 0)]
-    --     exact h₂ g'' (by simp [hg''])
-    --   ·
-    --     intro n hn g'' hg''G hg''
-    --     exact h₃ n hn
-    --     sorry
-    -- ·
-    --   -- rw [IsRemainder_def', IsRemainder_def']
-    --   use g
-    --   split_ands
-    --   · exact (Set.subset_insert_iff_of_not_mem hg').mp hg
-    --   · exact h₁
-    --   · intro g'' hg''
-    --     exact h₂ g'' (by simp[hg''])
-    --   · intro n hn g'' hg''G hg''
-    --     exact h₃ n hn g'' (by simp [hg''G]) hg''
   ·
     rw [IsRemainder_def', IsRemainder_def']
     intro ⟨g, hg, h₁, h₂, h₃⟩
@@ -222,6 +287,14 @@ lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
       intro c hc g' hg' hg'₁
       exact h₃ c hc g' ((Set.mem_insert_iff.mp hg').resolve_left hg'₁) hg'₁
 
+/--
+  Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set of polynomials,
+  and $r \in R[\mathbf{X}]$ a remainder. Then the remainder property is invariant under
+  removal of the zero polynomial:
+  \[
+    \mathsf{IsRemainder}_m\,p\,(G'' \setminus \{0\})\,r \iff \mathsf{IsRemainder}_m\,p\,G''\,r
+  \]
+--/
 lemma isRemainder_of_singleton_zero_iff_isRemainder (p : MvPolynomial σ R)
   (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
   m.IsRemainder p (G'' \ {0}) r ↔ m.IsRemainder p G'' r := by
@@ -244,15 +317,36 @@ section CommRing
 open Classical
 variable {R : Type*} [CommRing R] {s : σ →₀ ℕ}
 
+
+/--
+The $S$-polynomial of $f$ and $g$ is the combination
+  \[
+  S(f, g) = \frac{x^\gamma}{\mathrm{LT}(f)} \cdot f - \frac{x^\gamma}{\mathrm{LT}(g)} \cdot g.
+  \]
+--/
 noncomputable def sPolynomial (f g : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree g - m.degree f) (m.leadingCoeff g) * f -
   monomial (m.degree f - m.degree g) (m.leadingCoeff f) * g
 
+
+/--
+Fix a monomial order on the polynomial ring $k[x_1, \ldots, x_n]$.A finite subset $G = \{g_1, \ldots, g_t\}$ of an ideal $I \subseteq k[x_1, \ldots, x_n]$, with $I \ne \{0\}$, is said to be a \textbf{Gröbner basis} (or standard basis) if
+  \[
+  \langle \operatorname{LT}(g_1), \ldots, \operatorname{LT}(g_t) \rangle = \langle \operatorname{LT}(I) \rangle.
+  \]
+  Using the convention that $\langle \emptyset \rangle = \{0\}$, we define the empty set $\emptyset$ to be the Gröbner basis of the zero ideal $\{0\}$.
+--/
 def IsGroebnerBasis (G': Finset (MvPolynomial σ R)) (I : Ideal (MvPolynomial σ R)) :=
   G'.toSet ⊆ I ∧
   Ideal.span (m.leadingTerm '' ↑I)
     = Ideal.span (m.leadingTerm '' G'.toSet)
 
+/--
+the S-polynomial of $f$ and $g$ is antisymmetric:
+  \[
+    \Sph{f}{g} = -\Sph{g}{f}
+  \]
+--/
 lemma sPolynomial_antisymm (f g : MvPolynomial σ R) :
    m.sPolynomial f g = - m.sPolynomial g f := by
    unfold sPolynomial
@@ -261,17 +355,41 @@ lemma sPolynomial_antisymm (f g : MvPolynomial σ R) :
        (neg_sub ((monomial (m.degree f - m.degree g)) (m.leadingCoeff f) * g)
          ((monomial (m.degree g - m.degree f)) (m.leadingCoeff g) * f))
 
-
+/--
+  For any polynomial $g \in \MvPolynomial{\sigma}{R}$ and monomial order $m$,
+  the S-polynomial with zero as first argument vanishes:
+  \[
+    \Sph{0}{g} = 0
+  \]
+--/
 lemma sPolynomial_eq_zero_of_left_eq_zero (g : MvPolynomial σ R) :
   m.sPolynomial 0 g = 0 := by
   unfold sPolynomial
   simp only [zero_mul, sub_zero, leadingCoeff_zero, monomial_zero]
   exact CommMonoidWithZero.mul_zero ((monomial (m.degree g - m.degree 0)) (m.leadingCoeff g))
 
+/--
+  For any polynomial $g \in \MvPolynomial{\sigma}{R}$ and monomial order $m$,
+  the S-polynomial with zero as second argument vanishes:
+  \[
+    \Sph{f}{0} = 0
+  \]
+--/
 lemma sPolynomial_eq_zero_of_right_eq_zero' (f : MvPolynomial σ R) :
   m.sPolynomial f 0 = 0 := by
   rw [sPolynomial_antisymm, sPolynomial_eq_zero_of_left_eq_zero, neg_zero]
 
+/--
+  Let $G'' \subseteq R[\mathbf{X}]$ be a set of polynomials where every nonzero element has a unit leading coefficient:
+  \[
+    \forall g \in G'',\ \big(\mathrm{IsUnit}(\LC_m(g)) \lor g = 0\big)
+  \]
+  Then for any polynomial $p \in R[\mathbf{X}]$, there exists a remainder $r$ satisfying:
+  \[
+    \mathsf{IsRemainder}_m\,p\,G''\,r
+  \]
+  where $\LC_m(g)$ denotes the leading coefficient of $g$ under monomial order $m$.
+--/
 theorem div_set' {G'' : Set (MvPolynomial σ R)}
     (hG : ∀ g ∈ G'', (IsUnit (m.leadingCoeff g) ∨ g = 0)) (p : MvPolynomial σ R) :
     ∃ (r : MvPolynomial σ R), m.IsRemainder p G'' r := by
@@ -307,6 +425,10 @@ end CommRing
 
 section Field
 
+/--
+Let \( k \) be a field, and let \( G'' \subseteq k[x_i : i \in \sigma] \) be a set of polynomials.
+Then for any \( p \in k[x_i : i \in \sigma] \), there exists a generalized remainder \( r \) of \( p \) upon division by \( G'' \).
+-/
 theorem div_set'' {k : Type*} [Field k] {s : σ →₀ ℕ} {G'' : Set (MvPolynomial σ k)}
     (p : MvPolynomial σ k) :
     ∃ (r : MvPolynomial σ k), m.IsRemainder p G'' r := by

@@ -3,6 +3,14 @@ import Mathlib.Data.Finset.Basic
 
 namespace Set
 
+/--
+Let $f: \alpha \to \beta$ be a function and $s \subseteq \alpha$ a subset with finite image $f(s)$. Then there exists a finite subset $s' \subseteq_{\text{fin}} s$ such that:
+\begin{itemize}
+\item $s' \subseteq s$ (subset relation)
+\item $f(s') = f(s)$ (image equality)
+\item $|s'| = |f(s)|$ (cardinality preservation)
+\end{itemize}
+-/
 lemma finset_subset_preimage_of_finite_image {α : Type _} {β : Type _}
     {s : Set α} {f : α → β} (h : (f '' s).Finite) :
     ∃ (s' : Finset α), s'.toSet ⊆ s ∧ f '' s' = f '' s ∧ s'.card = h.toFinset.card := by
