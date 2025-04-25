@@ -2,18 +2,18 @@ import Lean
 import Std.Data.HashSet.Basic
 import Lean.Data.DeclarationRange
 import Lean.Data.Json
+import Lean.Data.NameMap
+import Batteries.Data.NameSet
+import Batteries.Data.BinaryHeap
+import ImportGraph.RequiredModules
 import Groebner.Defs
 import Groebner.Ideal
 import Groebner.Basic
 import Groebner.Set
 import Groebner.Submodule
-
-def mods := [`Groebner.Defs, `Groebner.Ideal, `Groebner.Basic, `Groebner.Set, `Groebner.Submodule]
-
-
+def mods := #[`Groebner.Defs, `Groebner.Ideal, `Groebner.Basic, `Groebner.Set, `Groebner.Submodule]
 
 open Lean
-
 structure DefInfo where
   name : Name
   docstring : Option String
@@ -23,9 +23,8 @@ structure DefInfo where
   isSorry : Bool
   pos : Option Position
 
-
-
-def isOriginal (s : Name) : Bool := !(s.isInternalDetail || s.isImplementationDetail || s.isInternalOrNum)
+def isOriginal (s : Name) : Bool :=
+  !(s.isInternalDetail || s.isImplementationDetail || s.isInternalOrNum || s.isAnonymous)
 
 -- #eval Submodule.add_mem
 def getOriginal (s : Name) : Name :=
@@ -38,24 +37,22 @@ def getOriginal (s : Name) : Name :=
     | Name.anonymous => s
 
 partial def expandUses (range : NameSet) (env: Environment) (used : Name) (s : Name): NameSet :=
-  let range := (range.erase s).erase used
   if isOriginal used then
     NameSet.empty.insert used
   else
     let original := getOriginal used
-    if original == s then
-    match env.find? used with
-    | some info =>
-      let expanded := NameSet.ofList <|
-        (info.getUsedConstantsAsSet ∩ range).toList.flatMap
-        fun x => (expandUses range env x s).toList
-      if original == s then
+    /- !isOriginal original : deal with _private.... -/
+    if original == s || !isOriginal original then
+      match env.find? used with
+      | some info =>
+        let range := (range.erase used).erase s
+        let expanded := NameSet.ofList <|
+          (info.getUsedConstantsAsSet ∩ range).toList.flatMap
+          fun x => (expandUses range env x s).toList
         expanded
-      else
-        expanded.insert original
-    | _ => panic! ""
-  else
-    NameSet.empty.insert original
+      | _ => panic! ""
+    else
+      NameSet.empty.insert original
 
 def defSort (a b : DefInfo) : Bool :=
   match Ord.arrayOrd.compare
@@ -66,24 +63,28 @@ def defSort (a b : DefInfo) : Bool :=
     | _ => false
 
 run_meta do
+  enableInitializersExecution
   let env ← getEnv
   let consts := env.constants
 
+  -- refer to https://leanprover.zulipchat.com/#narrow/channel/113489-new-members/topic/Listing.20all.20identifiers/near/513859402
   -- to exclude compiler constants like `instMonadOption._cstage1`
   let safeConsts := consts.toList.filter fun info => !info.snd.isUnsafe
 
   let ourDefs := safeConsts.filter fun info =>
     match env.getModuleFor? info.fst with
-    | some e => e ∈ mods && (info.snd.isDef || info.snd.isThm) && info.snd.value?.isSome
+    | some e => e ∈ mods
     | _ => false
 
   let names := NameSet.ofList (ourDefs.map fun info => info.fst)
   let defInfos : List DefInfo ←
-    (ourDefs.filter fun x => isOriginal x.fst).mapM fun info => do
+    (ourDefs.filter fun x =>
+      isOriginal x.fst && (x.snd.isDefinition || x.snd.isTheorem) && x.snd.value?.isSome
+    ).mapM fun info => do
     return {
       name := info.fst,
       docstring := ← findDocString? env info.fst,
-      uses := NameSet.filter isOriginal <| NameSet.ofList <|
+      uses := NameSet.ofList <|
         (info.snd.getUsedConstantsAsSet ∩ names).toList.flatMap <|
         fun x => (expandUses names env x info.fst).toList,
       isThm := info.snd.isTheorem,
@@ -106,7 +107,6 @@ run_meta do
       ("pos", match d.pos with | some p => Json.num p.line | _ => Json.null)
     ]
 
-  println! defInfosJson
   IO.FS.writeFile "defInfos.json" (toString defInfosJson)
 
-#check ``sorryAx
+  println! defInfosJson
