@@ -221,7 +221,7 @@ For any set of polynomials $G'' \subseteq R[\mathbf{X}]$ and monomial order $m$,
   \[
     \LT_m(G'' \setminus \{0\}) = \LT_m(G'') \setminus \{0\}
   \]
---/
+-/
 lemma leadingTerm_image_sdiff_singleton_zero (G'' : Set (MvPolynomial σ R)) :
   m.leadingTerm '' (G''\ {0}) = (m.leadingTerm '' G'') \ {0} := by
   apply subset_antisymm
@@ -242,7 +242,7 @@ Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set o
   \[
     \mathsf{IsRemainder}_m\,p\,(G'' \cup \{0\})\,r \iff \mathsf{IsRemainder}_m\,p\,G''\,r
   \]
---/
+-/
 lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
   (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
   m.IsRemainder p (insert 0 G'') r ↔ m.IsRemainder p G'' r := by
@@ -294,7 +294,7 @@ lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
   \[
     \mathsf{IsRemainder}_m\,p\,(G'' \setminus \{0\})\,r \iff \mathsf{IsRemainder}_m\,p\,G''\,r
   \]
---/
+-/
 lemma isRemainder_of_singleton_zero_iff_isRemainder (p : MvPolynomial σ R)
   (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
   m.IsRemainder p (G'' \ {0}) r ↔ m.IsRemainder p G'' r := by
