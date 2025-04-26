@@ -36,6 +36,16 @@ lake exe cache get
 lake build
 ```
 
+After building, you can generate theorem information and relationships:
+```bash
+lake lean scripts/PrintInfo.lean
+```
+
+Next, you can automatically generate LaTeX source for proofs by running
+```bash
+python3 scripts/printinfo.py
+```
+
 ## Reference
 This project draws heavily from the following reference:
 [Ideals, Varieties, and Algorithms](https://link.springer.com/book/10.1007/978-3-319-16721-3)
