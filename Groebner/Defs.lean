@@ -12,6 +12,9 @@ variable {σ : Type*} (m : MonomialOrder σ)
 section CommSemiring
 variable {R : Type*} [CommSemiring R]
 
+/--
+a \in Partially Ordered Set, a \geq 0
+-/
 @[simp]
 lemma zero_le (a : m.syn) : 0 ≤ a := bot_le
 

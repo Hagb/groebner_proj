@@ -638,13 +638,13 @@ This project presents a formalization of Gröbner basis theory in the Lean 4 the
 
   \leanok
   Given a nonzero polynomial \( f \in k[x] \), let
-\[
-f = c_0 x^m + c_1 x^{m-1} + \cdots + c_m,
-\]
-where \( c_i \in k \) and \( c_0 \neq 0 \) [thus, \( m = \deg(f) \)]. Then we say that \( c_0 x^m \) is the \textbf{leading term} of \( f \), written
-\[
-\operatorname{LT}(f) = c_0 x^m.
-\]
+  \[
+  f = c_0 x^m + c_1 x^{m-1} + \cdots + c_m,
+  \]
+  where \( c_i \in k \) and \( c_0 \neq 0 \) [thus, \( m = \deg(f) \)]. Then we say that \( c_0 x^m \) is the \textbf{leading term} of \( f \), written
+  \[
+  \operatorname{LT}(f) = c_0 x^m.
+  \]
 \end{definition}
 
 \begin{definition}\label{IsRemainder}
@@ -652,13 +652,13 @@ where \( c_i \in k \) and \( c_0 \neq 0 \) [thus, \( m = \deg(f) \)]. Then we sa
 
   \leanok
   Fix a monomial order \(>\) on \(\mathbb{Z}_{\geq 0}^n\), and let
-\(F = (f_1, \ldots, f_s)\) be an ordered \(s\)-tuple of polynomials in \(k[x_1, \ldots, x_n]\).
-Then every \(f \in k[x_1, \ldots, x_n]\) can be written as
-\[
-f = a_1 f_1 + \cdots + a_s f_s + r,
-\]
-where \(a_i, r \in k[x_1, \ldots, x_n]\), and either \(r = 0\) or \(r\) is a linear combination, with coefficients in \(k\), of monomials, none of which is divisible by any of \(\mathrm{LT}(f_1), \ldots, \mathrm{LT}(f_s)\).
-We will call \(r\) a \textbf{remainder} of \(f\) on division by \(F\).
+  \(F = (f_1, \ldots, f_s)\) be an ordered \(s\)-tuple of polynomials in \(k[x_1, \ldots, x_n]\).
+  Then every \(f \in k[x_1, \ldots, x_n]\) can be written as
+  \[
+  f = a_1 f_1 + \cdots + a_s f_s + r,
+  \]
+  where \(a_i, r \in k[x_1, \ldots, x_n]\), and either \(r = 0\) or \(r\) is a linear combination, with coefficients in \(k\), of monomials, none of which is divisible by any of \(\mathrm{LT}(f_1), \ldots, \mathrm{LT}(f_s)\).
+  We will call \(r\) a \textbf{remainder} of \(f\) on division by \(F\).
 \end{definition}
 
 \begin{definition}\label{sPolynomial}
@@ -666,9 +666,9 @@ We will call \(r\) a \textbf{remainder} of \(f\) on division by \(F\).
 
   \leanok
   The $S$-polynomial of $f$ and $g$ is the combination
-\[
-S(f, g) = \frac{x^\gamma}{\mathrm{LT}(f)} \cdot f - \frac{x^\gamma}{\mathrm{LT}(g)} \cdot g.
-\]
+  \[
+  S(f, g) = \frac{x^\gamma}{\mathrm{LT}(f)} \cdot f - \frac{x^\gamma}{\mathrm{LT}(g)} \cdot g.
+  \]
 \end{definition}
 
 \begin{definition}\label{IsGroebnerBasis}
@@ -676,18 +676,18 @@ S(f, g) = \frac{x^\gamma}{\mathrm{LT}(f)} \cdot f - \frac{x^\gamma}{\mathrm{LT}(
   % \uses{leadingTerm}
   \leanok
   Fix a monomial order on the polynomial ring $k[x_1, \ldots, x_n]$.A finite subset $G = \{g_1, \ldots, g_t\}$ of an ideal $I \subseteq k[x_1, \ldots, x_n]$, with $I \ne \{0\}$, is said to be a \textbf{Gröbner basis} (or standard basis) if
-\[
-\langle \operatorname{LT}(g_1), \ldots, \operatorname{LT}(g_t) \rangle = \langle \operatorname{LT}(I) \rangle.
-\]
-Using the convention that $\langle \emptyset \rangle = \{0\}$, we define the empty set $\emptyset$ to be the Gröbner basis of the zero ideal $\{0\}$.
+  \[
+  \langle \operatorname{LT}(g_1), \ldots, \operatorname{LT}(g_t) \rangle = \langle \operatorname{LT}(I) \rangle.
+  \]
+  Using the convention that $\langle \emptyset \rangle = \{0\}$, we define the empty set $\emptyset$ to be the Gröbner basis of the zero ideal $\{0\}$.
 \end{definition}
 
 \chapter{Lemmas}
 
 \begin{lemma}\label{zero_le}
   \lean{MonomialOrder.zero_le}
-
   \leanok
+
 
 \end{lemma}
 
@@ -749,12 +749,11 @@ there exists some component \( j \in \sigma \) such that
   \uses{leadingTerm, lm_eq_zero_iff}
   \leanok
   For any set of polynomials $G'' \subseteq R[\mathbf{X}]$ and monomial order $m$,
-the image of leading terms on the nonzero elements of $G''$ equals the image on all
-elements minus zero:
-\[
-\LT_m(G'' \setminus \{0\}) = \LT_m(G'') \setminus \{0\}
-\]
-
+  the image of leading terms on the nonzero elements of $G''$ equals the image on all
+  elements minus zero:
+  \[
+  \lt_m(G'' \setminus \{0\}) = \lt_m(G'') \setminus \{0\}
+  \]
 \end{lemma}
 
 \begin{lemma}\label{isRemainder_of_insert_zero_iff_isRemainder}
@@ -762,12 +761,11 @@ elements minus zero:
   \uses{zero_le, IsRemainder_def', IsRemainder, IsRemainder_def''}
   \leanok
   Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set of polynomials,
-and $r \in R[\mathbf{X}]$ a remainder. Then the remainder property is invariant under
-inserting the zero polynomial:
-\[
-\mathsf{IsRemainder}_m\,p\,(G'' \cup \{0\})\,r \iff \mathsf{IsRemainder}_m\,p\,G''\,r
-\]
-
+  and $r \in R[\mathbf{X}]$ a remainder. Then the remainder property is invariant under
+  inserting the zero polynomial:
+  \[
+  \mathsf{IsRemainder}_m\,p\,(G'' \cup \{0\})\,r \iff \mathsf{IsRemainder}_m\,p\,G''\,r
+  \]
 \end{lemma}
 
 \begin{lemma}\label{isRemainder_of_singleton_zero_iff_isRemainder}
@@ -985,7 +983,6 @@ r_1 - r_2 \in I.
 \begin{lemma}\label{buchberger_criterion}
   \lean{MonomialOrder.buchberger_criterion}
   \uses{IsGroebnerBasis, IsRemainder, sPolynomial}
-
   A basis \( G = \{ g_1, \ldots, g_t \} \) for an ideal \( I \) is a Gröbner basis if and only if \( S(g_i, g_j) \to_G 0 \) for all \( i \neq j \).
 \end{lemma}
 
@@ -994,20 +991,18 @@ r_1 - r_2 \in I.
 
   \leanok
   Let $f: \alpha \to \beta$ be a function and $s \subseteq \alpha$ a subset with finite image $f(s)$. Then there exists a finite subset $s' \subseteq_{\text{fin}} s$ such that:
-\begin{itemize}
-\item $s' \subseteq s$ (subset relation)
-\item $f(s') = f(s)$ (image equality)
-\item $|s'| = |f(s)|$ (cardinality preservation)
-\end{itemize}
+  \begin{itemize}
+  \item $s' \subseteq s$ (subset relation)
+  \item $f(s') = f(s)$ (image equality)
+  \item $|s'| = |f(s)|$ (cardinality preservation)
+  \end{itemize}
 
 \end{lemma}
 
 \begin{lemma}\label{span_sdiff_singleton_zero}
   \lean{Submodule.span_sdiff_singleton_zero}
-
   \leanok
   \[
-\langle G \rangle = \langle G \setminus \{0\} \rangle
-\]
-
+  \langle G \rangle = \langle G \setminus \{0\} \rangle
+  \]
 \end{lemma}
