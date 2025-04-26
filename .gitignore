@@ -4,3 +4,20 @@ curl
 *.txt
 *.json
 *.ipynb
+
+# Python env
+venv/
+groebner_proj/bin/
+groebner_proj/include/
+groebner_proj/lib/
+groebner_proj/pyvenv.cfg
+
+# other python env
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# tempoary tex
+scripts/*.tex

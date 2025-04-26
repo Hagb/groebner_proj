@@ -107,6 +107,6 @@ run_meta do
       ("pos", match d.pos with | some p => Json.num p.line | _ => Json.null)
     ]
 
-  IO.FS.writeFile "defInfos.json" (toString defInfosJson)
+  IO.FS.writeFile "scripts/defInfos.json" (toString defInfosJson)
 
   println! defInfosJson

@@ -2,7 +2,7 @@ import Mathlib
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 import Mathlib.RingTheory.Ideal.Span
-
+import Groebner.SimpIntro
 
 namespace MonomialOrder
 
@@ -87,20 +87,15 @@ lemma IsRemainder_def' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (
       congr 1
       simp [Finsupp.linearCombination_apply, Finsupp.sum]
       rfl
-    · intro g' hg'
-      simp [hg']
+    · simp_intro' g' hg'
       convert h₂ ⟨g', hg'⟩
     · exact h₃
   ·
     intro ⟨g, hg, h₁, h₂, h₃⟩
-    -- let g' :=
-    let g' := g.support.filterMap
-        (fun x => if hx : x ∈ G'' then some (⟨x, hx⟩ : ↑G'') else none)
-        (by simp; intro _ _ _ _ h' h''; rw [h', h''])
     use {
       support := g.support.filterMap
         (fun x => if hx : x ∈ G'' then some (⟨x, hx⟩ : ↑G'') else none)
-        (by simp; intro _ _ _ _ h' h''; rw [h', h'']),
+        (by simp_intro' ..),
       toFun := (g.toFun ·),
       mem_support_toFun := by intro; simp; rfl
     }
@@ -109,16 +104,14 @@ lemma IsRemainder_def' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (
       congr 1
       simp [Finsupp.linearCombination_apply, Finsupp.sum]
       apply Finset.sum_nbij (↑·)
-      · intro q hq
-        simp at hq
-        simp [hq]
-      · intro q
+      · simp_intro' ..
+      ·  -- if I use `simp_intro' x _ a _ h`, then how to deal with coe?
+        intro q
         simp
         intro _ _ _ _ hqs
         simp [←hqs]
-      · intro q hq
-        simp
-        exact ⟨Finsupp.mem_support_iff.mp hq, Set.mem_of_subset_of_mem hg hq⟩
+      · simp_intro' q hq
+        exact Set.mem_of_subset_of_mem hg <| Finsupp.mem_support_iff.mpr hq
       · simp [DFunLike.coe]
     · simp
       exact h₂
@@ -162,28 +155,21 @@ lemma IsRemainder_def'' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) 
     intro g' hg'
     exact h₃ g' (Set.mem_of_mem_of_subset hg' h₁)
   · intro ⟨g, G', h₁, h₂, h₃, h₄⟩
-    -- let g₁ := fun x => if x ∈ G' then g x else 0
     use Finsupp.onFinset G' (fun x => if x ∈ G' then g x else 0) (by simp; intro _ ha _; exact ha)
     split_ands
-    · intro x hx
-      simp at hx
+    · simp_intro' x hx
       exact Set.mem_of_mem_of_subset hx.1 h₁
     · rw [Finsupp.linearCombination_apply, Finsupp.sum, h₂, Finsupp.support_onFinset]
       congr 1
       simp
       have h : G' = ({a ∈ G' | a ∈ G' ∧ ¬g a = 0} ∩ G') ∪ ({a ∈ G' | g a = 0}) := by
         apply subset_antisymm
-        · intro x
-          simp
-          intro hx
-          simp [hx, em'] -- why `simp [hx]` doesn't use the law of excluded middle
-        · intro x
-          simp
+        · simp_intro' x hx [em']
+        · simp_intro' x
           rintro (⟨_, hx⟩ | ⟨hx,_⟩) <;> exact hx
       have h' : Disjoint ({a ∈ G' | a ∈ G' ∧ ¬g a = 0} ∩ G')  ({a ∈ G' | g a = 0}) := by
         unfold Disjoint
-        simp
-        intro s hs hs'
+        simp_intro' s hs hs'
         by_contra h
         obtain ⟨x, hx⟩ := Finset.nonempty_iff_ne_empty.mpr h
         have hs := Finset.mem_of_subset hs hx
@@ -221,7 +207,7 @@ For any set of polynomials $G'' \subseteq R[\mathbf{X}]$ and monomial order $m$,
   \[
     \LT_m(G'' \setminus \{0\}) = \LT_m(G'') \setminus \{0\}
   \]
---/
+-/
 lemma leadingTerm_image_sdiff_singleton_zero (G'' : Set (MvPolynomial σ R)) :
   m.leadingTerm '' (G''\ {0}) = (m.leadingTerm '' G'') \ {0} := by
   apply subset_antisymm
@@ -242,7 +228,7 @@ Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set o
   \[
     \mathsf{IsRemainder}_m\,p\,(G'' \cup \{0\})\,r \iff \mathsf{IsRemainder}_m\,p\,G''\,r
   \]
---/
+-/
 lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
   (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
   m.IsRemainder p (insert 0 G'') r ↔ m.IsRemainder p G'' r := by
@@ -294,7 +280,7 @@ lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
   \[
     \mathsf{IsRemainder}_m\,p\,(G'' \setminus \{0\})\,r \iff \mathsf{IsRemainder}_m\,p\,G''\,r
   \]
---/
+-/
 lemma isRemainder_of_singleton_zero_iff_isRemainder (p : MvPolynomial σ R)
   (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
   m.IsRemainder p (G'' \ {0}) r ↔ m.IsRemainder p G'' r := by
@@ -429,7 +415,7 @@ section Field
 Let \( k \) be a field, and let \( G'' \subseteq k[x_i : i \in \sigma] \) be a set of polynomials.
 Then for any \( p \in k[x_i : i \in \sigma] \), there exists a generalized remainder \( r \) of \( p \) upon division by \( G'' \).
 -/
-theorem div_set'' {k : Type*} [Field k] {s : σ →₀ ℕ} {G'' : Set (MvPolynomial σ k)}
+theorem div_set'' {k : Type*} [Field k] {G'' : Set (MvPolynomial σ k)}
     (p : MvPolynomial σ k) :
     ∃ (r : MvPolynomial σ k), m.IsRemainder p G'' r := by
   apply div_set'
