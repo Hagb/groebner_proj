@@ -645,7 +645,6 @@ where \( c_i \in k \) and \( c_0 \neq 0 \) [thus, \( m = \deg(f) \)]. Then we sa
 \[
 \operatorname{LT}(f) = c_0 x^m.
 \]
--
 \end{definition}
 
 \begin{definition}\label{IsRemainder}
@@ -660,7 +659,6 @@ f = a_1 f_1 + \cdots + a_s f_s + r,
 \]
 where \(a_i, r \in k[x_1, \ldots, x_n]\), and either \(r = 0\) or \(r\) is a linear combination, with coefficients in \(k\), of monomials, none of which is divisible by any of \(\mathrm{LT}(f_1), \ldots, \mathrm{LT}(f_s)\).
 We will call \(r\) a \textbf{remainder} of \(f\) on division by \(F\).
--
 \end{definition}
 
 \begin{definition}\label{sPolynomial}
@@ -671,7 +669,6 @@ We will call \(r\) a \textbf{remainder} of \(f\) on division by \(F\).
 \[
 S(f, g) = \frac{x^\gamma}{\mathrm{LT}(f)} \cdot f - \frac{x^\gamma}{\mathrm{LT}(g)} \cdot g.
 \]
--
 \end{definition}
 
 \begin{definition}\label{IsGroebnerBasis}
@@ -683,7 +680,6 @@ S(f, g) = \frac{x^\gamma}{\mathrm{LT}(f)} \cdot f - \frac{x^\gamma}{\mathrm{LT}(
 \langle \operatorname{LT}(g_1), \ldots, \operatorname{LT}(g_t) \rangle = \langle \operatorname{LT}(I) \rangle.
 \]
 Using the convention that $\langle \emptyset \rangle = \{0\}$, we define the empty set $\emptyset$ to be the Gröbner basis of the zero ideal $\{0\}$.
--
 \end{definition}
 
 \chapter{Lemmas}
@@ -710,7 +706,6 @@ such that:
   is bounded by $\deg_m(p)$
 \item No term of $r$ is divisible by any leading term of non-zero elements in $G''$
 \end{enumerate}
--
 \end{lemma}
 
 \begin{lemma}\label{IsRemainder_def''}
@@ -750,7 +745,6 @@ vanishes with respect to monomial order $m$ if and only if $p$ is the zero polyn
 \[
 \LT_m(p) = 0 \iff p = 0
 \]
--
 \end{lemma}
 
 \begin{lemma}\label{leadingTerm_image_sdiff_singleton_zero}
@@ -800,7 +794,6 @@ removal of the zero polynomial:
 \[
 \Sph{f}{g} = -\Sph{g}{f}
 \]
--
 \end{lemma}
 
 \begin{lemma}\label{sPolynomial_eq_zero_of_left_eq_zero}
@@ -812,7 +805,6 @@ the S-polynomial with zero as first argument vanishes:
 \[
 \Sph{0}{g} = 0
 \]
--
 \end{lemma}
 
 \begin{lemma}\label{sPolynomial_eq_zero_of_right_eq_zero'}
@@ -824,7 +816,6 @@ the S-polynomial with zero as second argument vanishes:
 \[
 \Sph{f}{0} = 0
 \]
--
 \end{lemma}
 
 \begin{lemma}\label{div_set'}
@@ -840,7 +831,6 @@ Then for any polynomial $p \in R[\mathbf{X}]$, there exists a remainder $r$ sati
 \mathsf{IsRemainder}_m\,p\,G''\,r
 \]
 where $\LC_m(g)$ denotes the leading coefficient of $g$ under monomial order $m$.
--
 \end{lemma}
 
 \begin{lemma}\label{div_set''}
@@ -972,7 +962,6 @@ r_1 - r_2 \in I.
   \uses{IsGroebnerBasis, leadingTerm, fg_span_iff_fg_span_finset_subset, finset_subset_preimage_of_finite_image}
   \leanok
   Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal. Then there exists a finite subset \( G = \{g_1, \ldots, g_t\} \) of \( I \) such that \( G \) is a Gröbner basis for \( I \).
--
 \end{lemma}
 
 \begin{lemma}\label{groebner_basis_isRemainder_zero_iff_mem_span}
@@ -980,7 +969,6 @@ r_1 - r_2 \in I.
   \uses{IsGroebnerBasis, IsRemainder}
 
   Let \( G = \{g_1, \dots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \dots, x_n] \) and let \( f \in k[x_1, \dots, x_n] \). Then \( f \in I \) if and only if the remainder on division of \( f \) by \( G \) is zero.
--
 \end{lemma}
 
 \begin{lemma}\label{is_groebner_basis_iff}
@@ -988,7 +976,6 @@ r_1 - r_2 \in I.
   \uses{IsGroebnerBasis, IsRemainder}
 
   Let \( G = \{g_1, \ldots, g_t\} \) be a finite subset of \( k[x_1, \ldots, x_n] \). Then \( G \) is a Gröbner basis for the ideal \( I = \langle G \rangle \) if and only if  for every \( f \in I \), the remainder of \( f \) on division by \( G \) is zero.
--
 \end{lemma}
 
 \begin{lemma}\label{groebner_basis_is_basis}
@@ -996,7 +983,6 @@ r_1 - r_2 \in I.
   \uses{IsGroebnerBasis}
 
   Let \( G = \{g_1, \ldots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \ldots, x_n] \). Then \( G \) is a basis for the vector space \( I \) over \( k \).
--
 \end{lemma}
 
 \begin{lemma}\label{buchberger_criterion}
@@ -1004,7 +990,6 @@ r_1 - r_2 \in I.
   \uses{IsGroebnerBasis, IsRemainder, sPolynomial}
 
   A basis \( G = \{ g_1, \ldots, g_t \} \) for an ideal \( I \) is a Gröbner basis if and only if \( S(g_i, g_j) \to_G 0 \) for all \( i \neq j \).
--
 \end{lemma}
 
 \begin{lemma}\label{finset_subset_preimage_of_finite_image}
