@@ -24,16 +24,16 @@ def generate_latex_content(json_data):
 
 
         content = f"""
-        \\begin{{definition}}\\label{{{name}}}
+        \\begin{{definition}}\\label{{{name.split('.')[-1]}}}
           {lean_ref}
-          {lean_ok}
           {uses_content}
+          {lean_ok}
           {docstring if docstring else ""}
         \\end{{definition}}""" if not is_thm else f"""
-        \\begin{{lemma}}\\label{{{name}}}
+        \\begin{{lemma}}\\label{{{name.split('.')[-1]}}}
           {lean_ref}
-          {lean_ok}
           {uses_content}
+          {lean_ok}
           {docstring if docstring else ""}
         \\end{{lemma}}"""
 
