@@ -20,7 +20,8 @@ def generate_latex_content(json_data):
         lean_ref = f"\\lean{{{name}}}"
         uses_content = ""
         if uses:
-          uses_content = "\\uses{" + ", ".join(uses) + "}"
+          processed_uses = [u.split('.')[-1] for u in uses]
+          uses_content = "\\uses{" + ", ".join(processed_uses) + "}"
 
 
         content = f"""

@@ -630,6 +630,7 @@ This project presents a formalization of Gröbner basis theory in the Lean 4 the
 
 
 
+
 \chapter{Definitions}
 
 \begin{definition}\label{leadingTerm}
@@ -675,7 +676,7 @@ S(f, g) = \frac{x^\gamma}{\mathrm{LT}(f)} \cdot f - \frac{x^\gamma}{\mathrm{LT}(
 
 \begin{definition}\label{IsGroebnerBasis}
   \lean{MonomialOrder.IsGroebnerBasis}
-  \uses{MonomialOrder.leadingTerm}
+  \uses{leadingTerm}
   \leanok
   Fix a monomial order on the polynomial ring $k[x_1, \ldots, x_n]$.A finite subset $G = \{g_1, \ldots, g_t\}$ of an ideal $I \subseteq k[x_1, \ldots, x_n]$, with $I \ne \{0\}$, is said to be a \textbf{Gröbner basis} (or standard basis) if
 \[
@@ -696,7 +697,7 @@ Using the convention that $\langle \emptyset \rangle = \{0\}$, we define the emp
 
 \begin{lemma}\label{IsRemainder_def'}
   \lean{MonomialOrder.IsRemainder_def'}
-  \uses{MonomialOrder.IsRemainder}
+  \uses{IsRemainder}
   \leanok
   Let $p \in R[\mathbf{X}]$, $G'' \subseteq R[\mathbf{X}]$ be a set of polynomials,
 and $r \in R[\mathbf{X}]$. Then $r$ is a remainder of $p$ modulo $G''$ with respect to
@@ -714,7 +715,7 @@ such that:
 
 \begin{lemma}\label{IsRemainder_def''}
   \lean{MonomialOrder.IsRemainder_def''}
-  \uses{MonomialOrder.zero_le, MonomialOrder.IsRemainder_def', MonomialOrder.IsRemainder}
+  \uses{zero_le, IsRemainder_def', IsRemainder}
   \leanok
   Let \( p, r \in k[x_i : i \in \sigma] \), and let \( G' \subseteq k[x_i : i \in \sigma] \) be a finite set.
 We say that \( r \) is a \emph{generalized remainder} of \( p \) upon division by \( G' \) if the following two conditions hold:
@@ -742,7 +743,7 @@ there exists some component \( j \in \sigma \) such that
 
 \begin{lemma}\label{lm_eq_zero_iff}
   \lean{MonomialOrder.lm_eq_zero_iff}
-  \uses{MonomialOrder.leadingTerm}
+  \uses{leadingTerm}
   \leanok
   Let $p \in R[\mathbf{X}]$ be a multivariate polynomial. Then the leading term of $p$
 vanishes with respect to monomial order $m$ if and only if $p$ is the zero polynomial:
@@ -754,7 +755,7 @@ vanishes with respect to monomial order $m$ if and only if $p$ is the zero polyn
 
 \begin{lemma}\label{leadingTerm_image_sdiff_singleton_zero}
   \lean{MonomialOrder.leadingTerm_image_sdiff_singleton_zero}
-  \uses{MonomialOrder.leadingTerm, MonomialOrder.lm_eq_zero_iff}
+  \uses{leadingTerm, lm_eq_zero_iff}
   \leanok
   For any set of polynomials $G'' \subseteq R[\mathbf{X}]$ and monomial order $m$,
 the image of leading terms on the nonzero elements of $G''$ equals the image on all
@@ -767,7 +768,7 @@ elements minus zero:
 
 \begin{lemma}\label{isRemainder_of_insert_zero_iff_isRemainder}
   \lean{MonomialOrder.isRemainder_of_insert_zero_iff_isRemainder}
-  \uses{MonomialOrder.zero_le, MonomialOrder.IsRemainder_def', MonomialOrder.IsRemainder, MonomialOrder.IsRemainder_def''}
+  \uses{zero_le, IsRemainder_def', IsRemainder, IsRemainder_def''}
   \leanok
   Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set of polynomials,
 and $r \in R[\mathbf{X}]$ a remainder. Then the remainder property is invariant under
@@ -780,7 +781,7 @@ inserting the zero polynomial:
 
 \begin{lemma}\label{isRemainder_of_singleton_zero_iff_isRemainder}
   \lean{MonomialOrder.isRemainder_of_singleton_zero_iff_isRemainder}
-  \uses{MonomialOrder.IsRemainder, MonomialOrder.isRemainder_of_insert_zero_iff_isRemainder}
+  \uses{IsRemainder, isRemainder_of_insert_zero_iff_isRemainder}
   \leanok
   Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set of polynomials,
 and $r \in R[\mathbf{X}]$ a remainder. Then the remainder property is invariant under
@@ -793,7 +794,7 @@ removal of the zero polynomial:
 
 \begin{lemma}\label{sPolynomial_antisymm}
   \lean{MonomialOrder.sPolynomial_antisymm}
-  \uses{MonomialOrder.sPolynomial}
+  \uses{sPolynomial}
   \leanok
   the S-polynomial of $f$ and $g$ is antisymmetric:
 \[
@@ -804,7 +805,7 @@ removal of the zero polynomial:
 
 \begin{lemma}\label{sPolynomial_eq_zero_of_left_eq_zero}
   \lean{MonomialOrder.sPolynomial_eq_zero_of_left_eq_zero}
-  \uses{MonomialOrder.sPolynomial}
+  \uses{sPolynomial}
   \leanok
   For any polynomial $g \in \MvPolynomial{\sigma}{R}$ and monomial order $m$,
 the S-polynomial with zero as first argument vanishes:
@@ -816,7 +817,7 @@ the S-polynomial with zero as first argument vanishes:
 
 \begin{lemma}\label{sPolynomial_eq_zero_of_right_eq_zero'}
   \lean{MonomialOrder.sPolynomial_eq_zero_of_right_eq_zero'}
-  \uses{MonomialOrder.sPolynomial_antisymm, MonomialOrder.sPolynomial, MonomialOrder.sPolynomial_eq_zero_of_left_eq_zero}
+  \uses{sPolynomial_antisymm, sPolynomial, sPolynomial_eq_zero_of_left_eq_zero}
   \leanok
   For any polynomial $g \in \MvPolynomial{\sigma}{R}$ and monomial order $m$,
 the S-polynomial with zero as second argument vanishes:
@@ -828,7 +829,7 @@ the S-polynomial with zero as second argument vanishes:
 
 \begin{lemma}\label{div_set'}
   \lean{MonomialOrder.div_set'}
-  \uses{MonomialOrder.isRemainder_of_singleton_zero_iff_isRemainder, MonomialOrder.IsRemainder}
+  \uses{isRemainder_of_singleton_zero_iff_isRemainder, IsRemainder}
   \leanok
   Let $G'' \subseteq R[\mathbf{X}]$ be a set of polynomials where every nonzero element has a unit leading coefficient:
 \[
@@ -844,7 +845,7 @@ where $\LC_m(g)$ denotes the leading coefficient of $g$ under monomial order $m$
 
 \begin{lemma}\label{div_set''}
   \lean{MonomialOrder.div_set''}
-  \uses{MonomialOrder.div_set', MonomialOrder.IsRemainder}
+  \uses{div_set', IsRemainder}
   \leanok
   Let \( k \) be a field, and let \( G'' \subseteq k[x_i : i \in \sigma] \) be a set of polynomials.
 Then for any \( p \in k[x_i : i \in \sigma] \), there exists a generalized remainder \( r \) of \( p \) upon division by \( G'' \).
@@ -884,7 +885,7 @@ $\exists$ finite $s' \subseteq s$ such that $\mathsf{span}(s) = \mathsf{span}(s'
 
 \begin{lemma}\label{span_sdiff_singleton_zero}
   \lean{Ideal.span_sdiff_singleton_zero}
-  \uses{Submodule.span_sdiff_singleton_zero}
+  \uses{span_sdiff_singleton_zero}
   \leanok
   For any subset $s \subseteq R$ of a ring $R$, removing zero does not change the linear span:
 \[
@@ -895,7 +896,7 @@ $\exists$ finite $s' \subseteq s$ such that $\mathsf{span}(s) = \mathsf{span}(s'
 
 \begin{lemma}\label{leadingTerm_ideal_span_monomial}
   \lean{MonomialOrder.leadingTerm_ideal_span_monomial}
-  \uses{MonomialOrder.leadingTerm}
+  \uses{leadingTerm}
   \leanok
   Let \( G'' \subseteq R[x_1, \dots, x_n] \) be a set of polynomials such that
 \[
@@ -910,7 +911,7 @@ Then,
 
 \begin{lemma}\label{leadingTerm_ideal_span_monomial'}
   \lean{MonomialOrder.leadingTerm_ideal_span_monomial'}
-  \uses{MonomialOrder.leadingTerm_ideal_span_monomial, Ideal.span_sdiff_singleton_zero, MonomialOrder.leadingTerm, MonomialOrder.leadingTerm_image_sdiff_singleton_zero}
+  \uses{leadingTerm_ideal_span_monomial, span_sdiff_singleton_zero, leadingTerm, leadingTerm_image_sdiff_singleton_zero}
   \leanok
   \[
 \langle \mathrm{lt}(G) \rangle = \left\langle \left\{ x^t : t \in \{ \mathrm{multideg}(p) : p \in G \setminus \{0\} \} \right\} \right\rangle
@@ -920,7 +921,7 @@ Then,
 
 \begin{lemma}\label{mem_ideal_of_remainder_mem_ideal}
   \lean{MonomialOrder.mem_ideal_of_remainder_mem_ideal}
-  \uses{MonomialOrder.IsRemainder}
+  \uses{IsRemainder}
   \leanok
   Let \( G'' \subseteq R[x_1, \dots, x_n] \), let \( I \subseteq R[x_1, \dots, x_n] \) be an ideal,
 and let \( p, r \in R[x_1, \dots, x_n] \). Suppose that:
@@ -938,7 +939,7 @@ p \in I.
 
 \begin{lemma}\label{remainder_mem_ideal_iff}
   \lean{MonomialOrder.remainder_mem_ideal_iff}
-  \uses{MonomialOrder.IsRemainder, MonomialOrder.mem_ideal_of_remainder_mem_ideal}
+  \uses{IsRemainder, mem_ideal_of_remainder_mem_ideal}
   \leanok
   Let \( R \) be a commutative ring, and let \( G'' \subseteq R[x_1, \dots, x_n] \), \( I \subseteq R[x_1, \dots, x_n] \) be an ideal, and \( p, r \in R[x_1, \dots, x_n] \).
 Assume that:
@@ -955,7 +956,7 @@ r \in I \quad \Longleftrightarrow \quad p \in I.
 
 \begin{lemma}\label{remainder_sub_remainder_mem_ideal}
   \lean{MonomialOrder.remainder_sub_remainder_mem_ideal}
-  \uses{MonomialOrder.IsRemainder}
+  \uses{IsRemainder}
   \leanok
   Let \( I \subseteq k[x_i : i \in \sigma] \) be an ideal, and let \( G \subseteq I \) be a finite subset.
 Suppose that \( r_1 \) and \( r_2 \) are generalized remainders of a polynomial \( p \) upon division by \( G \).
@@ -968,7 +969,7 @@ r_1 - r_2 \in I.
 
 \begin{lemma}\label{exists_groebner_basis}
   \lean{MonomialOrder.exists_groebner_basis}
-  \uses{MonomialOrder.IsGroebnerBasis, MonomialOrder.leadingTerm, Ideal.fg_span_iff_fg_span_finset_subset, Set.finset_subset_preimage_of_finite_image}
+  \uses{IsGroebnerBasis, leadingTerm, fg_span_iff_fg_span_finset_subset, finset_subset_preimage_of_finite_image}
   \leanok
   Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal. Then there exists a finite subset \( G = \{g_1, \ldots, g_t\} \) of \( I \) such that \( G \) is a Gröbner basis for \( I \).
 -
@@ -976,7 +977,7 @@ r_1 - r_2 \in I.
 
 \begin{lemma}\label{groebner_basis_isRemainder_zero_iff_mem_span}
   \lean{MonomialOrder.groebner_basis_isRemainder_zero_iff_mem_span}
-  \uses{MonomialOrder.IsGroebnerBasis, MonomialOrder.IsRemainder}
+  \uses{IsGroebnerBasis, IsRemainder}
 
   Let \( G = \{g_1, \dots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \dots, x_n] \) and let \( f \in k[x_1, \dots, x_n] \). Then \( f \in I \) if and only if the remainder on division of \( f \) by \( G \) is zero.
 -
@@ -984,7 +985,7 @@ r_1 - r_2 \in I.
 
 \begin{lemma}\label{is_groebner_basis_iff}
   \lean{MonomialOrder.is_groebner_basis_iff}
-  \uses{MonomialOrder.IsGroebnerBasis, MonomialOrder.IsRemainder}
+  \uses{IsGroebnerBasis, IsRemainder}
 
   Let \( G = \{g_1, \ldots, g_t\} \) be a finite subset of \( k[x_1, \ldots, x_n] \). Then \( G \) is a Gröbner basis for the ideal \( I = \langle G \rangle \) if and only if  for every \( f \in I \), the remainder of \( f \) on division by \( G \) is zero.
 -
@@ -992,7 +993,7 @@ r_1 - r_2 \in I.
 
 \begin{lemma}\label{groebner_basis_is_basis}
   \lean{MonomialOrder.groebner_basis_is_basis}
-  \uses{MonomialOrder.IsGroebnerBasis}
+  \uses{IsGroebnerBasis}
 
   Let \( G = \{g_1, \ldots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \ldots, x_n] \). Then \( G \) is a basis for the vector space \( I \) over \( k \).
 -
@@ -1000,7 +1001,7 @@ r_1 - r_2 \in I.
 
 \begin{lemma}\label{buchberger_criterion}
   \lean{MonomialOrder.buchberger_criterion}
-  \uses{MonomialOrder.IsGroebnerBasis, MonomialOrder.IsRemainder, MonomialOrder.sPolynomial}
+  \uses{IsGroebnerBasis, IsRemainder, sPolynomial}
 
   A basis \( G = \{ g_1, \ldots, g_t \} \) for an ideal \( I \) is a Gröbner basis if and only if \( S(g_i, g_j) \to_G 0 \) for all \( i \neq j \).
 -
