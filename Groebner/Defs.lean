@@ -27,7 +27,7 @@ Given a nonzero polynomial \( f \in k[x] \), let
   \[
   \operatorname{LT}(f) = c_0 x^m.
   \]
---/
+-/
 noncomputable def leadingTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree f) (m.leadingCoeff f)
 
@@ -40,7 +40,7 @@ Fix a monomial order \(>\) on \(\mathbb{Z}_{\geq 0}^n\), and let
   \]
   where \(a_i, r \in k[x_1, \ldots, x_n]\), and either \(r = 0\) or \(r\) is a linear combination, with coefficients in \(k\), of monomials, none of which is divisible by any of \(\mathrm{LT}(f_1), \ldots, \mathrm{LT}(f_s)\).
   We will call \(r\) a \textbf{remainder} of \(f\) on division by \(F\).
---/
+-/
 def IsRemainder (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
   := ∃ (g : G'' →₀ (MvPolynomial σ R)),
       p = Finsupp.linearCombination _ (fun (g' : G'') ↦ (g' : MvPolynomial σ R)) g + r ∧
@@ -65,7 +65,7 @@ Let $p \in R[\mathbf{X}]$, $G'' \subseteq R[\mathbf{X}]$ be a set of polynomials
           is bounded by $\deg_m(p)$
     \item No term of $r$ is divisible by any leading term of non-zero elements in $G''$
   \end{enumerate}
---/
+-/
 lemma IsRemainder_def' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
   : m.IsRemainder p G'' r ↔ ∃ (g : (MvPolynomial σ R) →₀ (MvPolynomial σ R)),
       ↑g.support ⊆ G'' ∧
@@ -198,7 +198,7 @@ Let $p \in R[\mathbf{X}]$ be a multivariate polynomial. Then the leading term of
   \[
     \LT_m(p) = 0 \iff p = 0
   \]
---/
+-/
 lemma lm_eq_zero_iff (p : MvPolynomial σ R): m.leadingTerm p = 0 ↔ p = 0 := by
   simp only [leadingTerm, monomial_eq_zero, leadingCoeff_eq_zero_iff]
 
@@ -308,7 +308,7 @@ The $S$-polynomial of $f$ and $g$ is the combination
   \[
   S(f, g) = \frac{x^\gamma}{\mathrm{LT}(f)} \cdot f - \frac{x^\gamma}{\mathrm{LT}(g)} \cdot g.
   \]
---/
+-/
 noncomputable def sPolynomial (f g : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree g - m.degree f) (m.leadingCoeff g) * f -
   monomial (m.degree f - m.degree g) (m.leadingCoeff f) * g
@@ -320,7 +320,7 @@ Fix a monomial order on the polynomial ring $k[x_1, \ldots, x_n]$.A finite subse
   \langle \operatorname{LT}(g_1), \ldots, \operatorname{LT}(g_t) \rangle = \langle \operatorname{LT}(I) \rangle.
   \]
   Using the convention that $\langle \emptyset \rangle = \{0\}$, we define the empty set $\emptyset$ to be the Gröbner basis of the zero ideal $\{0\}$.
---/
+-/
 def IsGroebnerBasis (G': Finset (MvPolynomial σ R)) (I : Ideal (MvPolynomial σ R)) :=
   G'.toSet ⊆ I ∧
   Ideal.span (m.leadingTerm '' ↑I)
@@ -331,7 +331,7 @@ the S-polynomial of $f$ and $g$ is antisymmetric:
   \[
     \Sph{f}{g} = -\Sph{g}{f}
   \]
---/
+-/
 lemma sPolynomial_antisymm (f g : MvPolynomial σ R) :
    m.sPolynomial f g = - m.sPolynomial g f := by
    unfold sPolynomial
@@ -346,7 +346,7 @@ lemma sPolynomial_antisymm (f g : MvPolynomial σ R) :
   \[
     \Sph{0}{g} = 0
   \]
---/
+-/
 lemma sPolynomial_eq_zero_of_left_eq_zero (g : MvPolynomial σ R) :
   m.sPolynomial 0 g = 0 := by
   unfold sPolynomial
@@ -359,7 +359,7 @@ lemma sPolynomial_eq_zero_of_left_eq_zero (g : MvPolynomial σ R) :
   \[
     \Sph{f}{0} = 0
   \]
---/
+-/
 lemma sPolynomial_eq_zero_of_right_eq_zero' (f : MvPolynomial σ R) :
   m.sPolynomial f 0 = 0 := by
   rw [sPolynomial_antisymm, sPolynomial_eq_zero_of_left_eq_zero, neg_zero]
@@ -374,7 +374,7 @@ lemma sPolynomial_eq_zero_of_right_eq_zero' (f : MvPolynomial σ R) :
     \mathsf{IsRemainder}_m\,p\,G''\,r
   \]
   where $\LC_m(g)$ denotes the leading coefficient of $g$ under monomial order $m$.
---/
+-/
 theorem div_set' {G'' : Set (MvPolynomial σ R)}
     (hG : ∀ g ∈ G'', (IsUnit (m.leadingCoeff g) ∨ g = 0)) (p : MvPolynomial σ R) :
     ∃ (r : MvPolynomial σ R), m.IsRemainder p G'' r := by

@@ -8,6 +8,23 @@ def generate_latex_content(json_data):
     definitions = []
     lemmas = []
 
+    name_to_namespaces = {}
+    for item in json_data:
+        name = item["name"]
+        name_without_namespace = name.split('.')[-1]
+        s = name_to_namespaces.get(name_without_namespace) or set()
+        s.add(name.rsplit('.', maxsplit=2)[0])
+        name_to_namespaces[name_without_namespace] = s
+
+
+    # check namespace conflict
+    def to_label(name):
+        name_without_namespace = name.split('.')[-1]
+        if len(name_to_namespaces[name_without_namespace]) > 1:
+            return name
+        else:
+            return name_without_namespace
+
     for item in json_data:
         name = item["name"]
         module = item["module"]
@@ -25,13 +42,13 @@ def generate_latex_content(json_data):
 
 
         content = f"""
-        \\begin{{definition}}\\label{{{name.split('.')[-1]}}}
+        \\begin{{definition}}\\label{{{to_label(name)}}}
           {lean_ref}
           {uses_content}
           {lean_ok}
           {docstring if docstring else ""}
         \\end{{definition}}""" if not is_thm else f"""
-        \\begin{{lemma}}\\label{{{name.split('.')[-1]}}}
+        \\begin{{lemma}}\\label{{{to_label(name)}}}
           {lean_ref}
           {uses_content}
           {lean_ok}
