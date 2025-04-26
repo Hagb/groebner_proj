@@ -673,7 +673,7 @@ S(f, g) = \frac{x^\gamma}{\mathrm{LT}(f)} \cdot f - \frac{x^\gamma}{\mathrm{LT}(
 
 \begin{definition}\label{IsGroebnerBasis}
   \lean{MonomialOrder.IsGroebnerBasis}
-  \uses{leadingTerm}
+  % \uses{leadingTerm}
   \leanok
   Fix a monomial order on the polynomial ring $k[x_1, \ldots, x_n]$.A finite subset $G = \{g_1, \ldots, g_t\}$ of an ideal $I \subseteq k[x_1, \ldots, x_n]$, with $I \ne \{0\}$, is said to be a \textbf{Gröbner basis} (or standard basis) if
 \[
@@ -693,7 +693,7 @@ Using the convention that $\langle \emptyset \rangle = \{0\}$, we define the emp
 
 \begin{lemma}\label{IsRemainder_def'}
   \lean{MonomialOrder.IsRemainder_def'}
-  \uses{IsRemainder}
+  % \uses{IsRemainder}
   \leanok
   Let $p \in R[\mathbf{X}]$, $G'' \subseteq R[\mathbf{X}]$ be a set of polynomials,
 and $r \in R[\mathbf{X}]$. Then $r$ is a remainder of $p$ modulo $G''$ with respect to
@@ -710,7 +710,7 @@ such that:
 
 \begin{lemma}\label{IsRemainder_def''}
   \lean{MonomialOrder.IsRemainder_def''}
-  \uses{zero_le, IsRemainder_def', IsRemainder}
+  % \uses{zero_le, IsRemainder_def', IsRemainder}
   \leanok
   Let \( p, r \in k[x_i : i \in \sigma] \), and let \( G' \subseteq k[x_i : i \in \sigma] \) be a finite set.
 We say that \( r \) is a \emph{generalized remainder} of \( p \) upon division by \( G' \) if the following two conditions hold:
@@ -738,7 +738,7 @@ there exists some component \( j \in \sigma \) such that
 
 \begin{lemma}\label{lm_eq_zero_iff}
   \lean{MonomialOrder.lm_eq_zero_iff}
-  \uses{leadingTerm}
+  % \uses{leadingTerm}
   \leanok
   Let $p \in R[\mathbf{X}]$ be a multivariate polynomial. Then the leading term of $p$
 vanishes with respect to monomial order $m$ if and only if $p$ is the zero polynomial:
