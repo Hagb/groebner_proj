@@ -74,25 +74,31 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span {p : MvPolynomial σ k}
       have h₂: ↑a ∈ G' := by
         exact Finset.coe_mem a
       exact Submodule.smul_mem I (q a) (h_G' h₂)
+    rw[h_p_eq_sum_r] at h_p_mem
     have h₂: r ∈ I := by
-      rw [← sub_eq_add_neg, h_p_eq_sum_r]
-    have h₃: r ∈ Ideal.span (m.leadingTerm '' ↑I) := by
-      sorry
-    rw[h_span] at h₃
-    by_contra h_neg_0
-
-
-
-
+      exact (Submodule.add_mem_iff_right I h₁).mp h_p_mem
+    sorry
 
 /--
-
 Let \( G = \{g_1, \ldots, g_t\} \) be a finite subset of \( k[x_1, \ldots, x_n] \). Then \( G \) is a Gröbner basis for the ideal \( I = \langle G \rangle \) if and only if  for every \( f \in I \), the remainder of \( f \) on division by \( G \) is zero.
 -/
 theorem is_groebner_basis_iff :
   m.IsGroebnerBasis G' I ↔ G'.toSet ⊆ I ∧ ∀ p ∈ I, m.IsRemainder p G' 0 := by
   -- uses groebner_basis_isRemainder_zero_iff_mem_span
-  sorry
+  constructor
+  · intro h
+    constructor
+    · unfold MonomialOrder.IsGroebnerBasis at h
+      rcases h with ⟨h_G', h_span⟩
+      exact h_G'
+    · intro p h_p_in_I
+      unfold MonomialOrder.IsRemainder
+      unfold MonomialOrder.IsGroebnerBasis at h
+      rcases h with ⟨h_G', h_span⟩
+      sorry
+
+
+
 
 -- theorem is_groebner_basis_iff' :
 --   m.IsGroebnerBasis G' I ↔
