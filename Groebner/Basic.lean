@@ -79,6 +79,7 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span {p : MvPolynomial σ k}
       exact (Submodule.add_mem_iff_right I h₁).mp h_p_mem
     sorry
 
+
 /--
 Let \( G = \{g_1, \ldots, g_t\} \) be a finite subset of \( k[x_1, \ldots, x_n] \). Then \( G \) is a Gröbner basis for the ideal \( I = \langle G \rangle \) if and only if  for every \( f \in I \), the remainder of \( f \) on division by \( G \) is zero.
 -/
