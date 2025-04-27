@@ -96,10 +96,6 @@ theorem is_groebner_basis_iff :
       unfold MonomialOrder.IsGroebnerBasis at h
       rcases h with ⟨h_G', h_span⟩
       sorry
-
-
-
-
 -- theorem is_groebner_basis_iff' :
 --   m.IsGroebnerBasis G' I ↔
 --   G'.toSet ⊆ I ∧ ∀ p ∈ I, ∀ r, m.IsRemainder p G' r → r = 0 := by
