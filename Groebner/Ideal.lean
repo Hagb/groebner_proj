@@ -218,4 +218,15 @@ lemma remainder_sub_remainder_mem_ideal {R : Type _} [CommRing R]
   <;> intro g hg
   <;> exact mul_mem_left I _ (Set.mem_of_mem_of_subset (by simp) hG''I)
 
+lemma IsRemainder_monomial_not_mem_leading_term_ideal {p r : MvPolynomial σ R}
+  {G'' : Set (MvPolynomial σ R)} (h : m.IsRemainder p G'' r):
+∀ s ∈ r.support, monomial s (r.coeff s) ∉ Ideal.span (m.leadingTerm '' G'') := by
+  sorry
+
+lemma IsRemainder_monomial_not_mem_leading_term_ideal' {p r : MvPolynomial σ k}
+  {G'' : Set (MvPolynomial σ k)} (h : m.IsRemainder p G'' r):
+∀ s ∈ r.support, monomial s 1 ∉ Ideal.span (m.leadingTerm '' G'') := by
+  -- use IsRemainder_monomial_not_mem_leading_term_ideal
+  sorry
+
 end MonomialOrder
