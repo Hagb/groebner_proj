@@ -250,6 +250,18 @@ lemma not_mem_leading_term_ideal {r : MvPolynomial σ k}
 r ∉ leading_term_ideal m G' := by
  sorry
 
+
+lemma IsRemainder_monomial_not_mem_leading_term_ideal {p r : MvPolynomial σ R}
+  {G'' : Set (MvPolynomial σ R)} (h : m.IsRemainder p G'' r):
+ ∀ s ∈ r.support, monomial s (r.coeff s) ∉ Ideal.span (m.leadingTerm '' G'') := by
+   sorry
+
+lemma IsRemainder_monomial_not_mem_leading_term_ideal' {p r : MvPolynomial σ k}
+  {G'' : Set (MvPolynomial σ k)} (h : m.IsRemainder p G'' r):
+ ∀ s ∈ r.support, monomial s 1 ∉ Ideal.span (m.leadingTerm '' G'') := by
+   -- use IsRemainder_monomial_not_mem_leading_term_ideal
+   sorry
+
 -- lemma rem_monomial_not_mem_leading_term_ideal {p r : MvPolynomial σ k}
 -- {G' : Finset (MvPolynomial σ k)} (h : IsRemainder p G' r):
 -- ∀ s ∈ r.support, monomial s 1 ∉ leading_term_ideal G'.toSet := by
