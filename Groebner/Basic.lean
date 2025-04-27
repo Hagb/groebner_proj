@@ -46,12 +46,42 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span {p : MvPolynomial σ k}
     rw[h_zero] at hr
     obtain ⟨g, h_p, -⟩ := hr
     rw [h_p]
-    have h_span : Ideal.span (G' : Set (MvPolynomial σ k)) = I := by
-      sorry
-    rw [← h_span]
-    sorry
+    unfold MonomialOrder.IsGroebnerBasis at h
+    have h₁: (Finsupp.linearCombination (MvPolynomial σ k) fun g' ↦ ↑g') g ∈ I := by
+      rw [Finsupp.linearCombination_apply]
+      rw[Finsupp.sum]
+      apply Ideal.sum_mem I
+      intro a h_a_in_support
+      rcases h with ⟨h_G', h_span⟩
+      have h₂: ↑a ∈ G' := by
+        exact Finset.coe_mem a
+      exact Submodule.smul_mem I (g a) (h_G' h₂)
+    have h₂: 0 ∈ I := by
+      exact Submodule.zero_mem I
+    exact (Submodule.add_mem_iff_right I h₁).mpr h₂
   · intro h_p_mem
-    sorry
+    unfold IsRemainder at hr
+    unfold MonomialOrder.IsGroebnerBasis at h
+    rcases h with ⟨h_G', h_span⟩
+    obtain ⟨q, h_p_eq_sum_r, h_r_reduced, h_degree⟩ := hr
+    have h₁: (Finsupp.linearCombination (MvPolynomial σ k) fun g' ↦ ↑g') q ∈ I := by
+      rw [Finsupp.linearCombination_apply]
+      rw[Finsupp.sum]
+      apply Ideal.sum_mem I
+      intro a h_a_in_support
+      have h₂: ↑a ∈ G' := by
+        exact Finset.coe_mem a
+      exact Submodule.smul_mem I (q a) (h_G' h₂)
+    have h₂: r ∈ I := by
+      rw [← sub_eq_add_neg, h_p_eq_sum_r]
+    have h₃: r ∈ Ideal.span (m.leadingTerm '' ↑I) := by
+      sorry
+    rw[h_span] at h₃
+    by_contra h_neg_0
+
+
+
+
 
 /--
 
