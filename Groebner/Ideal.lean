@@ -231,36 +231,50 @@ lemma remainder_sub_remainder_mem_ideal {R : Type _} [CommRing R]
   <;> intro g hg
   <;> exact mul_mem_left I _ (Set.mem_of_mem_of_subset (by simp) hG''I)
 
-lemma monomial_not_mem_leading_term_ideal{r : MvPolynomial σ k}
-  {G' : Set (MvPolynomial σ k)}
-  (h : ∀ g ∈ G', g ≠ 0 → ∀ s ∈ r.support, ¬ m.degree g ≤ s) :
-  ∀ s ∈ r.support, monomial s (1 : k) ∉ leading_term_ideal m G' := by
+-- lemma monomial_not_mem_leading_term_ideal{r : MvPolynomial σ k}
+--   {G' : Set (MvPolynomial σ k)}
+--   (h : ∀ g ∈ G', g ≠ 0 → ∀ s ∈ r.support, ¬ m.degree g ≤ s) :
+--   ∀ s ∈ r.support, monomial s (1 : k) ∉ leading_term_ideal m G' := by
+--   sorry
+
+-- lemma term_not_mem_leading_term_ideal {r : MvPolynomial σ k}
+-- {G' : Set (MvPolynomial σ k)}
+-- (h : ∀ g ∈ G', g ≠ 0 → ∀ s ∈ r.support, ¬ m.degree g ≤ s)
+-- : ∀ s ∈ r.support, monomial s (r.coeff s) ∉ leading_term_ideal m  G' := by
+--   sorry
+
+-- lemma not_mem_leading_term_ideal {r : MvPolynomial σ k}
+-- {G' : Set (MvPolynomial σ k)}
+-- (h : ∀ g ∈ G', g ≠ 0 → ∀ s ∈ r.support, ¬ m.degree g ≤ s)
+-- (hr : r ≠ 0) :
+-- r ∉ leading_term_ideal m G' := by
+--  sorry
+
+lemma degree_of_monomial_mem_leadingTerm_ideal {G'' : Set (MvPolynomial σ R)} {s : σ →₀ ℕ} {c : R}
+  (h : monomial s c ∈ G'') (h' : c ≠ 0):
+  ∃ g ∈ G'', m.degree g ≤ s := by sorry
+
+lemma mem_leadingTerm_ideal_iff (G'' : Set (MvPolynomial σ R)) (p : MvPolynomial σ R) :
+  p ∈ Ideal.span (m.leadingTerm '' G'') ↔
+  ∀ s, monomial s (p.coeff s) ∈ Ideal.span (m.leadingTerm '' G'') := by
   sorry
-
-lemma term_not_mem_leading_term_ideal {r : MvPolynomial σ k}
-{G' : Set (MvPolynomial σ k)}
-(h : ∀ g ∈ G', g ≠ 0 → ∀ s ∈ r.support, ¬ m.degree g ≤ s)
-: ∀ s ∈ r.support, monomial s (r.coeff s) ∉ leading_term_ideal m  G' := by
-  sorry
-
-lemma not_mem_leading_term_ideal {r : MvPolynomial σ k}
-{G' : Set (MvPolynomial σ k)}
-(h : ∀ g ∈ G', g ≠ 0 → ∀ s ∈ r.support, ¬ m.degree g ≤ s)
-(hr : r ≠ 0) :
-r ∉ leading_term_ideal m G' := by
- sorry
-
 
 lemma IsRemainder_monomial_not_mem_leading_term_ideal {p r : MvPolynomial σ R}
   {G'' : Set (MvPolynomial σ R)} (h : m.IsRemainder p G'' r):
- ∀ s ∈ r.support, monomial s (r.coeff s) ∉ Ideal.span (m.leadingTerm '' G'') := by
-   sorry
+∀ s ∈ r.support, monomial s (r.coeff s) ∉ Ideal.span (m.leadingTerm '' G'') := by
+  -- unfold MonomialOrder.IsRemainder at h
+  obtain ⟨_,_,h⟩ := h
+  intro s hs
+  by_contra
+  sorry
 
 lemma IsRemainder_monomial_not_mem_leading_term_ideal' {p r : MvPolynomial σ k}
   {G'' : Set (MvPolynomial σ k)} (h : m.IsRemainder p G'' r):
- ∀ s ∈ r.support, monomial s 1 ∉ Ideal.span (m.leadingTerm '' G'') := by
-   -- use IsRemainder_monomial_not_mem_leading_term_ideal
-   sorry
+∀ s ∈ r.support, monomial s 1 ∉ Ideal.span (m.leadingTerm '' G'') := by
+
+  -- use IsRemainder_monomial_not_mem_leading_term_ideal
+
+  sorry
 
 -- lemma rem_monomial_not_mem_leading_term_ideal {p r : MvPolynomial σ k}
 -- {G' : Finset (MvPolynomial σ k)} (h : IsRemainder p G' r):
