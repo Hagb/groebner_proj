@@ -77,6 +77,16 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span {p : MvPolynomial σ k}
     rw[h_p_eq_sum_r] at h_p_mem
     have h₂: r ∈ I := by
       exact (Submodule.add_mem_iff_right I h₁).mp h_p_mem
+    by_contra hr_ne_zero
+    obtain ⟨s, hs⟩ : ∃ s ∈ r.support, r.coeff s ≠ 0 := by
+      contrapose! hr_ne_zero
+      sorry
+
+    have mon_s_in : monomial s (r.coeff s) ∈ Ideal.span (m.leadingTerm '' ↑G') := by
+      -- r ∈ I，所以 r ∈ Ideal.span (leadingTerm '' I)
+      -- leadingTerm(r) 的 monomial 也应该在 span 里
+      -- (需要用 r ∈ I 推 monomial s (r.coeff s) ∈ leadingTerm 理想)
+      sorry
     sorry
 
 
@@ -97,6 +107,7 @@ theorem is_groebner_basis_iff :
       unfold MonomialOrder.IsGroebnerBasis at h
       rcases h with ⟨h_G', h_span⟩
       sorry
+  · sorry
 -- theorem is_groebner_basis_iff' :
 --   m.IsGroebnerBasis G' I ↔
 --   G'.toSet ⊆ I ∧ ∀ p ∈ I, ∀ r, m.IsRemainder p G' r → r = 0 := by
