@@ -21,7 +21,7 @@ variable (G': Finset (MvPolynomial σ k)) (I : Ideal (MvPolynomial σ k))
 
 /--
 Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal. Then there exists a finite subset \( G = \{g_1, \ldots, g_t\} \) of \( I \) such that \( G \) is a Gröbner basis for \( I \).
---/
+-/
 theorem exists_groebner_basis [Finite σ] :
   ∃ G' : Finset (MvPolynomial σ k), IsGroebnerBasis m G' ↑I := by
   have key : (Ideal.span (α:=MvPolynomial σ k) (m.leadingTerm '' ↑I)).FG :=
@@ -36,7 +36,7 @@ theorem exists_groebner_basis [Finite σ] :
 
 /--
 Let \( G = \{g_1, \dots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \dots, x_n] \) and let \( f \in k[x_1, \dots, x_n] \). Then \( f \in I \) if and only if the remainder on division of \( f \) by \( G \) is zero.
---/
+-/
 theorem groebner_basis_isRemainder_zero_iff_mem_span {p : MvPolynomial σ k}
   {G' : Finset (MvPolynomial σ k)} {I : Ideal (MvPolynomial σ k)}
   {r : MvPolynomial σ k}
@@ -48,14 +48,47 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span {p : MvPolynomial σ k}
     rw[h_zero] at hr
     obtain ⟨g, h_p, -⟩ := hr
     rw [h_p]
-    sorry
-
+    unfold MonomialOrder.IsGroebnerBasis at h
+    have h₁: (Finsupp.linearCombination (MvPolynomial σ k) fun g' ↦ ↑g') g ∈ I := by
+      rw [Finsupp.linearCombination_apply]
+      rw[Finsupp.sum]
+      apply Ideal.sum_mem I
+      intro a h_a_in_support
+      rcases h with ⟨h_G', h_span⟩
+      have h₂: ↑a ∈ G' := by
+        exact Finset.coe_mem a
+      exact Submodule.smul_mem I (g a) (h_G' h₂)
+    have h₂: 0 ∈ I := by
+      exact Submodule.zero_mem I
+    exact (Submodule.add_mem_iff_right I h₁).mpr h₂
   · intro h_p_mem
-    sorry
+    unfold IsRemainder at hr
+    unfold MonomialOrder.IsGroebnerBasis at h
+    rcases h with ⟨h_G', h_span⟩
+    obtain ⟨q, h_p_eq_sum_r, h_r_reduced, h_degree⟩ := hr
+    have h₁: (Finsupp.linearCombination (MvPolynomial σ k) fun g' ↦ ↑g') q ∈ I := by
+      rw [Finsupp.linearCombination_apply]
+      rw[Finsupp.sum]
+      apply Ideal.sum_mem I
+      intro a h_a_in_support
+      have h₂: ↑a ∈ G' := by
+        exact Finset.coe_mem a
+      exact Submodule.smul_mem I (q a) (h_G' h₂)
+    have h₂: r ∈ I := by
+      rw [← sub_eq_add_neg, h_p_eq_sum_r]
+    have h₃: r ∈ Ideal.span (m.leadingTerm '' ↑I) := by
+      sorry
+    rw[h_span] at h₃
+    by_contra h_neg_0
+
+
+
+
 
 /--
+
 Let \( G = \{g_1, \ldots, g_t\} \) be a finite subset of \( k[x_1, \ldots, x_n] \). Then \( G \) is a Gröbner basis for the ideal \( I = \langle G \rangle \) if and only if  for every \( f \in I \), the remainder of \( f \) on division by \( G \) is zero.
---/
+-/
 theorem is_groebner_basis_iff :
   m.IsGroebnerBasis G' I ↔ G'.toSet ⊆ I ∧ ∀ p ∈ I, m.IsRemainder p G' 0 := by
   -- uses groebner_basis_isRemainder_zero_iff_mem_span
@@ -68,14 +101,14 @@ theorem is_groebner_basis_iff :
 
 /--
 Let \( G = \{g_1, \ldots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \ldots, x_n] \). Then \( G \) is a basis for the vector space \( I \) over \( k \).
---/
+-/
 theorem groebner_basis_is_basis (h : m.IsGroebnerBasis G' I) : I = Ideal.span G' := by
   -- uses is_groebner_basis_iff
   sorry
 
 /--
 A basis \( G = \{ g_1, \ldots, g_t \} \) for an ideal \( I \) is a Gröbner basis if and only if \( S(g_i, g_j) \to_G 0 \) for all \( i \neq j \).
---/
+-/
 theorem buchberger_criterion {g₁ g₂ : MvPolynomial σ k}
   (hG: ∀ (g₁ g₂: G'), m.IsRemainder (m.sPolynomial g₁ g₂ : MvPolynomial σ k) G' 0) :
   m.IsGroebnerBasis G' (Ideal.span G') :=

@@ -1,641 +1,12 @@
-% In this file you should put the actual content of the blueprint.
-% It will be used both by the web and the print version.
-% It should *not* include the \begin{document}
-%
-% If you want to split the blueprint content into several files then
-% the current file can be a simple sequence of \input. Otherwise It
-% can start with a \section or \chapter for instance.
-% In this file you should put the actual content of the blueprint.
-% It will be used both by the web and the print version.
-% It should *not* include the \begin{document}
-%
-% If you want to split the blueprint content into several files then
-% the current file can be a simple sequence of \input. Otherwise It
-% can start with a \section or \chapter for instance.
 
-\chapter{Introduction}
-This project presents a formalization of Gröbner basis theory in the Lean 4 theorem prover, establishing the mathematical infrastructure required for automated algebraic reasoning. By constructing certified implementations of fundamental algorithms and theorems, we aim to bridge the gap between computational algebra and interactive theorem proving.
-
-% \chapter{Definitions}
-% \begin{definition}\label{leadingTerm}
-%   \lean{MonomialOrder.leadingTerm}
-%   \leanok
-%   Given a nonzero polynomial \( f \in k[x] \), let
-%   \[
-%   f = c_0 x^m + c_1 x^{m-1} + \cdots + c_m,
-%   \]
-%   where \( c_i \in k \) and \( c_0 \neq 0 \) [thus, \( m = \deg(f) \)]. Then we say that \( c_0 x^m \) is the \textbf{leading term} of \( f \), written
-%   \[
-%   \operatorname{LT}(f) = c_0 x^m.
-%   \]
-% \end{definition}
-
-% \begin{definition}\label{MonomialOrder}
-%   \lean{MonomialOrder}
-%   \leanok
-%   \( > \) on \( k[x_1, \ldots, x_n] \) is a relation \( > \) on \( \mathbb{Z}_{\geq 0}^n \), or equivalently, a relation on the set of monomials \( x^\alpha \), \( \alpha \in \mathbb{Z}_{\geq 0}^n \), satisfying:
-
-%   \begin{enumerate}
-%       \item[(i)] \( > \) is a \textbf{total (or linear) ordering} on \( \mathbb{Z}_{\geq 0}^n \).
-
-%       \item[(ii)] If \( \alpha > \beta \) and \( \gamma \in \mathbb{Z}_{\geq 0}^n \), then \( \alpha + \gamma > \beta + \gamma \).
-
-%       \item[(iii)] \( > \) is a \textbf{well-ordering} on \( \mathbb{Z}_{\geq 0}^n \). This means that every nonempty subset of \( \mathbb{Z}_{\geq 0}^n \) has a smallest element under \( > \). In other words, if \( A \subseteq \mathbb{Z}_{\geq 0}^n \) is nonempty, then there is \( \alpha \in A \) such that \( \beta > \alpha \) for every \( \beta \neq \alpha \) in \( A \).
-%   \end{enumerate}
-% \end{definition}
-
-% \begin{definition}\label{IsGroebnerBasis}
-%   \lean{MonomialOrder.IsGroebnerBasis}
-%   \leanok
-%   \uses{leadingTerm, MonomialOrder}
-%   Fix a monomial order on the polynomial ring $k[x_1, \ldots, x_n]$.A finite subset $G = \{g_1, \ldots, g_t\}$ of an ideal $I \subseteq k[x_1, \ldots, x_n]$, with $I \ne \{0\}$, is said to be a \textbf{Gröbner basis} (or standard basis) if
-%   \[
-%   \langle \operatorname{LT}(g_1), \ldots, \operatorname{LT}(g_t) \rangle = \langle \operatorname{LT}(I) \rangle.
-%   \]
-%   Using the convention that $\langle \emptyset \rangle = \{0\}$, we define the empty set $\emptyset$ to be the Gröbner basis of the zero ideal $\{0\}$.
-% \end{definition}
-
-% \begin{definition}\label{IsRemainder}
-%   \lean{MonomialOrder.IsRemainder}
-%   \uses{leadingTerm, MonomialOrder}
-%   \leanok
-%   Fix a monomial order \(>\) on \(\mathbb{Z}_{\geq 0}^n\), and let
-%   \(F = (f_1, \ldots, f_s)\) be an ordered \(s\)-tuple of polynomials in \(k[x_1, \ldots, x_n]\).
-%   Then every \(f \in k[x_1, \ldots, x_n]\) can be written as
-%   \[
-%   f = a_1 f_1 + \cdots + a_s f_s + r,
-%   \]
-%   where \(a_i, r \in k[x_1, \ldots, x_n]\), and either \(r = 0\) or \(r\) is a linear combination, with coefficients in \(k\), of monomials, none of which is divisible by any of \(\mathrm{LT}(f_1), \ldots, \mathrm{LT}(f_s)\).
-%   We will call \(r\) a \textbf{remainder} of \(f\) on division by \(F\).
-% \end{definition}
-
-% \begin{definition}\label{S Polynomial}
-%   \lean{MonomialOrder.sPolynomial}
-%   \leanok
-%   The $S$-polynomial of $f$ and $g$ is the combination
-%   \[
-%   S(f, g) = \frac{x^\gamma}{\mathrm{LT}(f)} \cdot f - \frac{x^\gamma}{\mathrm{LT}(g)} \cdot g.
-%   \]
-% \end{definition}
-
-% \begin{definition}\label{Variety}
-%   Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal. We will denote by \( \mathbf{V}(I) \) the set
-%   \[
-%   \mathbf{V}(I) = \{(a_1, \ldots, a_n) \in k^n \mid f(a_1, \ldots, a_n) = 0 \text{ for all } f \in I\}.
-%   \]
-% \end{definition}
-
-% \begin{definition}\label{Zerodimensional Ideal}
-%   \uses{Variety}
-%   Let \( I \subseteq k[x_1, \ldots, x_n] \) be a polynomial ideal over an algebraically closed field \( k \).
-%   The ideal \( I \) is called \textbf{zero-dimensional} if the associated affine variety
-%   \[
-%   \mathbf{V}(I) = \{\mathbf{a} \in k^n \mid f(\mathbf{a}) = 0 \text{ for all } f \in I\}
-%   \]
-%   is a finite set.
-%   \end{definition}
-
-% \chapter{Lemmas}
-% \section{Gröbner Basis}
-% \begin{lemma}\label{exists_groebner_basis}
-%   \lean{MonomialOrder.exists_groebner_basis}
-%   \uses{IsGroebnerBasis}
-%   Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal. Then there exists a finite subset \( G = \{g_1, \ldots, g_t\} \) of \( I \) such that \( G \) is a Gröbner basis for \( I \).
-% \end{lemma}
-
-% \begin{lemma}\label{is_groebner_basis_iff}
-%   \lean{MonomialOrder.is_groebner_basis_iff}
-%   \uses{IsGroebnerBasis}
-%   Let \( G = \{g_1, \ldots, g_t\} \) be a finite subset of \( k[x_1, \ldots, x_n] \). Then \( G \) is a Gröbner basis for the ideal \( I = \langle G \rangle \) if and only if  for every \( f \in I \), the remainder of \( f \) on division by \( G \) is zero.
-% \end{lemma}
-
-
-% \begin{lemma}\label{groebner_basis_isRemainder_zero_iff_mem_span}
-%   \lean{MonomialOrder.groebner_basis_isRemainder_zero_iff_mem_span}
-%   \uses{IsGroebnerBasis}
-%   Let \( G = \{g_1, \dots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \dots, x_n] \) and let \( f \in k[x_1, \dots, x_n] \). Then \( f \in I \) if and only if the remainder on division of \( f \) by \( G \) is zero.
-% \end{lemma}
-% \begin{proof}
-%   UTM P84
-% \end{proof}
-
-% \begin{lemma}\label{groebner_basis_is_basis}
-%   \lean{MonomialOrder.groebner_basis_is_basis}
-%   \uses{IsGroebnerBasis}
-%   Let \( G = \{g_1, \ldots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \ldots, x_n] \). Then \( G \) is a basis for the vector space \( I \) over \( k \).
-% \end{lemma}
-
-% \begin{lemma}\label{Buchberger Criteria}
-% \uses{S Polynomial, groebner_basis_isRemainder_zero_iff_mem_span}
-% A basis \( G = \{ g_1, \ldots, g_t \} \) for an ideal \( I \) is a Gröbner basis if and only if \( S(g_i, g_j) \to_G 0 \) for all \( i \neq j \).
-% \end{lemma}
-% \begin{proof}
-%  UTM P86
-% \end{proof}
-
-% \section{Zero-dimensional Ideal}\label{Zero-dimensional Ideal}
-% \begin{lemma}\label{fg_span_iff_fg_span_finset_subset}
-%   \lean{Ideal.fg_span_iff_fg_span_finset_subset}
-%   Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal. Then \( I \) is finitely generated if and only if there exists a finite subset \( F \subseteq I \) such that \( I = \langle F \rangle \).
-% \end{lemma}
-
-% \begin{lemma}\label{leadingTerm_ideal_span_monomial}
-%   \lean{MonomialOrder.leadingTerm_ideal_span_monomial'}
-%   \leanok
-%   \uses{leadingTerm, MonomialOrder}
-%   \[
-%   \langle \operatorname{lt}(G) \rangle = \left\langle \{ x^t : t \in \{ \operatorname{multideg}(p) : p \in G \setminus \{0\} \} \right\rangle
-%   \]
-% \end{lemma}
-
-% \begin{lemma}\label{remainder_mem_ideal_iff}
-%   \lean{MonomialOrder.remainder_mem_ideal_iff}
-%   \uses{IsRemainder, IsGroebnerBasis}
-%   Let \( I \subseteq k[x_i : i \in \sigma] \) be an ideal, and let \( G \subseteq I \) be a finite subset.
-%   If \( r \) is a generalized remainder of \( p \) upon division by \( G \),
-%   then \( r \in I \) if and only if \( p \in I \)
-% \end{lemma}
-
-% \begin{lemma}\label{remainder_sub_remainder_mem_ideal}
-%   \lean{MonomialOrder.remainder_sub_remainder_mem_ideal}
-%   \uses{IsRemainder, IsGroebnerBasis}
-%   Let \( I \subseteq k[x_i : i \in \sigma] \) be an ideal, and let \( G \subseteq I \) be a finite subset.
-%   Suppose \( r_1 \) and \( r_2 \) are generalized remainders of a polynomial \( p \) upon division by \( G \).
-%   Then \( r_1 - r_2 \in I \).
-% \end{lemma}
-
-% \begin{lemma}\label{verify_zero_dim_ideal}
-%   \uses{Zero-dimensional Ideal}
-%   Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal and fix a monomial ordering on \( k[x_1, \ldots, x_n] \). For each \( i \), \( 1 \leq i \leq n \), there exists some \( m_i \geq 0 \) such that \( x_i^{m_i} \in \langle \mathrm{LT}(I)\rangle \). Then I is Zero-dimensional Ideal.
-% \end{lemma}
-
-% \begin{lemma}\label{V_I_equal_V_F}
-%   \uses{Variety}
-%   \( \mathbf{V}(I) \) is an affine variety. In particular, if \( I = \langle f_1, \ldots, f_s \rangle \), then
-%   \[
-%   \mathbf{V}(I) = \mathbf{V}(f_1, \ldots, f_s).
-%   \]
-% \end{lemma}
-% \begin{proof}
-%   By definition
-% \end{proof}
-
-% \begin{lemma}\label{V_G_equal_V_I}
-%   \uses{Variety, V_I_equal_V_F, Zero-dimensional Ideal}
-%   Let $I \subseteq k[x_1,\ldots,x_n]$ be a zero-dimensional ideal and $G = \{g_1,\ldots,g_t\}$ a Gröbner Basis for $I$. Then the affine variety defined by $G$ equals the variety of $I$:
-%   \[
-%   \mathbf{V}(G) = \mathbf{V}(I)
-%   \]
-% \end{lemma}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-% \chapter{Definitions}
-
-% \begin{definition}\label{leadingTerm}
-%   \lean{MonomialOrder.leadingTerm}
-%   \leanok
-
-%   Given a nonzero polynomial \( f \in k[x] \), let
-% \[
-% f = c_0 x^m + c_1 x^{m-1} + \cdots + c_m,
-% \]
-% where \( c_i \in k \) and \( c_0 \neq 0 \) [thus, \( m = \deg(f) \)]. Then we say that \( c_0 x^m \) is the \textbf{leading term} of \( f \), written
-% \[
-% \operatorname{LT}(f) = c_0 x^m.
-% \]
-% -
-% \end{definition}
-
-% \begin{definition}\label{MonomialOrder}
-%   \lean{MonomialOrder}
-%   \leanok
-%   \( > \) on \( k[x_1, \ldots, x_n] \) is a relation \( > \) on \( \mathbb{Z}_{\geq 0}^n \), or equivalently, a relation on the set of monomials \( x^\alpha \), \( \alpha \in \mathbb{Z}_{\geq 0}^n \), satisfying:
-
-%   \begin{enumerate}
-%       \item[(i)] \( > \) is a \textbf{total (or linear) ordering} on \( \mathbb{Z}_{\geq 0}^n \).
-
-%       \item[(ii)] If \( \alpha > \beta \) and \( \gamma \in \mathbb{Z}_{\geq 0}^n \), then \( \alpha + \gamma > \beta + \gamma \).
-
-%       \item[(iii)] \( > \) is a \textbf{well-ordering} on \( \mathbb{Z}_{\geq 0}^n \). This means that every nonempty subset of \( \mathbb{Z}_{\geq 0}^n \) has a smallest element under \( > \). In other words, if \( A \subseteq \mathbb{Z}_{\geq 0}^n \) is nonempty, then there is \( \alpha \in A \) such that \( \beta > \alpha \) for every \( \beta \neq \alpha \) in \( A \).
-%   \end{enumerate}
-% \end{definition}
-
-% \begin{definition}\label{IsRemainder}
-%   \lean{MonomialOrder.IsRemainder}
-%   \leanok
-
-%   Fix a monomial order \(>\) on \(\mathbb{Z}_{\geq 0}^n\), and let
-% \(F = (f_1, \ldots, f_s)\) be an ordered \(s\)-tuple of polynomials in \(k[x_1, \ldots, x_n]\).
-% Then every \(f \in k[x_1, \ldots, x_n]\) can be written as
-% \[
-% f = a_1 f_1 + \cdots + a_s f_s + r,
-% \]
-% where \(a_i, r \in k[x_1, \ldots, x_n]\), and either \(r = 0\) or \(r\) is a linear combination, with coefficients in \(k\), of monomials, none of which is divisible by any of \(\mathrm{LT}(f_1), \ldots, \mathrm{LT}(f_s)\).
-% We will call \(r\) a \textbf{remainder} of \(f\) on division by \(F\).
-% -
-% \end{definition}
-
-% \begin{definition}\label{sPolynomial}
-%   \lean{MonomialOrder.sPolynomial}
-%   \leanok
-
-%   The $S$-polynomial of $f$ and $g$ is the combination
-% \[
-% S(f, g) = \frac{x^\gamma}{\mathrm{LT}(f)} \cdot f - \frac{x^\gamma}{\mathrm{LT}(g)} \cdot g.
-% \]
-% -
-% \end{definition}
-
-% \begin{definition}\label{IsGroebnerBasis}
-%   \lean{MonomialOrder.IsGroebnerBasis}
-%   \leanok
-%   \uses{MonomialOrder.leadingTerm}
-%   Fix a monomial order on the polynomial ring $k[x_1, \ldots, x_n]$.A finite subset $G = \{g_1, \ldots, g_t\}$ of an ideal $I \subseteq k[x_1, \ldots, x_n]$, with $I \ne \{0\}$, is said to be a \textbf{Gröbner basis} (or standard basis) if
-% \[
-% \langle \operatorname{LT}(g_1), \ldots, \operatorname{LT}(g_t) \rangle = \langle \operatorname{LT}(I) \rangle.
-% \]
-% Using the convention that $\langle \emptyset \rangle = \{0\}$, we define the empty set $\emptyset$ to be the Gröbner basis of the zero ideal $\{0\}$.
-% -
-% \end{definition}
-
-% \chapter{Lemmas}
-
-% \begin{lemma}\label{zero_le}
-%   \lean{MonomialOrder.zero_le}
-%   \leanok
-
-
-% \end{lemma}
-
-% \begin{lemma}\label{IsRemainder_def'}
-%   \lean{MonomialOrder.IsRemainder_def'}
-%   \leanok
-%   \uses{MonomialOrder.IsRemainder}
-%   Let $p \in R[\mathbf{X}]$, $G'' \subseteq R[\mathbf{X}]$ be a set of polynomials,
-% and $r \in R[\mathbf{X}]$. Then $r$ is a remainder of $p$ modulo $G''$ with respect to
-% monomial order $m$ if and only if there exists a finite linear combination from $G''$
-% such that:
-% \begin{enumerate}
-% \item The support of the combination is contained in $G''$
-% \item $p$ decomposes as the sum of this combination and $r$
-% \item For each $g' \in G''$, the degree of $g' \cdot (coefficient\ of\ g')$
-%   is bounded by $\deg_m(p)$
-% \item No term of $r$ is divisible by any leading term of non-zero elements in $G''$
-% \end{enumerate}
-% -
-% \end{lemma}
-
-% \begin{lemma}\label{IsRemainder_def''}
-%   \lean{MonomialOrder.IsRemainder_def''}
-%   \leanok
-%   \uses{MonomialOrder.zero_le},
-% {MonomialOrder.IsRemainder_def'},
-% {MonomialOrder.IsRemainder}
-%   Let \( p, r \in k[x_i : i \in \sigma] \), and let \( G' \subseteq k[x_i : i \in \sigma] \) be a finite set.
-% We say that \( r \) is a \emph{generalized remainder} of \( p \) upon division by \( G' \) if the following two conditions hold:
-
-% \begin{enumerate}
-% \item For every nonzero \( g \in G' \) and every monomial \( x^s \in \operatorname{supp}(r) \),
-% there exists some component \( j \in \sigma \) such that
-% \[
-% \operatorname{multideg}(g)_j > s_j.
-% \]
-% \item There exists a function \( q : G' \to k[x_i : i \in \sigma] \) such that:
-% \begin{itemize}
-% \item For every \( g \in G' \),
-%   \[
-%   \operatorname{multideg}''(q(g)g) \leq \operatorname{multideg}''(p);
-%   \]
-% \item The decomposition holds:
-%   \[
-%   p = \sum_{g \in G'} q(g)g + r.
-%   \]
-% \end{itemize}
-% \end{enumerate}
-
-% \end{lemma}
-
-% \begin{lemma}\label{lm_eq_zero_iff}
-%   \lean{MonomialOrder.lm_eq_zero_iff}
-%   \leanok
-%   \uses{MonomialOrder.leadingTerm}
-%   Let $p \in R[\mathbf{X}]$ be a multivariate polynomial. Then the leading term of $p$
-% vanishes with respect to monomial order $m$ if and only if $p$ is the zero polynomial:
-% \[
-% \LT_m(p) = 0 \iff p = 0
-% \]
-% -
-% \end{lemma}
-
-% \begin{lemma}\label{leadingTerm_image_sdiff_singleton_zero}
-%   \lean{MonomialOrder.leadingTerm_image_sdiff_singleton_zero}
-%   \leanok
-%   \uses{MonomialOrder.leadingTerm},
-% {MonomialOrder.lm_eq_zero_iff}
-%   For any set of polynomials $G'' \subseteq R[\mathbf{X}]$ and monomial order $m$,
-% the image of leading terms on the nonzero elements of $G''$ equals the image on all
-% elements minus zero:
-% \[
-% \LT_m(G'' \setminus \{0\}) = \LT_m(G'') \setminus \{0\}
-% \]
-
-% \end{lemma}
-
-% \begin{lemma}\label{isRemainder_of_insert_zero_iff_isRemainder}
-%   \lean{MonomialOrder.isRemainder_of_insert_zero_iff_isRemainder}
-%   \leanok
-%   \uses{MonomialOrder.zero_le},
-% {MonomialOrder.IsRemainder_def'},
-% {MonomialOrder.IsRemainder},
-% {MonomialOrder.IsRemainder_def''}
-%   Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set of polynomials,
-% and $r \in R[\mathbf{X}]$ a remainder. Then the remainder property is invariant under
-% inserting the zero polynomial:
-% \[
-% \mathsf{IsRemainder}_m\,p\,(G'' \cup \{0\})\,r \iff \mathsf{IsRemainder}_m\,p\,G''\,r
-% \]
-
-% \end{lemma}
-
-% \begin{lemma}\label{isRemainder_of_singleton_zero_iff_isRemainder}
-%   \lean{MonomialOrder.isRemainder_of_singleton_zero_iff_isRemainder}
-%   \leanok
-%   \uses{MonomialOrder.IsRemainder},
-% {MonomialOrder.isRemainder_of_insert_zero_iff_isRemainder}
-%   Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set of polynomials,
-% and $r \in R[\mathbf{X}]$ a remainder. Then the remainder property is invariant under
-% removal of the zero polynomial:
-% \[
-% \mathsf{IsRemainder}_m\,p\,(G'' \setminus \{0\})\,r \iff \mathsf{IsRemainder}_m\,p\,G''\,r
-% \]
-
-% \end{lemma}
-
-% \begin{lemma}\label{sPolynomial_antisymm}
-%   \lean{MonomialOrder.sPolynomial_antisymm}
-%   \leanok
-%   \uses{MonomialOrder.sPolynomial}
-%   the S-polynomial of $f$ and $g$ is antisymmetric:
-% \[
-% \Sph{f}{g} = -\Sph{g}{f}
-% \]
-% -
-% \end{lemma}
-
-% \begin{lemma}\label{sPolynomial_eq_zero_of_left_eq_zero}
-%   \lean{MonomialOrder.sPolynomial_eq_zero_of_left_eq_zero}
-%   \leanok
-%   \uses{MonomialOrder.sPolynomial}
-%   For any polynomial $g \in \MvPolynomial{\sigma}{R}$ and monomial order $m$,
-% the S-polynomial with zero as first argument vanishes:
-% \[
-% \Sph{0}{g} = 0
-% \]
-% -
-% \end{lemma}
-
-% \begin{lemma}\label{sPolynomial_eq_zero_of_right_eq_zero'}
-%   \lean{MonomialOrder.sPolynomial_eq_zero_of_right_eq_zero'}
-%   \leanok
-%   \uses{MonomialOrder.sPolynomial_antisymm},
-% {MonomialOrder.sPolynomial},
-% {MonomialOrder.sPolynomial_eq_zero_of_left_eq_zero}
-%   For any polynomial $g \in \MvPolynomial{\sigma}{R}$ and monomial order $m$,
-% the S-polynomial with zero as second argument vanishes:
-% \[
-% \Sph{f}{0} = 0
-% \]
-% -
-% \end{lemma}
-
-% \begin{lemma}\label{div_set'}
-%   \lean{MonomialOrder.div_set'}
-%   \leanok
-%   \uses{MonomialOrder.isRemainder_of_singleton_zero_iff_isRemainder},
-% {MonomialOrder.IsRemainder}
-%   Let $G'' \subseteq R[\mathbf{X}]$ be a set of polynomials where every nonzero element has a unit leading coefficient:
-% \[
-% \forall g \in G'',\ \big(\mathrm{IsUnit}(\LC_m(g)) \lor g = 0\big)
-% \]
-% Then for any polynomial $p \in R[\mathbf{X}]$, there exists a remainder $r$ satisfying:
-% \[
-% \mathsf{IsRemainder}_m\,p\,G''\,r
-% \]
-% where $\LC_m(g)$ denotes the leading coefficient of $g$ under monomial order $m$.
-% -
-% \end{lemma}
-
-% \begin{lemma}\label{div_set''}
-%   \lean{MonomialOrder.div_set''}
-%   \leanok
-%   \uses{MonomialOrder.div_set'},
-% {MonomialOrder.IsRemainder}
-%   Let \( k \) be a field, and let \( G'' \subseteq k[x_i : i \in \sigma] \) be a set of polynomials.
-% Then for any \( p \in k[x_i : i \in \sigma] \), there exists a generalized remainder \( r \) of \( p \) upon division by \( G'' \).
-
-% \end{lemma}
-
-% \begin{lemma}\label{fg_span_iff_fg_span_finset_subset}
-%   \lean{Ideal.fg_span_iff_fg_span_finset_subset}
-
-
-%   A subset $s \subseteq R$ has finitely generated span if and only if:
-% $\exists$ finite $s' \subseteq s$ such that $\mathsf{span}(s) = \mathsf{span}(s')$
-
-% \end{lemma}
-
-% \begin{lemma}\label{span_singleton_zero}
-%   \lean{Ideal.span_singleton_zero}
-%   \leanok
-
-%   For any ring \( R \), the span of the zero singleton set equals the zero submodule:
-% \[
-% \mathsf{span}_R \{(0 : R)\} = \bot
-% \]
-
-% \end{lemma}
-
-% \begin{lemma}\label{span_insert_zero}
-%   \lean{Ideal.span_insert_zero}
-%   \leanok
-
-%   For any subset $s \subseteq R$ of a ring $R$, inserting zero does not change the linear span:
-% \[
-% \mathsf{span}_R(\{0\} \cup s) = \mathsf{span}_R(s)
-% \]
-
-% \end{lemma}
-
-% \begin{lemma}\label{span_sdiff_singleton_zero}
-%   \lean{Ideal.span_sdiff_singleton_zero}
-%   \leanok
-%   \uses{Submodule.span_sdiff_singleton_zero}
-%   For any subset $s \subseteq R$ of a ring $R$, removing zero does not change the linear span:
-% \[
-% \mathsf{span}_R(s \setminus \{0\}) = \mathsf{span}_R(s)
-% \]
-
-% \end{lemma}
-
-% \begin{lemma}\label{leadingTerm_ideal_span_monomial}
-%   \lean{MonomialOrder.leadingTerm_ideal_span_monomial}
-%   \leanok
-%   \uses{MonomialOrder.leadingTerm}
-%   Let \( G'' \subseteq R[x_1, \dots, x_n] \) be a set of polynomials such that
-% \[
-% \forall p \in G'',\ \operatorname{leadingCoeff}(p) \in R^\times.
-% \]
-% Then,
-% \[
-% \left\langle \operatorname{lt}(G'') \right\rangle = \left\langle x^{\deg(p)} \mid p \in G'' \right\rangle,
-% \]
-
-% \end{lemma}
-
-% \begin{lemma}\label{leadingTerm_ideal_span_monomial'}
-%   \lean{MonomialOrder.leadingTerm_ideal_span_monomial'}
-%   \leanok
-%   \uses{MonomialOrder.leadingTerm_ideal_span_monomial},
-% {Ideal.span_sdiff_singleton_zero},
-% {MonomialOrder.leadingTerm},
-% {MonomialOrder.leadingTerm_image_sdiff_singleton_zero}
-%   \[
-% \langle \mathrm{lt}(G) \rangle = \left\langle \left\{ x^t : t \in \{ \mathrm{multideg}(p) : p \in G \setminus \{0\} \} \right\} \right\rangle
-% \]
-
-% \end{lemma}
-
-% \begin{lemma}\label{mem_ideal_of_remainder_mem_ideal}
-%   \lean{MonomialOrder.mem_ideal_of_remainder_mem_ideal}
-%   \leanok
-%   \uses{MonomialOrder.IsRemainder}
-%   Let \( G'' \subseteq R[x_1, \dots, x_n] \), let \( I \subseteq R[x_1, \dots, x_n] \) be an ideal,
-% and let \( p, r \in R[x_1, \dots, x_n] \). Suppose that:
-% \begin{itemize}
-% \item \( G'' \subseteq I \),
-% \item \( r \in I \),
-% \item \( r \) is the remainder of \( p \) upon division by \( G'' \).
-% \end{itemize}
-% Then,
-% \[
-% p \in I.
-% \]
-
-% \end{lemma}
-
-% \begin{lemma}\label{remainder_mem_ideal_iff}
-%   \lean{MonomialOrder.remainder_mem_ideal_iff}
-%   \leanok
-%   \uses{MonomialOrder.IsRemainder},
-% {MonomialOrder.mem_ideal_of_remainder_mem_ideal}
-%   Let \( R \) be a commutative ring, and let \( G'' \subseteq R[x_1, \dots, x_n] \), \( I \subseteq R[x_1, \dots, x_n] \) be an ideal, and \( p, r \in R[x_1, \dots, x_n] \).
-% Assume that:
-% \begin{itemize}
-% \item \( G'' \subseteq I \),
-% \item \( r \) is the remainder of \( p \) upon division by \( G'' \).
-% \end{itemize}
-% Then,
-% \[
-% r \in I \quad \Longleftrightarrow \quad p \in I.
-% \]
-
-% \end{lemma}
-
-% \begin{lemma}\label{remainder_sub_remainder_mem_ideal}
-%   \lean{MonomialOrder.remainder_sub_remainder_mem_ideal}
-%   \leanok
-%   \uses{MonomialOrder.IsRemainder}
-%   Let \( I \subseteq k[x_i : i \in \sigma] \) be an ideal, and let \( G \subseteq I \) be a finite subset.
-% Suppose that \( r_1 \) and \( r_2 \) are generalized remainders of a polynomial \( p \) upon division by \( G \).
-% Then,
-% \[
-% r_1 - r_2 \in I.
-% \]
-
-% \end{lemma}
-
-% \begin{lemma}\label{exists_groebner_basis}
-%   \lean{MonomialOrder.exists_groebner_basis}
-%   \leanok
-%   \uses{MonomialOrder.IsGroebnerBasis},
-% {MonomialOrder.leadingTerm},
-% {Ideal.fg_span_iff_fg_span_finset_subset},
-% {Set.finset_subset_preimage_of_finite_image}
-%   Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal. Then there exists a finite subset \( G = \{g_1, \ldots, g_t\} \) of \( I \) such that \( G \) is a Gröbner basis for \( I \).
-% -
-% \end{lemma}
-
-% \begin{lemma}\label{groebner_basis_isRemainder_zero_iff_mem_span}
-%   \lean{MonomialOrder.groebner_basis_isRemainder_zero_iff_mem_span}
-
-%   \uses{MonomialOrder.IsGroebnerBasis},
-% {MonomialOrder.IsRemainder}
-%   Let \( G = \{g_1, \dots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \dots, x_n] \) and let \( f \in k[x_1, \dots, x_n] \). Then \( f \in I \) if and only if the remainder on division of \( f \) by \( G \) is zero.
-% -
-% \end{lemma}
-
-% \begin{lemma}\label{is_groebner_basis_iff}
-%   \lean{MonomialOrder.is_groebner_basis_iff}
-
-%   \uses{MonomialOrder.IsGroebnerBasis},
-% {MonomialOrder.IsRemainder}
-%   Let \( G = \{g_1, \ldots, g_t\} \) be a finite subset of \( k[x_1, \ldots, x_n] \). Then \( G \) is a Gröbner basis for the ideal \( I = \langle G \rangle \) if and only if  for every \( f \in I \), the remainder of \( f \) on division by \( G \) is zero.
-% -
-% \end{lemma}
-
-% \begin{lemma}\label{groebner_basis_is_basis}
-%   \lean{MonomialOrder.groebner_basis_is_basis}
-
-%   \uses{MonomialOrder.IsGroebnerBasis}
-%   Let \( G = \{g_1, \ldots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \ldots, x_n] \). Then \( G \) is a basis for the vector space \( I \) over \( k \).
-% -
-% \end{lemma}
-
-% \begin{lemma}\label{buchberger_criterion}
-%   \lean{MonomialOrder.buchberger_criterion}
-
-%   \uses{MonomialOrder.IsGroebnerBasis},
-% {MonomialOrder.IsRemainder},
-% {MonomialOrder.sPolynomial}
-%   A basis \( G = \{ g_1, \ldots, g_t \} \) for an ideal \( I \) is a Gröbner basis if and only if \( S(g_i, g_j) \to_G 0 \) for all \( i \neq j \).
-% -
-% \end{lemma}
-
-% \begin{lemma}\label{finset_subset_preimage_of_finite_image}
-%   \lean{Set.finset_subset_preimage_of_finite_image}
-%   \leanok
-
-%   Let $f: \alpha \to \beta$ be a function and $s \subseteq \alpha$ a subset with finite image $f(s)$. Then there exists a finite subset $s' \subseteq_{\text{fin}} s$ such that:
-% \begin{itemize}
-% \item $s' \subseteq s$ (subset relation)
-% \item $f(s') = f(s)$ (image equality)
-% \item $|s'| = |f(s)|$ (cardinality preservation)
-% \end{itemize}
-
-% \end{lemma}
-
-% \begin{lemma}\label{span_sdiff_singleton_zero}
-%   \lean{Submodule.span_sdiff_singleton_zero}
-%   \leanok
-
-%   \[
-% \langle G \rangle = \langle G \setminus \{0\} \rangle
-% \]
-
-% \end{lemma}
-
-
-
-\chapter{Definitions}
-
-\begin{definition}\label{MonomialOrder.leadingTerm}
-  \lean{MonomialOrder.leadingTerm}
-  \leanok
-
-  Given a nonzero polynomial \( f \in k[x] \), let
+    \chapter{Definitions}
+    
+        \begin{definition}\label{leadingTerm}
+          \settitle{<MonomialOrder.<BR/>leadingTerm>}
+          \lean{MonomialOrder.leadingTerm}
+          
+          \leanok
+          Given a nonzero polynomial \( f \in k[x] \), let
 \[
 f = c_0 x^m + c_1 x^{m-1} + \cdots + c_m,
 \]
@@ -643,14 +14,15 @@ where \( c_i \in k \) and \( c_0 \neq 0 \) [thus, \( m = \deg(f) \)]. Then we sa
 \[
 \operatorname{LT}(f) = c_0 x^m.
 \]
--
-\end{definition}
 
-\begin{definition}\label{MonomialOrder.IsRemainder}
-  \lean{MonomialOrder.IsRemainder}
-  \leanok
+        \end{definition}
 
-  Fix a monomial order \(>\) on \(\mathbb{Z}_{\geq 0}^n\), and let
+        \begin{definition}\label{IsRemainder}
+          \settitle{<MonomialOrder.<BR/>IsRemainder>}
+          \lean{MonomialOrder.IsRemainder}
+          
+          \leanok
+          Fix a monomial order \(>\) on \(\mathbb{Z}_{\geq 0}^n\), and let
 \(F = (f_1, \ldots, f_s)\) be an ordered \(s\)-tuple of polynomials in \(k[x_1, \ldots, x_n]\).
 Then every \(f \in k[x_1, \ldots, x_n]\) can be written as
 \[
@@ -658,245 +30,361 @@ f = a_1 f_1 + \cdots + a_s f_s + r,
 \]
 where \(a_i, r \in k[x_1, \ldots, x_n]\), and either \(r = 0\) or \(r\) is a linear combination, with coefficients in \(k\), of monomials, none of which is divisible by any of \(\mathrm{LT}(f_1), \ldots, \mathrm{LT}(f_s)\).
 We will call \(r\) a \textbf{remainder} of \(f\) on division by \(F\).
--
-\end{definition}
 
-\begin{definition}\label{MonomialOrder.sPolynomial}
-  \lean{MonomialOrder.sPolynomial}
-  \leanok
+        \end{definition}
 
-  The $S$-polynomial of $f$ and $g$ is the combination
+        \begin{definition}\label{sPolynomial}
+          \settitle{<MonomialOrder.<BR/>sPolynomial>}
+          \lean{MonomialOrder.sPolynomial}
+          
+          \leanok
+          The $S$-polynomial of $f$ and $g$ is the combination
 \[
 S(f, g) = \frac{x^\gamma}{\mathrm{LT}(f)} \cdot f - \frac{x^\gamma}{\mathrm{LT}(g)} \cdot g.
 \]
--
-\end{definition}
 
-\begin{definition}\label{MonomialOrder.IsGroebnerBasis}
-  \lean{MonomialOrder.IsGroebnerBasis}
-  \leanok
-  \uses{MonomialOrder.leadingTerm}
-  Fix a monomial order on the polynomial ring $k[x_1, \ldots, x_n]$.A finite subset $G = \{g_1, \ldots, g_t\}$ of an ideal $I \subseteq k[x_1, \ldots, x_n]$, with $I \ne \{0\}$, is said to be a \textbf{Gröbner basis} (or standard basis) if
+        \end{definition}
+
+        \begin{definition}\label{IsGroebnerBasis}
+          \settitle{<MonomialOrder.<BR/>IsGroebnerBasis>}
+          \lean{MonomialOrder.IsGroebnerBasis}
+          
+          \leanok
+          Fix a monomial order on the polynomial ring $k[x_1, \ldots, x_n]$.A finite subset $G = \{g_1, \ldots, g_t\}$ of an ideal $I \subseteq k[x_1, \ldots, x_n]$, with $I \ne \{0\}$, is said to be a \textbf{Gröbner basis} (or standard basis) if
 \[
 \langle \operatorname{LT}(g_1), \ldots, \operatorname{LT}(g_t) \rangle = \langle \operatorname{LT}(I) \rangle.
 \]
 Using the convention that $\langle \emptyset \rangle = \{0\}$, we define the empty set $\emptyset$ to be the Gröbner basis of the zero ideal $\{0\}$.
--
-\end{definition}
 
-\chapter{Lemmas}
+        \end{definition}
 
-\begin{lemma}\label{MonomialOrder.zero_le}
-  \lean{MonomialOrder.zero_le}
-  \leanok
+    \chapter{Lemmas}
+    
+        \begin{lemma}\label{zero_le}
+          \settitle{<MonomialOrder.<BR/>zero_le>}
+          \lean{MonomialOrder.zero_le}
+          
+          \leanok
+          a \in Partially Ordered Set, a \geq 0
 
+        \end{lemma}
+        
+        \begin{proof}
+          
+          \leanok
+        \end{proof}
+        
 
-\end{lemma}
-
-\begin{lemma}\label{MonomialOrder.IsRemainder_def'}
-  \lean{MonomialOrder.IsRemainder_def'}
-  \leanok
-  \uses{MonomialOrder.IsRemainder}
-  Let $p \in R[\mathbf{X}]$, $G'' \subseteq R[\mathbf{X}]$ be a set of polynomials,
+        \begin{lemma}\label{IsRemainder_def’}
+          \settitle{<MonomialOrder.<BR/>IsRemainder_<BR/>def'>}
+          \lean{MonomialOrder.IsRemainder_def'}
+          \uses{IsRemainder}
+          \leanok
+          Let $p \in R[\mathbf{X}]$, $G'' \subseteq R[\mathbf{X}]$ be a set of polynomials,
 and $r \in R[\mathbf{X}]$. Then $r$ is a remainder of $p$ modulo $G''$ with respect to
 monomial order $m$ if and only if there exists a finite linear combination from $G''$
 such that:
 \begin{enumerate}
-\item The support of the combination is contained in $G''$
-\item $p$ decomposes as the sum of this combination and $r$
-\item For each $g' \in G''$, the degree of $g' \cdot (coefficient\ of\ g')$
-  is bounded by $\deg_m(p)$
-\item No term of $r$ is divisible by any leading term of non-zero elements in $G''$
+  \item The support of the combination is contained in $G''$
+  \item $p$ decomposes as the sum of this combination and $r$
+  \item For each $g' \in G''$, the degree of $g' \cdot (coefficient\ of\ g')$
+        is bounded by $\deg_m(p)$
+  \item No term of $r$ is divisible by any leading term of non-zero elements in $G''$
 \end{enumerate}
--
-\end{lemma}
 
-\begin{lemma}\label{MonomialOrder.IsRemainder_def''}
-  \lean{MonomialOrder.IsRemainder_def''}
-  \leanok
-  \uses{MonomialOrder.zero_le, MonomialOrder.IsRemainder_def', MonomialOrder.IsRemainder}
-  Let \( p, r \in k[x_i : i \in \sigma] \), and let \( G' \subseteq k[x_i : i \in \sigma] \) be a finite set.
+        \end{lemma}
+        
+        \begin{proof}
+          
+          \leanok
+        \end{proof}
+        
+
+        \begin{lemma}\label{IsRemainder_def’’}
+          \settitle{<MonomialOrder.<BR/>IsRemainder_<BR/>def''>}
+          \lean{MonomialOrder.IsRemainder_def''}
+          \uses{IsRemainder}
+          \leanok
+          Let \( p, r \in k[x_i : i \in \sigma] \), and let \( G' \subseteq k[x_i : i \in \sigma] \) be a finite set.
 We say that \( r \) is a \emph{generalized remainder} of \( p \) upon division by \( G' \) if the following two conditions hold:
 
 \begin{enumerate}
-\item For every nonzero \( g \in G' \) and every monomial \( x^s \in \operatorname{supp}(r) \),
-there exists some component \( j \in \sigma \) such that
-\[
-\operatorname{multideg}(g)_j > s_j.
-\]
-\item There exists a function \( q : G' \to k[x_i : i \in \sigma] \) such that:
-\begin{itemize}
-\item For every \( g \in G' \),
-  \[
-  \operatorname{multideg}''(q(g)g) \leq \operatorname{multideg}''(p);
-  \]
-\item The decomposition holds:
-  \[
-  p = \sum_{g \in G'} q(g)g + r.
-  \]
-\end{itemize}
+  \item For every nonzero \( g \in G' \) and every monomial \( x^s \in \operatorname{supp}(r) \),
+        there exists some component \( j \in \sigma \) such that
+        \[
+        \operatorname{multideg}(g)_j > s_j.
+        \]
+  \item There exists a function \( q : G' \to k[x_i : i \in \sigma] \) such that:
+  \begin{itemize}
+    \item For every \( g \in G' \),
+          \[
+          \operatorname{multideg}''(q(g)g) \leq \operatorname{multideg}''(p);
+          \]
+    \item The decomposition holds:
+          \[
+          p = \sum_{g \in G'} q(g)g + r.
+          \]
+  \end{itemize}
 \end{enumerate}
 
-\end{lemma}
+        \end{lemma}
+        
+        \begin{proof}
+          \uses{zero_le, IsRemainder_def’}
+          \leanok
+        \end{proof}
+        
 
-\begin{lemma}\label{MonomialOrder.lm_eq_zero_iff}
-  \lean{MonomialOrder.lm_eq_zero_iff}
-  \leanok
-  \uses{MonomialOrder.leadingTerm}
-  Let $p \in R[\mathbf{X}]$ be a multivariate polynomial. Then the leading term of $p$
+        \begin{lemma}\label{lm_eq_zero_iff}
+          \settitle{<MonomialOrder.<BR/>lm_eq_zero_<BR/>iff>}
+          \lean{MonomialOrder.lm_eq_zero_iff}
+          \uses{leadingTerm}
+          \leanok
+          Let $p \in R[\mathbf{X}]$ be a multivariate polynomial. Then the leading term of $p$
 vanishes with respect to monomial order $m$ if and only if $p$ is the zero polynomial:
 \[
-\LT_m(p) = 0 \iff p = 0
+  \LT_m(p) = 0 \iff p = 0
 \]
--
-\end{lemma}
 
-\begin{lemma}\label{MonomialOrder.leadingTerm_image_sdiff_singleton_zero}
-  \lean{MonomialOrder.leadingTerm_image_sdiff_singleton_zero}
-  \leanok
-  \uses{MonomialOrder.leadingTerm, MonomialOrder.lm_eq_zero_iff}
-  For any set of polynomials $G'' \subseteq R[\mathbf{X}]$ and monomial order $m$,
+        \end{lemma}
+        
+        \begin{proof}
+          
+          \leanok
+        \end{proof}
+        
+
+        \begin{lemma}\label{leadingTerm_image_sdiff_singleton_zero}
+          \settitle{<MonomialOrder.<BR/>leadingTerm_<BR/>image_sdiff_<BR/>singleton_<BR/>zero>}
+          \lean{MonomialOrder.leadingTerm_image_sdiff_singleton_zero}
+          \uses{leadingTerm}
+          \leanok
+          For any set of polynomials $G'' \subseteq R[\mathbf{X}]$ and monomial order $m$,
 the image of leading terms on the nonzero elements of $G''$ equals the image on all
 elements minus zero:
 \[
-\LT_m(G'' \setminus \{0\}) = \LT_m(G'') \setminus \{0\}
+  \LT_m(G'' \setminus \{0\}) = \LT_m(G'') \setminus \{0\}
 \]
 
-\end{lemma}
+        \end{lemma}
+        
+        \begin{proof}
+          \uses{lm_eq_zero_iff}
+          \leanok
+        \end{proof}
+        
 
-\begin{lemma}\label{MonomialOrder.isRemainder_of_insert_zero_iff_isRemainder}
-  \lean{MonomialOrder.isRemainder_of_insert_zero_iff_isRemainder}
-  \leanok
-  \uses{MonomialOrder.zero_le, MonomialOrder.IsRemainder_def', MonomialOrder.IsRemainder, MonomialOrder.IsRemainder_def''}
-  Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set of polynomials,
+        \begin{lemma}\label{isRemainder_of_insert_zero_iff_isRemainder}
+          \settitle{<MonomialOrder.<BR/>isRemainder_<BR/>of_insert_<BR/>zero_iff_<BR/>isRemainder>}
+          \lean{MonomialOrder.isRemainder_of_insert_zero_iff_isRemainder}
+          \uses{IsRemainder}
+          \leanok
+          Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set of polynomials,
 and $r \in R[\mathbf{X}]$ a remainder. Then the remainder property is invariant under
 inserting the zero polynomial:
 \[
-\mathsf{IsRemainder}_m\,p\,(G'' \cup \{0\})\,r \iff \mathsf{IsRemainder}_m\,p\,G''\,r
+  \mathsf{IsRemainder}_m\,p\,(G'' \cup \{0\})\,r \iff \mathsf{IsRemainder}_m\,p\,G''\,r
 \]
 
-\end{lemma}
+        \end{lemma}
+        
+        \begin{proof}
+          \uses{zero_le, IsRemainder_def’, IsRemainder_def’’}
+          \leanok
+        \end{proof}
+        
 
-\begin{lemma}\label{MonomialOrder.isRemainder_of_singleton_zero_iff_isRemainder}
-  \lean{MonomialOrder.isRemainder_of_singleton_zero_iff_isRemainder}
-  \leanok
-  \uses{MonomialOrder.IsRemainder, MonomialOrder.isRemainder_of_insert_zero_iff_isRemainder}
-  Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set of polynomials,
+        \begin{lemma}\label{isRemainder_of_singleton_zero_iff_isRemainder}
+          \settitle{<MonomialOrder.<BR/>isRemainder_<BR/>of_<BR/>singleton_<BR/>zero_iff_<BR/>isRemainder>}
+          \lean{MonomialOrder.isRemainder_of_singleton_zero_iff_isRemainder}
+          \uses{IsRemainder}
+          \leanok
+          Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set of polynomials,
 and $r \in R[\mathbf{X}]$ a remainder. Then the remainder property is invariant under
 removal of the zero polynomial:
 \[
-\mathsf{IsRemainder}_m\,p\,(G'' \setminus \{0\})\,r \iff \mathsf{IsRemainder}_m\,p\,G''\,r
+  \mathsf{IsRemainder}_m\,p\,(G'' \setminus \{0\})\,r \iff \mathsf{IsRemainder}_m\,p\,G''\,r
 \]
 
-\end{lemma}
+        \end{lemma}
+        
+        \begin{proof}
+          \uses{isRemainder_of_insert_zero_iff_isRemainder}
+          \leanok
+        \end{proof}
+        
 
-\begin{lemma}\label{MonomialOrder.sPolynomial_antisymm}
-  \lean{MonomialOrder.sPolynomial_antisymm}
-  \leanok
-  \uses{MonomialOrder.sPolynomial}
-  the S-polynomial of $f$ and $g$ is antisymmetric:
+        \begin{lemma}\label{sPolynomial_antisymm}
+          \settitle{<MonomialOrder.<BR/>sPolynomial_<BR/>antisymm>}
+          \lean{MonomialOrder.sPolynomial_antisymm}
+          \uses{sPolynomial}
+          \leanok
+          the S-polynomial of $f$ and $g$ is antisymmetric:
 \[
-\Sph{f}{g} = -\Sph{g}{f}
+  \Sph{f}{g} = -\Sph{g}{f}
 \]
--
-\end{lemma}
 
-\begin{lemma}\label{MonomialOrder.sPolynomial_eq_zero_of_left_eq_zero}
-  \lean{MonomialOrder.sPolynomial_eq_zero_of_left_eq_zero}
-  \leanok
-  \uses{MonomialOrder.sPolynomial}
-  For any polynomial $g \in \MvPolynomial{\sigma}{R}$ and monomial order $m$,
+        \end{lemma}
+        
+        \begin{proof}
+          
+          \leanok
+        \end{proof}
+        
+
+        \begin{lemma}\label{sPolynomial_eq_zero_of_left_eq_zero}
+          \settitle{<MonomialOrder.<BR/>sPolynomial_<BR/>eq_zero_of_<BR/>left_eq_zero>}
+          \lean{MonomialOrder.sPolynomial_eq_zero_of_left_eq_zero}
+          \uses{sPolynomial}
+          \leanok
+          For any polynomial $g \in \MvPolynomial{\sigma}{R}$ and monomial order $m$,
 the S-polynomial with zero as first argument vanishes:
 \[
-\Sph{0}{g} = 0
+  \Sph{0}{g} = 0
 \]
--
-\end{lemma}
 
-\begin{lemma}\label{MonomialOrder.sPolynomial_eq_zero_of_right_eq_zero'}
-  \lean{MonomialOrder.sPolynomial_eq_zero_of_right_eq_zero'}
-  \leanok
-  \uses{MonomialOrder.sPolynomial_antisymm, MonomialOrder.sPolynomial, MonomialOrder.sPolynomial_eq_zero_of_left_eq_zero}
-  For any polynomial $g \in \MvPolynomial{\sigma}{R}$ and monomial order $m$,
+        \end{lemma}
+        
+        \begin{proof}
+          
+          \leanok
+        \end{proof}
+        
+
+        \begin{lemma}\label{sPolynomial_eq_zero_of_right_eq_zero’}
+          \settitle{<MonomialOrder.<BR/>sPolynomial_<BR/>eq_zero_of_<BR/>right_eq_<BR/>zero'>}
+          \lean{MonomialOrder.sPolynomial_eq_zero_of_right_eq_zero'}
+          \uses{sPolynomial}
+          \leanok
+          For any polynomial $g \in \MvPolynomial{\sigma}{R}$ and monomial order $m$,
 the S-polynomial with zero as second argument vanishes:
 \[
-\Sph{f}{0} = 0
+  \Sph{f}{0} = 0
 \]
--
-\end{lemma}
 
-\begin{lemma}\label{MonomialOrder.div_set'}
-  \lean{MonomialOrder.div_set'}
-  \leanok
-  \uses{MonomialOrder.isRemainder_of_singleton_zero_iff_isRemainder, MonomialOrder.IsRemainder}
-  Let $G'' \subseteq R[\mathbf{X}]$ be a set of polynomials where every nonzero element has a unit leading coefficient:
+        \end{lemma}
+        
+        \begin{proof}
+          \uses{sPolynomial_antisymm, sPolynomial_eq_zero_of_left_eq_zero}
+          \leanok
+        \end{proof}
+        
+
+        \begin{lemma}\label{div_set’}
+          \settitle{<MonomialOrder.<BR/>div_set'>}
+          \lean{MonomialOrder.div_set'}
+          \uses{IsRemainder}
+          \leanok
+          Let $G'' \subseteq R[\mathbf{X}]$ be a set of polynomials where every nonzero element has a unit leading coefficient:
 \[
-\forall g \in G'',\ \big(\mathrm{IsUnit}(\LC_m(g)) \lor g = 0\big)
+  \forall g \in G'',\ \big(\mathrm{IsUnit}(\LC_m(g)) \lor g = 0\big)
 \]
 Then for any polynomial $p \in R[\mathbf{X}]$, there exists a remainder $r$ satisfying:
 \[
-\mathsf{IsRemainder}_m\,p\,G''\,r
+  \mathsf{IsRemainder}_m\,p\,G''\,r
 \]
 where $\LC_m(g)$ denotes the leading coefficient of $g$ under monomial order $m$.
--
-\end{lemma}
 
-\begin{lemma}\label{MonomialOrder.div_set''}
-  \lean{MonomialOrder.div_set''}
-  \leanok
-  \uses{MonomialOrder.div_set', MonomialOrder.IsRemainder}
-  Let \( k \) be a field, and let \( G'' \subseteq k[x_i : i \in \sigma] \) be a set of polynomials.
+        \end{lemma}
+        
+        \begin{proof}
+          \uses{isRemainder_of_singleton_zero_iff_isRemainder}
+          \leanok
+        \end{proof}
+        
+
+        \begin{lemma}\label{div_set’’}
+          \settitle{<MonomialOrder.<BR/>div_set''>}
+          \lean{MonomialOrder.div_set''}
+          \uses{IsRemainder}
+          \leanok
+          Let \( k \) be a field, and let \( G'' \subseteq k[x_i : i \in \sigma] \) be a set of polynomials.
 Then for any \( p \in k[x_i : i \in \sigma] \), there exists a generalized remainder \( r \) of \( p \) upon division by \( G'' \).
 
-\end{lemma}
+        \end{lemma}
+        
+        \begin{proof}
+          \uses{div_set’}
+          \leanok
+        \end{proof}
+        
 
-\begin{lemma}\label{Ideal.fg_span_iff_fg_span_finset_subset}
-  \lean{Ideal.fg_span_iff_fg_span_finset_subset}
-
-
-  A subset $s \subseteq R$ has finitely generated span if and only if:
+        \begin{lemma}\label{fg_span_iff_fg_span_finset_subset}
+          \settitle{<Ideal.fg_<BR/>span_iff_fg_<BR/>span_finset_<BR/>subset>}
+          \lean{Ideal.fg_span_iff_fg_span_finset_subset}
+          
+          \leanok
+          A subset $s \subseteq R$ has finitely generated span if and only if:
 $\exists$ finite $s' \subseteq s$ such that $\mathsf{span}(s) = \mathsf{span}(s')$
 
-\end{lemma}
+        \end{lemma}
+        
+        \begin{proof}
+          
+          
+        \end{proof}
+        
 
-\begin{lemma}\label{Ideal.span_singleton_zero}
-  \lean{Ideal.span_singleton_zero}
-  \leanok
-
-  For any ring \( R \), the span of the zero singleton set equals the zero submodule:
+        \begin{lemma}\label{span_singleton_zero}
+          \settitle{<Ideal.span_<BR/>singleton_<BR/>zero>}
+          \lean{Ideal.span_singleton_zero}
+          
+          \leanok
+          For any ring \( R \), the span of the zero singleton set equals the zero submodule:
 \[
-\mathsf{span}_R \{(0 : R)\} = \bot
+  \mathsf{span}_R \{(0 : R)\} = \bot
 \]
 
-\end{lemma}
+        \end{lemma}
+        
+        \begin{proof}
+          
+          \leanok
+        \end{proof}
+        
 
-\begin{lemma}\label{Ideal.span_insert_zero}
-  \lean{Ideal.span_insert_zero}
-  \leanok
-
-  For any subset $s \subseteq R$ of a ring $R$, inserting zero does not change the linear span:
+        \begin{lemma}\label{span_insert_zero}
+          \settitle{<Ideal.span_<BR/>insert_zero>}
+          \lean{Ideal.span_insert_zero}
+          
+          \leanok
+          For any subset $s \subseteq R$ of a ring $R$, inserting zero does not change the linear span:
 \[
-\mathsf{span}_R(\{0\} \cup s) = \mathsf{span}_R(s)
+  \mathsf{span}_R(\{0\} \cup s) = \mathsf{span}_R(s)
 \]
 
-\end{lemma}
+        \end{lemma}
+        
+        \begin{proof}
+          
+          \leanok
+        \end{proof}
+        
 
-\begin{lemma}\label{Ideal.span_sdiff_singleton_zero}
-  \lean{Ideal.span_sdiff_singleton_zero}
-  \leanok
-  \uses{Submodule.span_sdiff_singleton_zero}
-  For any subset $s \subseteq R$ of a ring $R$, removing zero does not change the linear span:
+        \begin{lemma}\label{Ideal.span_sdiff_singleton_zero}
+          \settitle{<Ideal.span_<BR/>sdiff_<BR/>singleton_<BR/>zero>}
+          \lean{Ideal.span_sdiff_singleton_zero}
+          
+          \leanok
+          For any subset $s \subseteq R$ of a ring $R$, removing zero does not change the linear span:
 \[
-\mathsf{span}_R(s \setminus \{0\}) = \mathsf{span}_R(s)
+  \mathsf{span}_R(s \setminus \{0\}) = \mathsf{span}_R(s)
 \]
 
-\end{lemma}
+        \end{lemma}
+        
+        \begin{proof}
+          \uses{Submodule.span_sdiff_singleton_zero}
+          \leanok
+        \end{proof}
+        
 
-\begin{lemma}\label{MonomialOrder.leadingTerm_ideal_span_monomial}
-  \lean{MonomialOrder.leadingTerm_ideal_span_monomial}
-  \leanok
-  \uses{MonomialOrder.leadingTerm}
-  Let \( G'' \subseteq R[x_1, \dots, x_n] \) be a set of polynomials such that
+        \begin{lemma}\label{leadingTerm_ideal_span_monomial}
+          \settitle{<MonomialOrder.<BR/>leadingTerm_<BR/>ideal_span_<BR/>monomial>}
+          \lean{MonomialOrder.leadingTerm_ideal_span_monomial}
+          \uses{leadingTerm}
+          \leanok
+          Let \( G'' \subseteq R[x_1, \dots, x_n] \) be a set of polynomials such that
 \[
 \forall p \in G'',\ \operatorname{leadingCoeff}(p) \in R^\times.
 \]
@@ -905,125 +393,208 @@ Then,
 \left\langle \operatorname{lt}(G'') \right\rangle = \left\langle x^{\deg(p)} \mid p \in G'' \right\rangle,
 \]
 
-\end{lemma}
+        \end{lemma}
+        
+        \begin{proof}
+          
+          \leanok
+        \end{proof}
+        
 
-\begin{lemma}\label{MonomialOrder.leadingTerm_ideal_span_monomial'}
-  \lean{MonomialOrder.leadingTerm_ideal_span_monomial'}
-  \leanok
-  \uses{MonomialOrder.leadingTerm_ideal_span_monomial, Ideal.span_sdiff_singleton_zero, MonomialOrder.leadingTerm, MonomialOrder.leadingTerm_image_sdiff_singleton_zero}
-  \[
+        \begin{lemma}\label{leadingTerm_ideal_span_monomial’}
+          \settitle{<MonomialOrder.<BR/>leadingTerm_<BR/>ideal_span_<BR/>monomial'>}
+          \lean{MonomialOrder.leadingTerm_ideal_span_monomial'}
+          \uses{leadingTerm}
+          \leanok
+          \[
 \langle \mathrm{lt}(G) \rangle = \left\langle \left\{ x^t : t \in \{ \mathrm{multideg}(p) : p \in G \setminus \{0\} \} \right\} \right\rangle
 \]
 
-\end{lemma}
+        \end{lemma}
+        
+        \begin{proof}
+          \uses{leadingTerm_ideal_span_monomial, Ideal.span_sdiff_singleton_zero, leadingTerm_image_sdiff_singleton_zero}
+          \leanok
+        \end{proof}
+        
 
-\begin{lemma}\label{MonomialOrder.mem_ideal_of_remainder_mem_ideal}
-  \lean{MonomialOrder.mem_ideal_of_remainder_mem_ideal}
-  \leanok
-  \uses{MonomialOrder.IsRemainder}
-  Let \( G'' \subseteq R[x_1, \dots, x_n] \), let \( I \subseteq R[x_1, \dots, x_n] \) be an ideal,
+        \begin{lemma}\label{mem_ideal_of_remainder_mem_ideal}
+          \settitle{<MonomialOrder.<BR/>mem_ideal_<BR/>of_<BR/>remainder_<BR/>mem_ideal>}
+          \lean{MonomialOrder.mem_ideal_of_remainder_mem_ideal}
+          \uses{IsRemainder}
+          \leanok
+          Let \( G'' \subseteq R[x_1, \dots, x_n] \), let \( I \subseteq R[x_1, \dots, x_n] \) be an ideal,
 and let \( p, r \in R[x_1, \dots, x_n] \). Suppose that:
 \begin{itemize}
-\item \( G'' \subseteq I \),
-\item \( r \in I \),
-\item \( r \) is the remainder of \( p \) upon division by \( G'' \).
+  \item \( G'' \subseteq I \),
+  \item \( r \in I \),
+  \item \( r \) is the remainder of \( p \) upon division by \( G'' \).
 \end{itemize}
 Then,
 \[
 p \in I.
 \]
 
-\end{lemma}
+        \end{lemma}
+        
+        \begin{proof}
+          
+          \leanok
+        \end{proof}
+        
 
-\begin{lemma}\label{MonomialOrder.remainder_mem_ideal_iff}
-  \lean{MonomialOrder.remainder_mem_ideal_iff}
-  \leanok
-  \uses{MonomialOrder.IsRemainder, MonomialOrder.mem_ideal_of_remainder_mem_ideal}
-  Let \( R \) be a commutative ring, and let \( G'' \subseteq R[x_1, \dots, x_n] \), \( I \subseteq R[x_1, \dots, x_n] \) be an ideal, and \( p, r \in R[x_1, \dots, x_n] \).
+        \begin{lemma}\label{remainder_mem_ideal_iff}
+          \settitle{<MonomialOrder.<BR/>remainder_<BR/>mem_ideal_<BR/>iff>}
+          \lean{MonomialOrder.remainder_mem_ideal_iff}
+          \uses{IsRemainder}
+          \leanok
+          Let \( R \) be a commutative ring, and let \( G'' \subseteq R[x_1, \dots, x_n] \), \( I \subseteq R[x_1, \dots, x_n] \) be an ideal, and \( p, r \in R[x_1, \dots, x_n] \).
 Assume that:
 \begin{itemize}
-\item \( G'' \subseteq I \),
-\item \( r \) is the remainder of \( p \) upon division by \( G'' \).
+  \item \( G'' \subseteq I \),
+  \item \( r \) is the remainder of \( p \) upon division by \( G'' \).
 \end{itemize}
 Then,
 \[
 r \in I \quad \Longleftrightarrow \quad p \in I.
 \]
 
-\end{lemma}
+        \end{lemma}
+        
+        \begin{proof}
+          \uses{mem_ideal_of_remainder_mem_ideal}
+          \leanok
+        \end{proof}
+        
 
-\begin{lemma}\label{MonomialOrder.remainder_sub_remainder_mem_ideal}
-  \lean{MonomialOrder.remainder_sub_remainder_mem_ideal}
-  \leanok
-  \uses{MonomialOrder.IsRemainder}
-  Let \( I \subseteq k[x_i : i \in \sigma] \) be an ideal, and let \( G \subseteq I \) be a finite subset.
+        \begin{lemma}\label{remainder_sub_remainder_mem_ideal}
+          \settitle{<MonomialOrder.<BR/>remainder_<BR/>sub_<BR/>remainder_<BR/>mem_ideal>}
+          \lean{MonomialOrder.remainder_sub_remainder_mem_ideal}
+          \uses{IsRemainder}
+          \leanok
+          Let \( I \subseteq k[x_i : i \in \sigma] \) be an ideal, and let \( G \subseteq I \) be a finite subset.
 Suppose that \( r_1 \) and \( r_2 \) are generalized remainders of a polynomial \( p \) upon division by \( G \).
 Then,
 \[
 r_1 - r_2 \in I.
 \]
 
-\end{lemma}
+        \end{lemma}
+        
+        \begin{proof}
+          
+          \leanok
+        \end{proof}
+        
 
-\begin{lemma}\label{MonomialOrder.exists_groebner_basis}
-  \lean{MonomialOrder.exists_groebner_basis}
-  \leanok
-  \uses{MonomialOrder.IsGroebnerBasis, MonomialOrder.leadingTerm, Ideal.fg_span_iff_fg_span_finset_subset, Set.finset_subset_preimage_of_finite_image}
-  Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal. Then there exists a finite subset \( G = \{g_1, \ldots, g_t\} \) of \( I \) such that \( G \) is a Gröbner basis for \( I \).
--
-\end{lemma}
+        \begin{lemma}\label{exists_groebner_basis}
+          \settitle{<MonomialOrder.<BR/>exists_<BR/>groebner_<BR/>basis>}
+          \lean{MonomialOrder.exists_groebner_basis}
+          \uses{IsGroebnerBasis}
+          \leanok
+          Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal. Then there exists a finite subset \( G = \{g_1, \ldots, g_t\} \) of \( I \) such that \( G \) is a Gröbner basis for \( I \).
 
-\begin{lemma}\label{MonomialOrder.groebner_basis_isRemainder_zero_iff_mem_span}
-  \lean{MonomialOrder.groebner_basis_isRemainder_zero_iff_mem_span}
+        \end{lemma}
+        
+        \begin{proof}
+          \uses{leadingTerm, fg_span_iff_fg_span_finset_subset, finset_subset_preimage_of_finite_image}
+          \leanok
+        \end{proof}
+        
 
-  \uses{MonomialOrder.IsGroebnerBasis, MonomialOrder.IsRemainder}
-  Let \( G = \{g_1, \dots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \dots, x_n] \) and let \( f \in k[x_1, \dots, x_n] \). Then \( f \in I \) if and only if the remainder on division of \( f \) by \( G \) is zero.
--
-\end{lemma}
+        \begin{lemma}\label{groebner_basis_isRemainder_zero_iff_mem_span}
+          \settitle{<MonomialOrder.<BR/>groebner_<BR/>basis_<BR/>isRemainder_<BR/>zero_iff_<BR/>mem_span>}
+          \lean{MonomialOrder.groebner_basis_isRemainder_zero_iff_mem_span}
+          \uses{IsGroebnerBasis, IsRemainder}
+          \leanok
+          Let \( G = \{g_1, \dots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \dots, x_n] \) and let \( f \in k[x_1, \dots, x_n] \). Then \( f \in I \) if and only if the remainder on division of \( f \) by \( G \) is zero.
 
-\begin{lemma}\label{MonomialOrder.is_groebner_basis_iff}
-  \lean{MonomialOrder.is_groebner_basis_iff}
+        \end{lemma}
+        
+        \begin{proof}
+          
+          
+        \end{proof}
+        
 
-  \uses{MonomialOrder.IsGroebnerBasis, MonomialOrder.IsRemainder}
-  Let \( G = \{g_1, \ldots, g_t\} \) be a finite subset of \( k[x_1, \ldots, x_n] \). Then \( G \) is a Gröbner basis for the ideal \( I = \langle G \rangle \) if and only if  for every \( f \in I \), the remainder of \( f \) on division by \( G \) is zero.
--
-\end{lemma}
+        \begin{lemma}\label{is_groebner_basis_iff}
+          \settitle{<MonomialOrder.<BR/>is_groebner_<BR/>basis_iff>}
+          \lean{MonomialOrder.is_groebner_basis_iff}
+          \uses{IsGroebnerBasis, IsRemainder}
+          \leanok
+          Let \( G = \{g_1, \ldots, g_t\} \) be a finite subset of \( k[x_1, \ldots, x_n] \). Then \( G \) is a Gröbner basis for the ideal \( I = \langle G \rangle \) if and only if  for every \( f \in I \), the remainder of \( f \) on division by \( G \) is zero.
 
-\begin{lemma}\label{MonomialOrder.groebner_basis_is_basis}
-  \lean{MonomialOrder.groebner_basis_is_basis}
+        \end{lemma}
+        
+        \begin{proof}
+          
+          
+        \end{proof}
+        
 
-  \uses{MonomialOrder.IsGroebnerBasis}
-  Let \( G = \{g_1, \ldots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \ldots, x_n] \). Then \( G \) is a basis for the vector space \( I \) over \( k \).
--
-\end{lemma}
+        \begin{lemma}\label{groebner_basis_is_basis}
+          \settitle{<MonomialOrder.<BR/>groebner_<BR/>basis_is_<BR/>basis>}
+          \lean{MonomialOrder.groebner_basis_is_basis}
+          \uses{IsGroebnerBasis}
+          \leanok
+          Let \( G = \{g_1, \ldots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \ldots, x_n] \). Then \( G \) is a basis for the vector space \( I \) over \( k \).
 
-\begin{lemma}\label{MonomialOrder.buchberger_criterion}
-  \lean{MonomialOrder.buchberger_criterion}
+        \end{lemma}
+        
+        \begin{proof}
+          
+          
+        \end{proof}
+        
 
-  \uses{MonomialOrder.IsGroebnerBasis, MonomialOrder.IsRemainder, MonomialOrder.sPolynomial}
-  A basis \( G = \{ g_1, \ldots, g_t \} \) for an ideal \( I \) is a Gröbner basis if and only if \( S(g_i, g_j) \to_G 0 \) for all \( i \neq j \).
--
-\end{lemma}
+        \begin{lemma}\label{buchberger_criterion}
+          \settitle{<MonomialOrder.<BR/>buchberger_<BR/>criterion>}
+          \lean{MonomialOrder.buchberger_criterion}
+          \uses{IsGroebnerBasis, IsRemainder, sPolynomial}
+          \leanok
+          A basis \( G = \{ g_1, \ldots, g_t \} \) for an ideal \( I \) is a Gröbner basis if and only if \( S(g_i, g_j) \to_G 0 \) for all \( i \neq j \).
 
-\begin{lemma}\label{Set.finset_subset_preimage_of_finite_image}
-  \lean{Set.finset_subset_preimage_of_finite_image}
-  \leanok
+        \end{lemma}
+        
+        \begin{proof}
+          
+          
+        \end{proof}
+        
 
-  Let $f: \alpha \to \beta$ be a function and $s \subseteq \alpha$ a subset with finite image $f(s)$. Then there exists a finite subset $s' \subseteq_{\text{fin}} s$ such that:
+        \begin{lemma}\label{finset_subset_preimage_of_finite_image}
+          \settitle{<Set.finset_<BR/>subset_<BR/>preimage_of_<BR/>finite_image>}
+          \lean{Set.finset_subset_preimage_of_finite_image}
+          
+          \leanok
+          Let $f: \alpha \to \beta$ be a function and $s \subseteq \alpha$ a subset with finite image $f(s)$. Then there exists a finite subset $s' \subseteq_{\text{fin}} s$ such that:
 \begin{itemize}
 \item $s' \subseteq s$ (subset relation)
 \item $f(s') = f(s)$ (image equality)
 \item $|s'| = |f(s)|$ (cardinality preservation)
 \end{itemize}
 
-\end{lemma}
+        \end{lemma}
+        
+        \begin{proof}
+          
+          \leanok
+        \end{proof}
+        
 
-\begin{lemma}\label{Submodule.span_sdiff_singleton_zero}
-  \lean{Submodule.span_sdiff_singleton_zero}
-  \leanok
-
-  \[
-\langle G \rangle = \langle G \setminus \{0\} \rangle
+        \begin{lemma}\label{Submodule.span_sdiff_singleton_zero}
+          \settitle{<Submodule.<BR/>span_sdiff_<BR/>singleton_<BR/>zero>}
+          \lean{Submodule.span_sdiff_singleton_zero}
+          
+          \leanok
+          \[
+  \langle G \rangle = \langle G \setminus \{0\} \rangle
 \]
 
-\end{lemma}
+        \end{lemma}
+        
+        \begin{proof}
+          
+          \leanok
+        \end{proof}
+        

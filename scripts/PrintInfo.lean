@@ -17,10 +17,12 @@ open Lean
 structure DefInfo where
   name : Name
   docstring : Option String
-  uses : NameSet
+  statementUses : NameSet
+  proofUses : NameSet
   isThm : Bool
   module : Name
-  isSorry : Bool
+  statementSorry : Bool
+  proofSorry : Bool
   pos : Option Position
 
 def isOriginal (s : Name) : Bool :=
@@ -36,19 +38,21 @@ def getOriginal (s : Name) : Name :=
     | Name.num p _ => getOriginal p
     | Name.anonymous => s
 
-partial def expandUses (range : NameSet) (env: Environment) (used : Name) (s : Name): NameSet :=
+partial def expandUses (range : NameSet) (excluded : NameSet) (env: Environment) (used : Name) (s : Name) (statement : Bool) : NameSet :=
   if isOriginal used then
     NameSet.empty.insert used
   else
     let original := getOriginal used
     /- !isOriginal original : deal with _private.... -/
     if original == s || !isOriginal original then
+      let excluded := (excluded.insert s).insert used
       match env.find? used with
       | some info =>
-        let range := (range.erase used).erase s
-        let expanded := NameSet.ofList <|
-          (info.getUsedConstantsAsSet ∩ range).toList.flatMap
-          fun x => (expandUses range env x s).toList
+        let usedByUsed := if statement then info.type.getUsedConstantsAsSet else info.getUsedConstantsAsSet
+        let expanded := (usedByUsed \ range).union <| NameSet.ofList <|
+          ((usedByUsed ∩ range) \ excluded).toList.flatMap
+          fun x => (expandUses range excluded env x s statement).toList.append
+            <| if statement then (expandUses range excluded env x s false).toList else []
         expanded
       | _ => panic! ""
     else
@@ -81,18 +85,28 @@ run_meta do
     (ourDefs.filter fun x =>
       isOriginal x.fst && (x.snd.isDefinition || x.snd.isTheorem) && x.snd.value?.isSome
     ).mapM fun info => do
-    return {
-      name := info.fst,
-      docstring := ← findDocString? env info.fst,
-      uses := NameSet.ofList <|
-        (info.snd.getUsedConstantsAsSet ∩ names).toList.flatMap <|
-        fun x => (expandUses names env x info.fst).toList,
-      isThm := info.snd.isTheorem,
-      module := (env.getModuleFor? info.fst).get!,
-      isSorry := (info.snd.getUsedConstantsAsSet.find? ``sorryAx).isSome
-      pos := (←Lean.findDeclarationRanges? info.fst).map (fun x => x.range.pos)
+      let proofUses := NameSet.ofList <|
+          (info.snd.getUsedConstantsAsSet ∩ names).toList.flatMap <|
+          fun x => (expandUses names {} env x info.fst false).toList
+      let proofSorry := (proofUses.find? ``sorryAx).isSome || (info.snd.getUsedConstantsAsSet.find? ``sorryAx).isSome
+      let statementUses := NameSet.ofList <|
+          (info.snd.type.getUsedConstantsAsSet ∩ names).toList.flatMap <|
+          fun x => (expandUses names {} env x info.fst true).toList
+      let statementSorry := (statementUses.find? ``sorryAx).isSome ||
+        (info.snd.type.getUsedConstantsAsSet.find? ``sorryAx).isSome
+      let ourStatementUses := statementUses ∩ names
+      pure {
+        name := info.fst,
+        docstring := ← findDocString? env info.fst,
+        statementUses := ourStatementUses,
+        proofUses := (proofUses ∩ names) \ ourStatementUses,
+        isThm := info.snd.isTheorem,
+        module := (env.getModuleFor? info.fst).get!,
+        proofSorry := proofSorry
+        statementSorry := statementSorry
+        pos := (←Lean.findDeclarationRanges? info.fst).map (fun x => x.range.pos)
 
-    }
+      }
 
   let defInfosJson : Json := Json.arr <|
     (defInfos.toArray.heapSort defSort).map <|
@@ -100,10 +114,12 @@ run_meta do
     Json.mkObj [
       ("name", Json.str d.name.toString),
       ("docstring", match d.docstring with | some x => Json.str x | _ => Json.null),
-      ("uses", Json.arr <| d.uses.toArray.map <| fun x => Json.str x.toString),
+      ("statementUses", Json.arr <| d.statementUses.toArray.map <| fun x => Json.str x.toString),
+      ("proofUses", Json.arr <| d.proofUses.toArray.map <| fun x => Json.str x.toString),
       ("isThm", Json.bool d.isThm),
       ("module", Json.str d.module.toString),
-      ("isSorry", Json.bool d.isSorry),
+      ("proofSorry", Json.bool d.proofSorry),
+      ("statementSorry", Json.bool d.statementSorry),
       ("pos", match d.pos with | some p => Json.num p.line | _ => Json.null)
     ]
 
