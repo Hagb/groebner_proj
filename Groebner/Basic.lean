@@ -46,7 +46,7 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span {p : MvPolynomial σ k}
   constructor
   · intro h_zero
     rw[h_zero] at hr
-    obtain ⟨g, h_p, -⟩ := hr
+    obtain ⟨⟨g, h_p, -⟩, -⟩ := hr
     rw [h_p]
     unfold MonomialOrder.IsGroebnerBasis at h
     have h₁: (Finsupp.linearCombination (MvPolynomial σ k) fun g' ↦ ↑g') g ∈ I := by
@@ -65,7 +65,7 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span {p : MvPolynomial σ k}
     unfold IsRemainder at hr
     unfold MonomialOrder.IsGroebnerBasis at h
     rcases h with ⟨h_G', h_span⟩
-    obtain ⟨q, h_p_eq_sum_r, h_r_reduced, h_degree⟩ := hr
+    obtain ⟨⟨q, h_p_eq_sum_r, h_r_reduced⟩, h_degree⟩ := hr
     have h₁: (Finsupp.linearCombination (MvPolynomial σ k) fun g' ↦ ↑g') q ∈ I := by
       rw [Finsupp.linearCombination_apply]
       rw[Finsupp.sum]

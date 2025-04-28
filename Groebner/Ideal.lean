@@ -174,7 +174,7 @@ lemma mem_ideal_of_remainder_mem_ideal {G'': Set (MvPolynomial σ R)} {r : MvPol
   {I : Ideal (MvPolynomial σ R)} {p : MvPolynomial σ R}
   (hG''I : G'' ⊆ I) (hpG''r : m.IsRemainder p G'' r) (hr : r ∈ I) :
   p ∈ I := by
-  obtain ⟨f, h_eq, h_deg, h_remain⟩ := hpG''r
+  obtain ⟨⟨f, h_eq, h_deg⟩, h_remain⟩ := hpG''r
   rw[h_eq]
   refine Ideal.add_mem _ ?_ ?_
   ·
@@ -201,7 +201,7 @@ lemma remainder_mem_ideal_iff {R : Type*} [CommRing R] {G'': Set (MvPolynomial �
   (hG''I : G'' ⊆ I) (hpG''r : m.IsRemainder p G'' r) :
   r ∈ I ↔ p ∈ I := by
   refine ⟨mem_ideal_of_remainder_mem_ideal hG''I hpG''r, ?_⟩
-  obtain ⟨f, h_eq, h_deg, h_remain⟩ := hpG''r
+  obtain ⟨⟨f, h_eq, h_deg⟩, h_remain⟩ := hpG''r
   intro hp
   rw [← sub_eq_of_eq_add' h_eq]
   apply Ideal.sub_mem I hp
@@ -222,8 +222,8 @@ lemma remainder_sub_remainder_mem_ideal {R : Type _} [CommRing R]
   {G'': Set (MvPolynomial σ R)} {I : Ideal (MvPolynomial σ R)} {p r₁ r₂ : MvPolynomial σ R}
   (hG''I : G'' ⊆ I) (hr₁ : m.IsRemainder p G'' r₁) (hr₂ : m.IsRemainder p G'' r₂) :
   r₁-r₂ ∈ I := by
-  obtain ⟨f₁, h_eq₁, h_deg₁, h_remain₁⟩ := hr₁
-  obtain ⟨f₂, h_eq₂, h_deg₂, h_remain₂⟩ := hr₂
+  obtain ⟨⟨f₁, h_eq₁, h_deg₁⟩, h_remain₁⟩ := hr₁
+  obtain ⟨⟨f₂, h_eq₂, h_deg₂⟩, h_remain₂⟩ := hr₂
   rw [← sub_eq_of_eq_add' h_eq₁, ← sub_eq_of_eq_add' h_eq₂]
   simp
   apply Ideal.sub_mem I
@@ -275,8 +275,7 @@ lemma IsRemainder_monomial_not_mem_leading_term_ideal {p r : MvPolynomial σ R}
   · exact h1ne0
   · intro q hq
     unfold MonomialOrder.IsRemainder at h
-    obtain ⟨_, _, _, h⟩ := h
-    apply h s hs q hq
+    apply h.2 s hs q hq
     by_contra hq0
     specialize hG'' q hq
     simp [hq0, h1ne0.symm] at hG''

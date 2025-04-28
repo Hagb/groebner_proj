@@ -43,10 +43,10 @@ Fix a monomial order \(>\) on \(\mathbb{Z}_{\geq 0}^n\), and let
   We will call \(r\) a \textbf{remainder} of \(f\) on division by \(F\).
 -/
 def IsRemainder (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
-  := ∃ (g : G'' →₀ (MvPolynomial σ R)),
+  := (∃ (g : G'' →₀ (MvPolynomial σ R)),
       p = Finsupp.linearCombination _ (fun (g' : G'') ↦ (g' : MvPolynomial σ R)) g + r ∧
-      (∀ (g' : G''), m.degree ((g' : MvPolynomial σ R) * (g g')) ≼[m] m.degree p) ∧
-      (∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c))
+      ∀ (g' : G''), m.degree ((g' : MvPolynomial σ R) * (g g')) ≼[m] m.degree p) ∧
+      ∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c)
 
 open Classical
 
@@ -68,56 +68,60 @@ Let $p \in R[\mathbf{X}]$, $G'' \subseteq R[\mathbf{X}]$ be a set of polynomials
   \end{enumerate}
 -/
 lemma IsRemainder_def' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
-  : m.IsRemainder p G'' r ↔ ∃ (g : (MvPolynomial σ R) →₀ (MvPolynomial σ R)),
+  : m.IsRemainder p G'' r ↔ (∃ (g : (MvPolynomial σ R) →₀ (MvPolynomial σ R)),
       ↑g.support ⊆ G'' ∧
       p = Finsupp.linearCombination _ id g + r ∧
-      (∀ g' ∈ G'', m.degree ((g' : MvPolynomial σ R) * (g g')) ≼[m] m.degree p) ∧
-      (∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c)) := by
+      ∀ g' ∈ G'', m.degree ((g' : MvPolynomial σ R) * (g g')) ≼[m] m.degree p) ∧
+      ∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c) := by
   -- probably many tech details
   -- (technologically but not mathematically) normal or hard
   unfold IsRemainder
   constructor
   ·
-    intro ⟨g, h₁, h₂, h₃⟩
-    use {
-      support := g.support,
-      toFun := fun x => if hx : x ∈ G'' then g.toFun (⟨x, hx⟩) else 0,
-      mem_support_toFun := by intro; simp; rfl
-    }
+    intro ⟨⟨g, h₁, h₂⟩, h₃⟩
     split_ands
-    · simp
-    · simp [h₁]
-      congr 1
-      simp [Finsupp.linearCombination_apply, Finsupp.sum]
-      rfl
-    · simp_intro' g' hg'
-      convert h₂ ⟨g', hg'⟩
+    ·
+      use {
+        support := g.support,
+        toFun := fun x => if hx : x ∈ G'' then g.toFun (⟨x, hx⟩) else 0,
+        mem_support_toFun := by intro; simp; rfl
+      }
+      split_ands
+      · simp
+      · simp [h₁]
+        congr 1
+        simp [Finsupp.linearCombination_apply, Finsupp.sum]
+        rfl
+      · simp_intro' g' hg'
+        convert h₂ ⟨g', hg'⟩
     · exact h₃
   ·
-    intro ⟨g, hg, h₁, h₂, h₃⟩
-    use {
-      support := g.support.filterMap
-        (fun x => if hx : x ∈ G'' then some (⟨x, hx⟩ : ↑G'') else none)
-        (by simp_intro' ..),
-      toFun := (g.toFun ·),
-      mem_support_toFun := by intro; simp; rfl
-    }
+    intro ⟨⟨g, hg, h₁, h₂⟩, h₃⟩
     split_ands
-    · rw [h₁, eq_comm]
-      congr 1
-      simp [Finsupp.linearCombination_apply, Finsupp.sum]
-      apply Finset.sum_nbij (↑·)
-      · simp_intro' ..
-      ·  -- if I use `simp_intro' x _ a _ h`, then how to deal with coe?
-        intro q
-        simp
-        intro _ _ _ _ hqs
-        simp [←hqs]
-      · simp_intro' q hq
-        exact Set.mem_of_subset_of_mem hg <| Finsupp.mem_support_iff.mpr hq
-      · simp [DFunLike.coe]
-    · simp
-      exact h₂
+    ·
+      use {
+        support := g.support.filterMap
+          (fun x => if hx : x ∈ G'' then some (⟨x, hx⟩ : ↑G'') else none)
+          (by simp_intro' ..),
+        toFun := (g.toFun ·),
+        mem_support_toFun := by intro; simp; rfl
+      }
+      split_ands
+      · rw [h₁, eq_comm]
+        congr 1
+        simp [Finsupp.linearCombination_apply, Finsupp.sum]
+        apply Finset.sum_nbij (↑·)
+        · simp_intro' ..
+        ·  -- if I use `simp_intro' x _ a _ h`, then how to deal with coe?
+          intro q
+          simp
+          intro _ _ _ _ hqs
+          simp [←hqs]
+        · simp_intro' q hq
+          exact Set.mem_of_subset_of_mem hg <| Finsupp.mem_support_iff.mpr hq
+        · simp [DFunLike.coe]
+      · simp
+        exact h₂
     · exact h₃
 
 /--
@@ -145,52 +149,54 @@ We say that \( r \) is a \emph{generalized remainder} of \( p \) upon division b
 -/
 lemma IsRemainder_def'' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
   : m.IsRemainder p G'' r ↔
-  ∃ (g : (MvPolynomial σ R) → (MvPolynomial σ R))(G' : Finset (MvPolynomial σ R)),
+  (∃ (g : (MvPolynomial σ R) → (MvPolynomial σ R))(G' : Finset (MvPolynomial σ R)),
       ↑G' ⊆ G'' ∧
       p = G'.sum (fun x => g x * x) + r ∧
-      (∀ g' ∈ G', m.degree ((g' : MvPolynomial σ R) * (g g')) ≼[m] m.degree p) ∧
-      (∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c)) := by
+      ∀ g' ∈ G', m.degree ((g' : MvPolynomial σ R) * (g g')) ≼[m] m.degree p) ∧
+      ∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c) := by
   rw [IsRemainder_def']
   constructor
-  · intro ⟨g, h₁, h₂, h₃, h₄⟩
+  · intro ⟨⟨g, h₁, h₂, h₃⟩, h₄⟩
+    refine ⟨?_, h₄⟩
     use g.toFun, g.support
-    refine ⟨h₁, by rwa [Finsupp.linearCombination_apply, Finsupp.sum] at h₂, ?_, h₄⟩
+    refine ⟨h₁, by rwa [Finsupp.linearCombination_apply, Finsupp.sum] at h₂, ?_⟩
     intro g' hg'
     exact h₃ g' (Set.mem_of_mem_of_subset hg' h₁)
-  · intro ⟨g, G', h₁, h₂, h₃, h₄⟩
-    use Finsupp.onFinset G' (fun x => if x ∈ G' then g x else 0) (by simp; intro _ ha _; exact ha)
+  · intro ⟨⟨g, G', h₁, h₂, h₃⟩, h₄⟩
     split_ands
-    · simp_intro' x hx
-      exact Set.mem_of_mem_of_subset hx.1 h₁
-    · rw [Finsupp.linearCombination_apply, Finsupp.sum, h₂, Finsupp.support_onFinset]
-      congr 1
-      simp
-      have h : G' = ({a ∈ G' | a ∈ G' ∧ ¬g a = 0} ∩ G') ∪ ({a ∈ G' | g a = 0}) := by
-        apply subset_antisymm
-        · simp_intro' x hx [em']
-        · simp_intro' x
-          rintro (⟨_, hx⟩ | ⟨hx,_⟩) <;> exact hx
-      have h' : Disjoint ({a ∈ G' | a ∈ G' ∧ ¬g a = 0} ∩ G')  ({a ∈ G' | g a = 0}) := by
-        unfold Disjoint
-        simp_intro' s hs hs'
-        by_contra h
-        obtain ⟨x, hx⟩ := Finset.nonempty_iff_ne_empty.mpr h
-        have hs := Finset.mem_of_subset hs hx
-        have hs' := Finset.mem_of_subset hs' hx
-        simp at hs hs'
-        exact hs.1.2 hs'.2
-      nth_rewrite 1 [h]
-      rw [Finset.sum_union h']
-      convert add_zero _
-      convert Finset.sum_const_zero
-      expose_names
-      simp at h_1
-      simp [h_1.2]
     ·
-      intro g'' hg''
-      by_cases hg''G' : g'' ∈ G'
-      · simp [hg''G', h₃]
-      · simp [hg''G']
+      use Finsupp.onFinset G' (fun x => if x ∈ G' then g x else 0) (by simp; intro _ ha _; exact ha)
+      split_ands
+      · simp_intro' x hx
+        exact Set.mem_of_mem_of_subset hx.1 h₁
+      · rw [Finsupp.linearCombination_apply, Finsupp.sum, h₂, Finsupp.support_onFinset]
+        congr 1
+        simp
+        have h : G' = ({a ∈ G' | a ∈ G' ∧ ¬g a = 0} ∩ G') ∪ ({a ∈ G' | g a = 0}) := by
+          apply subset_antisymm
+          · simp_intro' x hx [em']
+          · simp_intro' x
+            rintro (⟨_, hx⟩ | ⟨hx,_⟩) <;> exact hx
+        have h' : Disjoint ({a ∈ G' | a ∈ G' ∧ ¬g a = 0} ∩ G')  ({a ∈ G' | g a = 0}) := by
+          unfold Disjoint
+          simp_intro' s hs hs'
+          by_contra h
+          obtain ⟨x, hx⟩ := Finset.nonempty_iff_ne_empty.mpr h
+          have hs := Finset.mem_of_subset hs hx
+          have hs' := Finset.mem_of_subset hs' hx
+          simp at hs hs'
+          exact hs.1.2 hs'.2
+        nth_rewrite 1 [h]
+        rw [Finset.sum_union h']
+        convert add_zero _
+        convert Finset.sum_const_zero
+        expose_names
+        simp at h_1
+        simp [h_1.2]
+      · intro g'' hg''
+        by_cases hg''G' : g'' ∈ G'
+        · simp [hg''G', h₃]
+        · simp [hg''G']
     · exact h₄
 
 /--
@@ -236,44 +242,37 @@ lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
   (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
   m.IsRemainder p (insert 0 G'') r ↔ m.IsRemainder p G'' r := by
   constructor
-  ·
-    by_cases hG'' : 0 ∈ G''; simp only [Set.insert_eq_of_mem hG'', imp_self]
+  · by_cases hG'' : 0 ∈ G''; simp only [Set.insert_eq_of_mem hG'', imp_self]
     rw [IsRemainder_def'', IsRemainder_def'']
-    intro ⟨g, G', hG', h₁, h₂, h₃⟩
-    use g, (G'.erase 0)
+    intro ⟨⟨g, G', hG', h₁, h₂⟩, h₃⟩
     split_ands
-    · simp [hG']
-    ·
-      rw [h₁]
-      congr 1
-      by_cases hG'0 : 0 ∈ G'
-      ·
-        nth_rw 1 [← Finset.insert_erase hG'0]
-        rw [Finset.sum_insert_zero (a:=0)]
-        simp
-      ·
-        rw [Finset.erase_eq_self.mpr hG'0]
-
-    ·
-      intro g' hg'
-      simp at hg'
-      exact h₂ g' hg'.2
-    ·
-      intro n hn g' hg'G' hg'
+    · use g, (G'.erase 0)
+      split_ands
+      · simp [hG']
+      · rw [h₁]
+        congr 1
+        by_cases hG'0 : 0 ∈ G'
+        · nth_rw 1 [← Finset.insert_erase hG'0]
+          rw [Finset.sum_insert_zero (a:=0)]
+          simp
+        · rw [Finset.erase_eq_self.mpr hG'0]
+      · intro g' hg'
+        simp at hg'
+        exact h₂ g' hg'.2
+    · intro n hn g' hg'G' hg'
       exact h₃ n hn g' (by simp [hg'G']) hg'
-  ·
-    rw [IsRemainder_def', IsRemainder_def']
-    intro ⟨g, hg, h₁, h₂, h₃⟩
-    use g
+  · rw [IsRemainder_def', IsRemainder_def']
+    intro ⟨⟨g, hg, h₁, h₂⟩, h₃⟩
     split_ands
-    · exact subset_trans hg (Set.subset_insert _ _)
-    · exact h₁
-    · intro g' hg'
-      by_cases hg'₁ : g' = 0
-      · simp only [hg'₁, zero_mul, degree_zero, map_zero, zero_le]
-      · exact h₂ g' ((Set.mem_insert_iff.mp hg').resolve_left hg'₁)
-    ·
-      intro c hc g' hg' hg'₁
+    · use g
+      split_ands
+      · exact subset_trans hg (Set.subset_insert _ _)
+      · exact h₁
+      · intro g' hg'
+        by_cases hg'₁ : g' = 0
+        · simp only [hg'₁, zero_mul, degree_zero, map_zero, zero_le]
+        · exact h₂ g' ((Set.mem_insert_iff.mp hg').resolve_left hg'₁)
+    · intro c hc g' hg' hg'₁
       exact h₃ c hc g' ((Set.mem_insert_iff.mp hg').resolve_left hg'₁) hg'₁
 
 /--
@@ -397,10 +396,11 @@ theorem div_set' {G'' : Set (MvPolynomial σ R)}
   rcases h with ⟨h₁, h₂, h₃⟩
   simp at *
   unfold IsRemainder
-  use g
   split_ands
-  · exact h₁
-  · exact fun g' ↦ h₂ (↑g') g'.property
+  · use g
+    split_ands
+    · exact h₁
+    · exact fun g' ↦ h₂ (↑g') g'.property
   · intro c hc g hg g_neq0
     have hg' : g ∈ G := by
       obtain ⟨hg₁, hg₂⟩ := hg
