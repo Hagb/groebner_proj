@@ -103,12 +103,13 @@ def generate_latex_content(json_data):
         else:
             definitions.append(content)
 
+    _newline = "\n" # workaround for python3.10 where f-string expression part cannot include a backslash
     latex_output = f"""
     \\chapter{{Definitions}}
-    {'\n'.join(definitions)}
+    {_newline.join(definitions)}
 
     \\chapter{{Lemmas}}
-    {'\n'.join(lemmas)}"""
+    {_newline.join(lemmas)}"""
 
     return latex_output
 
