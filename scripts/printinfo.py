@@ -10,7 +10,7 @@ with open("scripts/defInfos.json", 'r') as fp:
 def md_to_latex(md):
     result = subprocess.run(['pandoc', '-t', 'latex'], stdout=subprocess.PIPE, input=md.encode('utf-8'))
     assert result.returncode == 0
-    return result.stdout.decode('utf-8')
+    return result.stdout.decode('utf-8').replace("\\def\\labelenumi{\\arabic{enumi}.}\n", "") # hack to make web blueprint work
 
 def generate_latex_content(json_data):
     definitions = []
