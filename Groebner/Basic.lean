@@ -62,8 +62,10 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span {p : MvPolynomial σ k}
       exact Submodule.zero_mem I
     exact (Submodule.add_mem_iff_right I h₁).mpr h₂
   · intro h_p_mem
-    unfold IsRemainder at hr
-    unfold MonomialOrder.IsGroebnerBasis at h
+    by_contra hr_ne_zero
+    obtain ⟨s, hs⟩ := MvPolynomial.support_nonempty.mpr hr_ne_zero
+    have h_monomial_not_mem : monomial s (r.coeff s) ∉ Ideal.span (m.leadingTerm '' ↑G') := by
+      apply MonomialOrder.IsRemainder_monomial_not_mem_leading_term_ideal hr s hs
     rcases h with ⟨h_G', h_span⟩
     obtain ⟨q, h_p_eq_sum_r, h_r_reduced, h_degree⟩ := hr
     have h₁: (Finsupp.linearCombination (MvPolynomial σ k) fun g' ↦ ↑g') q ∈ I := by
@@ -77,17 +79,10 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span {p : MvPolynomial σ k}
     rw[h_p_eq_sum_r] at h_p_mem
     have h₂: r ∈ I := by
       exact (Submodule.add_mem_iff_right I h₁).mp h_p_mem
-    by_contra hr_ne_zero
-    obtain ⟨s, hs⟩ : ∃ s ∈ r.support, r.coeff s ≠ 0 := by
-      contrapose! hr_ne_zero
+    rw[←h_span] at h_monomial_not_mem
+    have h₃: r ∉ I := by
       sorry
 
-    have mon_s_in : monomial s (r.coeff s) ∈ Ideal.span (m.leadingTerm '' ↑G') := by
-      -- r ∈ I，所以 r ∈ Ideal.span (leadingTerm '' I)
-      -- leadingTerm(r) 的 monomial 也应该在 span 里
-      -- (需要用 r ∈ I 推 monomial s (r.coeff s) ∈ leadingTerm 理想)
-      sorry
-    sorry
 
 
 /--
@@ -103,10 +98,9 @@ theorem is_groebner_basis_iff :
       rcases h with ⟨h_G', h_span⟩
       exact h_G'
     · intro p h_p_in_I
-      unfold MonomialOrder.IsRemainder
-      unfold MonomialOrder.IsGroebnerBasis at h
-      rcases h with ⟨h_G', h_span⟩
       sorry
+
+
   · sorry
 -- theorem is_groebner_basis_iff' :
 --   m.IsGroebnerBasis G' I ↔
