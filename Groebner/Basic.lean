@@ -116,8 +116,9 @@ theorem is_groebner_basis_iff :
 /--
 Let \( G = \{g_1, \ldots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \ldots, x_n] \). Then \( G \) is a basis for the vector space \( I \) over \( k \).
 -/
-theorem groebner_basis_is_basis (h : m.IsGroebnerBasis G' I) : I = Ideal.span G' := by
+theorem span_groebner_basis (h : m.IsGroebnerBasis G' I) : I = Ideal.span G' := by
   -- uses is_groebner_basis_iff
+  have _uses := @is_groebner_basis_iff.{0,0,0}
   sorry
 
 /--
@@ -125,5 +126,7 @@ A basis \( G = \{ g_1, \ldots, g_t \} \) for an ideal \( I \) is a Gröbner basi
 -/
 theorem buchberger_criterion {g₁ g₂ : MvPolynomial σ k}
   (hG: ∀ (g₁ g₂: G'), m.IsRemainder (m.sPolynomial g₁ g₂ : MvPolynomial σ k) G' 0) :
-  m.IsGroebnerBasis G' (Ideal.span G') :=
+  m.IsGroebnerBasis G' (Ideal.span G') := by
+  have _uses := @groebner_basis_isRemainder_zero_iff_mem_span.{0,0,0}
+  have _uses := @is_groebner_basis_iff.{0,0,0}
   sorry
