@@ -85,14 +85,14 @@ def generate_latex_content(json_data):
         # it can be installed via
         # `pip install --force-reinstall https://github.com/WuProver/plastexdepgraph/archive/refs/heads/settitle.zip`
         content = f"""
-        \\begin{{definition}}[{to_label(name).replace('_', _backdash+'_')}]\\label{{{to_label(name)}}}
+        \\begin{{definition}}[\\texttt{{{to_label(name).replace('_', _backdash+'_')}}}]\\label{{{to_label(name)}}}
           \\settitle{{{to_title(name)}}}
           {lean_ref}
           {statement_uses_content}
           {statement_lean_ok}
           {docstring if docstring else ""}
         \\end{{definition}}""" if not is_thm else f"""
-        \\begin{{lemma}}[{to_label(name).replace('_', _backdash+'_')}]\\label{{{to_label(name)}}}
+        \\begin{{lemma}}[\\texttt{{{to_label(name).replace('_', _backdash+'_')}}}]\\label{{{to_label(name)}}}
           \\settitle{{{to_title(name)}}}
           {lean_ref}
           {statement_uses_content}
