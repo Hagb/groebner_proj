@@ -20,27 +20,27 @@ a \in Partially Ordered Set, a \geq 0
 lemma zero_le (a : m.syn) : 0 ≤ a := bot_le
 
 /--
-Given a nonzero polynomial \( f \in k[x] \), let
-  \[
+Given a nonzero polynomial $f \in k[x]$, let
+  $$
   f = c_0 x^m + c_1 x^{m-1} + \cdots + c_m,
-  \]
-  where \( c_i \in k \) and \( c_0 \neq 0 \) [thus, \( m = \deg(f) \)]. Then we say that \( c_0 x^m \) is the \textbf{leading term} of \( f \), written
-  \[
+  $$
+  where $c_i \in k$ and $c_0 \neq 0$ [thus, $m = \deg(f)$]. Then we say that $c_0 x^m$ is the **leading term** of $f$, written
+  $$
   \operatorname{LT}(f) = c_0 x^m.
-  \]
+  $$
 -/
 noncomputable def leadingTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree f) (m.leadingCoeff f)
 
 /--
-Fix a monomial order \(>\) on \(\mathbb{Z}_{\geq 0}^n\), and let
-  \(F = (f_1, \ldots, f_s)\) be an ordered \(s\)-tuple of polynomials in \(k[x_1, \ldots, x_n]\).
-  Then every \(f \in k[x_1, \ldots, x_n]\) can be written as
-  \[
+Fix a monomial order $>$ on $\mathbb{Z}_{\geq 0}^n$, and let
+  $F = (f_1, \ldots, f_s)$ be an ordered $s$-tuple of polynomials in $k[x_1, \ldots, x_n]$.
+  Then every $f \in k[x_1, \ldots, x_n]$ can be written as
+  $$
   f = a_1 f_1 + \cdots + a_s f_s + r,
-  \]
-  where \(a_i, r \in k[x_1, \ldots, x_n]\), and either \(r = 0\) or \(r\) is a linear combination, with coefficients in \(k\), of monomials, none of which is divisible by any of \(\mathrm{LT}(f_1), \ldots, \mathrm{LT}(f_s)\).
-  We will call \(r\) a \textbf{remainder} of \(f\) on division by \(F\).
+  $$
+  where $a_i, r \in k[x_1, \ldots, x_n]$, and either $r = 0$ or $r$ is a linear combination, with coefficients in $k$, of monomials, none of which is divisible by any of $\mathrm{LT}(f_1), \ldots, \mathrm{LT}(f_s)$.
+  We will call $r$ a **remainder** of $f$ on division by $F$.
 -/
 def IsRemainder (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
   := (∃ (g : G'' →₀ (MvPolynomial σ R)),
@@ -59,13 +59,12 @@ Let $p \in R[\mathbf{X}]$, $G'' \subseteq R[\mathbf{X}]$ be a set of polynomials
   and $r \in R[\mathbf{X}]$. Then $r$ is a remainder of $p$ modulo $G''$ with respect to
   monomial order $m$ if and only if there exists a finite linear combination from $G''$
   such that:
-  \begin{enumerate}
-    \item The support of the combination is contained in $G''$
-    \item $p$ decomposes as the sum of this combination and $r$
-    \item For each $g' \in G''$, the degree of $g' \cdot (coefficient\ of\ g')$
-          is bounded by $\deg_m(p)$
-    \item No term of $r$ is divisible by any leading term of non-zero elements in $G''$
-  \end{enumerate}
+
+  1. The support of the combination is contained in $G''$
+  2. $p$ decomposes as the sum of this combination and $r$
+  3. For each $g' \in G''$, the degree of $g' \cdot (coefficient\ of\ g')$
+        is bounded by $\deg_m(p)$
+  4. No term of $r$ is divisible by any leading term of non-zero elements in $G''$
 -/
 lemma IsRemainder_def' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
   : m.IsRemainder p G'' r ↔ (∃ (g : (MvPolynomial σ R) →₀ (MvPolynomial σ R)),
@@ -125,27 +124,24 @@ lemma IsRemainder_def' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (
     · exact h₃
 
 /--
-Let \( p, r \in k[x_i : i \in \sigma] \), and let \( G' \subseteq k[x_i : i \in \sigma] \) be a finite set.
-We say that \( r \) is a \emph{generalized remainder} of \( p \) upon division by \( G' \) if the following two conditions hold:
+Let $p, r \in k[x_i : i \in \sigma]$, and let $G' \subseteq k[x_i : i \in \sigma]$ be a finite set.
+We say that $r$ is a _generalized remainder_ of $p$ upon division by $G'$ if the following two conditions hold:
 
-\begin{enumerate}
-  \item For every nonzero \( g \in G' \) and every monomial \( x^s \in \operatorname{supp}(r) \),
-        there exists some component \( j \in \sigma \) such that
-        \[
+  1. For every nonzero $g \in G'$ and every monomial $x^s \in \operatorname{supp}(r)$,
+        there exists some component $j \in \sigma$ such that
+        $$
         \operatorname{multideg}(g)_j > s_j.
-        \]
-  \item There exists a function \( q : G' \to k[x_i : i \in \sigma] \) such that:
-  \begin{itemize}
-    \item For every \( g \in G' \),
-          \[
+        $$
+  2. There exists a function $q : G' \to k[x_i : i \in \sigma]$ such that:
+
+    - For every $g \in G'$,
+          $$
           \operatorname{multideg}''(q(g)g) \leq \operatorname{multideg}''(p);
-          \]
-    \item The decomposition holds:
-          \[
+          $$
+    - The decomposition holds:
+          $$
           p = \sum_{g \in G'} q(g)g + r.
-          \]
-  \end{itemize}
-\end{enumerate}
+          $$
 -/
 lemma IsRemainder_def'' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
   : m.IsRemainder p G'' r ↔
@@ -202,9 +198,9 @@ lemma IsRemainder_def'' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) 
 /--
 Let $p \in R[\mathbf{X}]$ be a multivariate polynomial. Then the leading term of $p$
   vanishes with respect to monomial order $m$ if and only if $p$ is the zero polynomial:
-  \[
+  $$
     \LT_m(p) = 0 \iff p = 0
-  \]
+  $$
 -/
 lemma lm_eq_zero_iff (p : MvPolynomial σ R): m.leadingTerm p = 0 ↔ p = 0 := by
   simp only [leadingTerm, monomial_eq_zero, leadingCoeff_eq_zero_iff]
@@ -213,9 +209,9 @@ lemma lm_eq_zero_iff (p : MvPolynomial σ R): m.leadingTerm p = 0 ↔ p = 0 := b
 For any set of polynomials $G'' \subseteq R[\mathbf{X}]$ and monomial order $m$,
   the image of leading terms on the nonzero elements of $G''$ equals the image on all
   elements minus zero:
-  \[
+  $$
     \LT_m(G'' \setminus \{0\}) = \LT_m(G'') \setminus \{0\}
-  \]
+  $$
 -/
 lemma leadingTerm_image_sdiff_singleton_zero (G'' : Set (MvPolynomial σ R)) :
   m.leadingTerm '' (G''\ {0}) = (m.leadingTerm '' G'') \ {0} := by
@@ -234,9 +230,9 @@ lemma leadingTerm_image_sdiff_singleton_zero (G'' : Set (MvPolynomial σ R)) :
 Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set of polynomials,
   and $r \in R[\mathbf{X}]$ a remainder. Then the remainder property is invariant under
   inserting the zero polynomial:
-  \[
+  $$
     \mathsf{IsRemainder}_m\,p\,(G'' \cup \{0\})\,r \iff \mathsf{IsRemainder}_m\,p\,G''\,r
-  \]
+  $$
 -/
 lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
   (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
@@ -279,9 +275,9 @@ lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
   Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set of polynomials,
   and $r \in R[\mathbf{X}]$ a remainder. Then the remainder property is invariant under
   removal of the zero polynomial:
-  \[
+  $$
     \mathsf{IsRemainder}_m\,p\,(G'' \setminus \{0\})\,r \iff \mathsf{IsRemainder}_m\,p\,G''\,r
-  \]
+  $$
 -/
 lemma isRemainder_of_singleton_zero_iff_isRemainder (p : MvPolynomial σ R)
   (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
@@ -308,9 +304,9 @@ variable {R : Type*} [CommRing R] {s : σ →₀ ℕ}
 
 /--
 The $S$-polynomial of $f$ and $g$ is the combination
-  \[
+  $$
   S(f, g) = \frac{x^\gamma}{\mathrm{LT}(f)} \cdot f - \frac{x^\gamma}{\mathrm{LT}(g)} \cdot g.
-  \]
+  $$
 -/
 noncomputable def sPolynomial (f g : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree g - m.degree f) (m.leadingCoeff g) * f -
@@ -318,10 +314,10 @@ noncomputable def sPolynomial (f g : MvPolynomial σ R) : MvPolynomial σ R :=
 
 
 /--
-Fix a monomial order on the polynomial ring $k[x_1, \ldots, x_n]$.A finite subset $G = \{g_1, \ldots, g_t\}$ of an ideal $I \subseteq k[x_1, \ldots, x_n]$, with $I \ne \{0\}$, is said to be a \textbf{Gröbner basis} (or standard basis) if
-  \[
+Fix a monomial order on the polynomial ring $k[x_1, \ldots, x_n]$.A finite subset $G = \{g_1, \ldots, g_t\}$ of an ideal $I \subseteq k[x_1, \ldots, x_n]$, with $I \ne \{0\}$, is said to be a **Gröbner basis** (or standard basis) if
+  $$
   \langle \operatorname{LT}(g_1), \ldots, \operatorname{LT}(g_t) \rangle = \langle \operatorname{LT}(I) \rangle.
-  \]
+  $$
   Using the convention that $\langle \emptyset \rangle = \{0\}$, we define the empty set $\emptyset$ to be the Gröbner basis of the zero ideal $\{0\}$.
 -/
 def IsGroebnerBasis (G': Finset (MvPolynomial σ R)) (I : Ideal (MvPolynomial σ R)) :=
@@ -331,9 +327,9 @@ def IsGroebnerBasis (G': Finset (MvPolynomial σ R)) (I : Ideal (MvPolynomial σ
 
 /--
 the S-polynomial of $f$ and $g$ is antisymmetric:
-  \[
+  $$
     \Sph{f}{g} = -\Sph{g}{f}
-  \]
+  $$
 -/
 lemma sPolynomial_antisymm (f g : MvPolynomial σ R) :
    m.sPolynomial f g = - m.sPolynomial g f := by
@@ -346,9 +342,9 @@ lemma sPolynomial_antisymm (f g : MvPolynomial σ R) :
 /--
   For any polynomial $g \in \MvPolynomial{\sigma}{R}$ and monomial order $m$,
   the S-polynomial with zero as first argument vanishes:
-  \[
+  $$
     \Sph{0}{g} = 0
-  \]
+  $$
 -/
 lemma sPolynomial_eq_zero_of_left_eq_zero (g : MvPolynomial σ R) :
   m.sPolynomial 0 g = 0 := by
@@ -359,9 +355,9 @@ lemma sPolynomial_eq_zero_of_left_eq_zero (g : MvPolynomial σ R) :
 /--
   For any polynomial $g \in \MvPolynomial{\sigma}{R}$ and monomial order $m$,
   the S-polynomial with zero as second argument vanishes:
-  \[
+  $$
     \Sph{f}{0} = 0
-  \]
+  $$
 -/
 lemma sPolynomial_eq_zero_of_right_eq_zero' (f : MvPolynomial σ R) :
   m.sPolynomial f 0 = 0 := by
@@ -369,13 +365,13 @@ lemma sPolynomial_eq_zero_of_right_eq_zero' (f : MvPolynomial σ R) :
 
 /--
   Let $G'' \subseteq R[\mathbf{X}]$ be a set of polynomials where every nonzero element has a unit leading coefficient:
-  \[
+  $$
     \forall g \in G'',\ \big(\mathrm{IsUnit}(\LC_m(g)) \lor g = 0\big)
-  \]
+  $$
   Then for any polynomial $p \in R[\mathbf{X}]$, there exists a remainder $r$ satisfying:
-  \[
+  $$
     \mathsf{IsRemainder}_m\,p\,G''\,r
-  \]
+  $$
   where $\LC_m(g)$ denotes the leading coefficient of $g$ under monomial order $m$.
 -/
 theorem div_set' {G'' : Set (MvPolynomial σ R)}
@@ -415,8 +411,8 @@ end CommRing
 section Field
 
 /--
-Let \( k \) be a field, and let \( G'' \subseteq k[x_i : i \in \sigma] \) be a set of polynomials.
-Then for any \( p \in k[x_i : i \in \sigma] \), there exists a generalized remainder \( r \) of \( p \) upon division by \( G'' \).
+Let $k$ be a field, and let $G'' \subseteq k[x_i : i \in \sigma]$ be a set of polynomials.
+Then for any $p \in k[x_i : i \in \sigma]$, there exists a generalized remainder $r$ of $p$ upon division by $G''$.
 -/
 theorem div_set'' {k : Type*} [Field k] {G'' : Set (MvPolynomial σ k)}
     (p : MvPolynomial σ k) :
