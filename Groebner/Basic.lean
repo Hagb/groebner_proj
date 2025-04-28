@@ -20,7 +20,7 @@ variable (p : MvPolynomial σ k)
 variable (G': Finset (MvPolynomial σ k)) (I : Ideal (MvPolynomial σ k))
 
 /--
-Let \( I \subseteq k[x_1, \ldots, x_n] \) be an ideal. Then there exists a finite subset \( G = \{g_1, \ldots, g_t\} \) of \( I \) such that \( G \) is a Gröbner basis for \( I \).
+Let $I \subseteq k[x_1, \ldots, x_n]$ be an ideal. Then there exists a finite subset $G = \{g_1, \ldots, g_t\}$ of $I$ such that $G$ is a Gröbner basis for $I$.
 -/
 theorem exists_groebner_basis [Finite σ] :
   ∃ G' : Finset (MvPolynomial σ k), IsGroebnerBasis m G' ↑I := by
@@ -35,7 +35,7 @@ theorem exists_groebner_basis [Finite σ] :
   · rw [hIs, hG'G, hGs]
 
 /--
-Let \( G = \{g_1, \dots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \dots, x_n] \) and let \( f \in k[x_1, \dots, x_n] \). Then \( f \in I \) if and only if the remainder on division of \( f \) by \( G \) is zero.
+Let $G = \{g_1, \dots, g_t\}$ be a Gröbner basis for an ideal $I \subseteq k[x_1, \dots, x_n]$ and let $f \in k[x_1, \dots, x_n]$. Then $f \in I$ if and only if the remainder on division of $f$ by $G$ is zero.
 -/
 theorem groebner_basis_isRemainder_zero_iff_mem_span {p : MvPolynomial σ k}
   {G' : Finset (MvPolynomial σ k)} {I : Ideal (MvPolynomial σ k)}
@@ -86,7 +86,7 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span {p : MvPolynomial σ k}
 
 
 /--
-Let \( G = \{g_1, \ldots, g_t\} \) be a finite subset of \( k[x_1, \ldots, x_n] \). Then \( G \) is a Gröbner basis for the ideal \( I = \langle G \rangle \) if and only if  for every \( f \in I \), the remainder of \( f \) on division by \( G \) is zero.
+Let $G = \{g_1, \ldots, g_t\}$ be a finite subset of $k[x_1, \ldots, x_n]$. Then $G$ is a Gröbner basis for the ideal $I = \langle G \rangle$ if and only if  for every $f \in I$, the remainder of $f$ on division by $G$ is zero.
 -/
 theorem is_groebner_basis_iff :
   m.IsGroebnerBasis G' I ↔ G'.toSet ⊆ I ∧ ∀ p ∈ I, m.IsRemainder p G' 0 := by
@@ -108,7 +108,7 @@ theorem is_groebner_basis_iff :
 --   sorry
 
 /--
-Let \( G = \{g_1, \ldots, g_t\} \) be a Gröbner basis for an ideal \( I \subseteq k[x_1, \ldots, x_n] \). Then \( G \) is a basis for the vector space \( I \) over \( k \).
+Let $G = \{g_1, \ldots, g_t\}$ be a Gröbner basis for an ideal $I \subseteq k[x_1, \ldots, x_n]$. Then $G$ is a basis for the vector space $I$ over $k$.
 -/
 theorem span_groebner_basis (h : m.IsGroebnerBasis G' I) : I = Ideal.span G' := by
   -- uses is_groebner_basis_iff
@@ -116,7 +116,7 @@ theorem span_groebner_basis (h : m.IsGroebnerBasis G' I) : I = Ideal.span G' := 
   sorry
 
 /--
-A basis \( G = \{ g_1, \ldots, g_t \} \) for an ideal \( I \) is a Gröbner basis if and only if \( S(g_i, g_j) \to_G 0 \) for all \( i \neq j \).
+A basis $G = \{ g_1, \ldots, g_t \}$ for an ideal $I$ is a Gröbner basis if and only if $S(g_i, g_j) \to_G 0$ for all $i \neq j$.
 -/
 theorem buchberger_criterion {g₁ g₂ : MvPolynomial σ k}
   (hG: ∀ (g₁ g₂: G'), m.IsRemainder (m.sPolynomial g₁ g₂ : MvPolynomial σ k) G' 0) :

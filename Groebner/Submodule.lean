@@ -10,9 +10,9 @@ variable (s : Set M)
 
 -- to Mathlib
 /--
-  \[
+  $$
     \langle G \rangle = \langle G \setminus \{0\} \rangle
-  \]
+  $$
 -/
 @[simp]
 lemma span_sdiff_singleton_zero:

@@ -5,11 +5,10 @@ namespace Set
 
 /--
 Let $f: \alpha \to \beta$ be a function and $s \subseteq \alpha$ a subset with finite image $f(s)$. Then there exists a finite subset $s' \subseteq_{\text{fin}} s$ such that:
-\begin{itemize}
-\item $s' \subseteq s$ (subset relation)
-\item $f(s') = f(s)$ (image equality)
-\item $|s'| = |f(s)|$ (cardinality preservation)
-\end{itemize}
+
+- $s' \subseteq s$ (subset relation)
+- $f(s') = f(s)$ (image equality)
+- $|s'| = |f(s)|$ (cardinality preservation)
 -/
 lemma finset_subset_preimage_of_finite_image {α : Type _} {β : Type _}
     {s : Set α} {f : α → β} (h : (f '' s).Finite) :

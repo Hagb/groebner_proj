@@ -51,10 +51,10 @@ theorem fg_span_iff_fg_span_finset_subset (s : Set R) :
 -- to Mathlib
 
 /--
-For any ring \( R \), the span of the zero singleton set equals the zero submodule:
-  \[
+For any ring $R$, the span of the zero singleton set equals the zero submodule:
+  $$
     \mathsf{span}_R \{(0 : R)\} = \bot
-  \]
+  $$
 -/
 @[simp]
 lemma span_singleton_zero : span {(0 : R)} = ⊥ :=
@@ -64,9 +64,9 @@ lemma span_singleton_zero : span {(0 : R)} = ⊥ :=
 
 /--
 For any subset $s \subseteq R$ of a ring $R$, inserting zero does not change the linear span:
-  \[
+  $$
     \mathsf{span}_R(\{0\} \cup s) = \mathsf{span}_R(s)
-  \]
+  $$
 -/
 @[simp]
 lemma span_insert_zero (s : Set R): span (insert 0 s) = span s :=
@@ -76,9 +76,9 @@ lemma span_insert_zero (s : Set R): span (insert 0 s) = span s :=
 
 /--
 For any subset $s \subseteq R$ of a ring $R$, removing zero does not change the linear span:
-  \[
+  $$
     \mathsf{span}_R(s \setminus \{0\}) = \mathsf{span}_R(s)
-  \]
+  $$
 -/
 @[simp]
 lemma span_sdiff_singleton_zero (s : Set R): span (s \ {0}) = span s := Submodule.span_sdiff_singleton_zero _ _
@@ -103,14 +103,14 @@ open Ideal
 open Field
 
 /--
-Let \( G'' \subseteq R[x_1, \dots, x_n] \) be a set of polynomials such that
-\[
+Let $G'' \subseteq R[x_1, \dots, x_n]$ be a set of polynomials such that
+$$
 \forall p \in G'',\ \operatorname{leadingCoeff}(p) \in R^\times.
-\]
+$$
 Then,
-\[
+$$
 \left\langle \operatorname{lt}(G'') \right\rangle = \left\langle x^{\deg(p)} \mid p \in G'' \right\rangle,
-\]
+$$
 -/
 lemma leadingTerm_ideal_span_monomial {G'': Set (MvPolynomial σ R)}
   (hG'' : ∀ p ∈ G'', IsUnit (m.leadingCoeff p)) :
@@ -144,9 +144,9 @@ lemma leadingTerm_ideal_span_monomial {G'': Set (MvPolynomial σ R)}
         rw [smul_mul_assoc, ←mul_smul_comm, MvPolynomial.smul_monomial, IsUnit.inv_smul]
 
 /--
-\[
+$$
 \langle \mathrm{lt}(G) \rangle = \left\langle \left\{ x^t : t \in \{ \mathrm{multideg}(p) : p \in G \setminus \{0\} \} \right\} \right\rangle
-\]
+$$
 -/
 lemma leadingTerm_ideal_span_monomial' : span (m.leadingTerm '' G'') =
   span ((fun p => MvPolynomial.monomial (m.degree p) (1 : k)) '' (G'' \ {(0 : MvPolynomial σ k)})) := by
@@ -158,17 +158,17 @@ lemma leadingTerm_ideal_span_monomial' : span (m.leadingTerm '' G'') =
       simp
 
 /--
-Let \( G'' \subseteq R[x_1, \dots, x_n] \), let \( I \subseteq R[x_1, \dots, x_n] \) be an ideal,
-and let \( p, r \in R[x_1, \dots, x_n] \). Suppose that:
-\begin{itemize}
-  \item \( G'' \subseteq I \),
-  \item \( r \in I \),
-  \item \( r \) is the remainder of \( p \) upon division by \( G'' \).
-\end{itemize}
+Let $G'' \subseteq R[x_1, \dots, x_n]$, let $I \subseteq R[x_1, \dots, x_n]$ be an ideal,
+and let $p, r \in R[x_1, \dots, x_n]$. Suppose that:
+
+  - $G'' \subseteq I$,
+  - $r \in I$,
+  - $r$ is the remainder of $p$ upon division by $G''$.
+
 Then,
-\[
+$$
 p \in I.
-\]
+$$
 -/
 lemma mem_ideal_of_remainder_mem_ideal {G'': Set (MvPolynomial σ R)} {r : MvPolynomial σ R}
   {I : Ideal (MvPolynomial σ R)} {p : MvPolynomial σ R}
@@ -185,16 +185,16 @@ lemma mem_ideal_of_remainder_mem_ideal {G'': Set (MvPolynomial σ R)} {r : MvPol
   · exact hr
 
 /--
-Let \( R \) be a commutative ring, and let \( G'' \subseteq R[x_1, \dots, x_n] \), \( I \subseteq R[x_1, \dots, x_n] \) be an ideal, and \( p, r \in R[x_1, \dots, x_n] \).
+Let $R$ be a commutative ring, and let $G'' \subseteq R[x_1, \dots, x_n]$, $I \subseteq R[x_1, \dots, x_n]$ be an ideal, and $p, r \in R[x_1, \dots, x_n]$.
 Assume that:
-\begin{itemize}
-  \item \( G'' \subseteq I \),
-  \item \( r \) is the remainder of \( p \) upon division by \( G'' \).
-\end{itemize}
+
+  - $G'' \subseteq I$,
+  - $r$ is the remainder of $p$ upon division by $G''$.
+
 Then,
-\[
+$$
 r \in I \quad \Longleftrightarrow \quad p \in I.
-\]
+$$
 -/
 lemma remainder_mem_ideal_iff {R : Type*} [CommRing R] {G'': Set (MvPolynomial σ R)}
   {r : MvPolynomial σ R} {I : Ideal (MvPolynomial σ R)} {p : MvPolynomial σ R}
@@ -211,12 +211,12 @@ lemma remainder_mem_ideal_iff {R : Type*} [CommRing R] {G'': Set (MvPolynomial �
   exact mul_mem_left I _ (Set.mem_of_mem_of_subset (by simp) hG''I)
 
 /--
-Let \( I \subseteq k[x_i : i \in \sigma] \) be an ideal, and let \( G \subseteq I \) be a finite subset.
-Suppose that \( r_1 \) and \( r_2 \) are generalized remainders of a polynomial \( p \) upon division by \( G \).
+Let $I \subseteq k[x_i : i \in \sigma]$ be an ideal, and let $G \subseteq I$ be a finite subset.
+Suppose that $r_1$ and $r_2$ are generalized remainders of a polynomial $p$ upon division by $G$.
 Then,
-\[
+$$
 r_1 - r_2 \in I.
-\]
+$$
 -/
 lemma remainder_sub_remainder_mem_ideal {R : Type _} [CommRing R]
   {G'': Set (MvPolynomial σ R)} {I : Ideal (MvPolynomial σ R)} {p r₁ r₂ : MvPolynomial σ R}
