@@ -18,9 +18,9 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: groebner_blueprint
+title: Formalization of Groebner Basis Theory in L∃∀N
 #email: your-email@example.com
-description: by tsuki
+description: by Lihong Zhi's Team
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://WuProver.github.io/groebner_proj" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username:
