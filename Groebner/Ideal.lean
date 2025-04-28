@@ -15,7 +15,7 @@ import Groebner.Submodule
 
 namespace Ideal
 
-variable {R : Type _} [Semiring R]
+variable {R : Type*} [Semiring R]
 
 theorem mem_span_iff (A : Set R) (p : R) :
 p ∈ Ideal.span A ↔ ∃ (s : Finset A)(f : R → R), p = ∑ m in s, f m * m
@@ -94,7 +94,7 @@ variable {σ : Type*} {m : MonomialOrder σ} {s : σ →₀ ℕ}
 variable {k : Type*} [Field k] variable (p p₁ p₂ : MvPolynomial σ k)
 variable (G': Finset (MvPolynomial σ k)) (G'': Set (MvPolynomial σ k))
 variable (I I₁ I₂ : Ideal (MvPolynomial σ k))
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} [CommSemiring R]
 
 open Finsupp
 open Finset
@@ -218,7 +218,7 @@ $$
 r_1 - r_2 \in I.
 $$
 -/
-lemma remainder_sub_remainder_mem_ideal {R : Type _} [CommRing R]
+lemma remainder_sub_remainder_mem_ideal {R : Type*} [CommRing R]
   {G'': Set (MvPolynomial σ R)} {I : Ideal (MvPolynomial σ R)} {p r₁ r₂ : MvPolynomial σ R}
   (hG''I : G'' ⊆ I) (hr₁ : m.IsRemainder p G'' r₁) (hr₂ : m.IsRemainder p G'' r₂) :
   r₁-r₂ ∈ I := by
