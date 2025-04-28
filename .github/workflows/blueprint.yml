@@ -75,8 +75,8 @@ jobs:
 
       - name: Generate content.tex
         run: |
-          apt-get update
-          apt-get -y install pandoc
+          sudo apt-get update
+          sudo apt-get -y install pandoc
           PATH=~/.elan/bin/:$PATH ./generate-content.sh
 
       - name: Build blueprint and copy to `home_page/blueprint`
