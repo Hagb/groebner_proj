@@ -250,15 +250,6 @@ lemma remainder_sub_remainder_mem_ideal {R : Type _} [CommRing R]
 -- r ∉ leading_term_ideal m G' := by
 --  sorry
 
-lemma degree_of_monomial_mem_leadingTerm_ideal {G'' : Set (MvPolynomial σ R)} {s : σ →₀ ℕ} {c : R}
-  (h : monomial s c ∈ G'') (h' : c ≠ 0):
-  ∃ g ∈ G'', g ≠ 0 ∧ m.degree g ≤ s := by sorry
-
-lemma mem_leadingTerm_ideal_iff (G'' : Set (MvPolynomial σ R)) (p : MvPolynomial σ R) :
-  p ∈ Ideal.span (m.leadingTerm '' G'') ↔
-  ∀ s, monomial s (p.coeff s) ∈ Ideal.span (m.leadingTerm '' G'') := by
-  sorry
-
 lemma IsRemainder_monomial_not_mem_leading_term_ideal {p r : MvPolynomial σ R}
   {G'' : Set (MvPolynomial σ R)}
   (hG'' : ∀ p ∈ G'', IsUnit (m.leadingCoeff p))
@@ -266,28 +257,25 @@ lemma IsRemainder_monomial_not_mem_leading_term_ideal {p r : MvPolynomial σ R}
 ∀ s ∈ r.support, monomial s 1 ∉ Ideal.span (m.leadingTerm '' G'') := by
   intro s hs
   rw [leadingTerm_ideal_span_monomial hG'', ← Set.image_image (monomial · 1) _ _, mem_ideal_span_monomial_image]
-  simp
   have h1ne0: (1 : R) ≠ 0 := by
     by_contra h1eq0
     rw [MvPolynomial.mem_support_iff, ← mul_one <| r.coeff s, h1eq0, mul_zero] at hs
     exact hs rfl
-  split_ands
-  · exact h1ne0
-  · intro q hq
-    unfold MonomialOrder.IsRemainder at h
-    apply h.2 s hs q hq
-    by_contra hq0
-    specialize hG'' q hq
-    simp [hq0, h1ne0.symm] at hG''
+  simp [h1ne0]
+  intro q hq
+  unfold MonomialOrder.IsRemainder at h
+  apply h.2 s hs q hq
+  by_contra hq0
+  specialize hG'' q hq
+  simp [hq0, h1ne0.symm] at hG''
 
 lemma IsRemainder_monomial_not_mem_leading_term_ideal' {p r : MvPolynomial σ k}
   {G'' : Set (MvPolynomial σ k)} (h : m.IsRemainder p G'' r):
 ∀ s ∈ r.support, monomial s 1 ∉ Ideal.span (m.leadingTerm '' G'') := by
   rw [←Ideal.span_sdiff_singleton_zero, ← m.leadingTerm_image_sdiff_singleton_zero]
-  rw [←isRemainder_of_singleton_zero_iff_isRemainder] at h
   apply IsRemainder_monomial_not_mem_leading_term_ideal
   simp
-  exact h
+  rwa [←isRemainder_of_singleton_zero_iff_isRemainder] at h
 
 -- lemma rem_monomial_not_mem_leading_term_ideal {p r : MvPolynomial σ k}
 -- {G' : Finset (MvPolynomial σ k)} (h : IsRemainder p G' r):
