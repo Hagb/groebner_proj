@@ -15,7 +15,7 @@ This project is still work in process.
 
 ### Main Statements
 
-Given a monomial order, a field $k$, and an index set $\sigma$, we will show the above statement about $k[x_i:i\in \sigma]$:
+Given a monomial order, a field $k$, and an index set $\sigma$, we will show the following properties about $k[x_i:i\in \sigma]$:
 
 - [`MonomialOrder.exists_groebner_basis`](https://wuprover.github.io/groebner_proj/docs/find/#doc/MonomialOrder.exists_groebner_basis): if the $\sigma$ is finite, then each ideal $I \subseteq k[x_i: i\in \sigma]$ has its Gröbner basis.
 - [`MonomialOrder.groebner_basis_isRemainder_zero_iff_mem_span`](https://wuprover.github.io/groebner_proj/docs/find/#doc/MonomialOrder.groebner_basis_isRemainder_zero_iff_mem_span) (WIP): given a Gröbner basis $G$ of an ideal $I\subseteq k[x_i: i\in \sigma]$ and a polynomial $p\in k[x_i: i\in \sigma]$, $0$ is a remainder of $p$ on division by $G$, if and only if $p\in I$.
