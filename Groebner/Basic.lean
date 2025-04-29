@@ -63,9 +63,29 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span {p : MvPolynomial σ k}
     exact (Submodule.add_mem_iff_right I h₁).mpr h₂
   · intro h_p_mem
     by_contra hr_ne_zero
-    obtain ⟨s, hs⟩ := MvPolynomial.support_nonempty.mpr hr_ne_zero
-    have h_monomial_not_mem : monomial s (r.coeff s) ∉ Ideal.span (m.leadingTerm '' ↑G') := by
-      apply MonomialOrder.IsRemainder_monomial_not_mem_leading_term_ideal hr s hs
+    have h₃: m.leadingTerm r ∉ Ideal.span (m.leadingTerm '' ↑G') := by
+      nth_rewrite 1 [leadingTerm]
+      have : (m.leadingCoeff r) ≠ 0 := by
+        exact leadingCoeff_ne_zero_iff.mpr hr_ne_zero
+      have h: monomial (m.degree r) (m.leadingCoeff r) = C (m.leadingCoeff r) * monomial (m.degree r) 1 := by
+        simp only [C_mul_monomial, mul_one]
+      have h': monomial (m.degree r) 1 ∉ Ideal.span (m.leadingTerm '' (↑G': Set (MvPolynomial σ k))) := by
+        apply MonomialOrder.IsRemainder_monomial_not_mem_leading_term_ideal' hr
+        have h'':  r.coeff (m.degree r) ≠ 0 := by
+          exact this
+        exact mem_support_iff.mpr this
+
+      rw[h]
+      by_contra h_in_ideal
+      have h_inv: C (m.leadingCoeff r)⁻¹ * C (m.leadingCoeff r) * ((monomial (m.degree r)) 1)∈ Ideal.span (m.leadingTerm '' ↑G') := by
+        rw [mul_assoc]
+        apply Ideal.mul_mem_left
+        exact h_in_ideal
+      have c_1: C (m.leadingCoeff r)⁻¹ * C (m.leadingCoeff r) * (monomial (m.degree r)) 1 = (monomial (m.degree r)) 1 := by
+        rw[←C_mul]
+        simp[this]
+      rw[c_1] at h_inv
+      exact h' h_inv
     rcases h with ⟨h_G', h_span⟩
     obtain ⟨⟨q, h_p_eq_sum_r, h_r_reduced⟩, h_degree⟩ := hr
     have h₁: (Finsupp.linearCombination (MvPolynomial σ k) fun g' ↦ ↑g') q ∈ I := by
@@ -79,9 +99,14 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span {p : MvPolynomial σ k}
     rw[h_p_eq_sum_r] at h_p_mem
     have h₂: r ∈ I := by
       exact (Submodule.add_mem_iff_right I h₁).mp h_p_mem
-    rw[←h_span] at h_monomial_not_mem
-    have h₃: r ∉ I := by
-      sorry
+    have h₄: m.leadingTerm r ∈ Ideal.span (m.leadingTerm '' ↑G') := by
+      rw[←h_span]
+      apply Ideal.subset_span
+      apply Set.mem_image_of_mem
+      exact h₂
+    exact h₃ h₄
+
+
 
 
 
@@ -98,10 +123,16 @@ theorem is_groebner_basis_iff :
       rcases h with ⟨h_G', h_span⟩
       exact h_G'
     · intro p h_p_in_I
+      unfold MonomialOrder.IsGroebnerBasis at h
+      rcases h with ⟨h_G', h_span⟩
       sorry
+  · intro h
+    rcases h with ⟨h_G', h_remainder⟩
+    unfold MonomialOrder.IsGroebnerBasis
+    constructor
+    · exact h_G'
+    · sorry
 
-
-  · sorry
 -- theorem is_groebner_basis_iff' :
 --   m.IsGroebnerBasis G' I ↔
 --   G'.toSet ⊆ I ∧ ∀ p ∈ I, ∀ r, m.IsRemainder p G' r → r = 0 := by
