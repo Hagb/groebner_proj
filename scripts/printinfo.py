@@ -10,7 +10,7 @@ with open("scripts/defInfos.json", 'r') as fp:
 def md_to_latex(md):
     result = subprocess.run(['pandoc', '-t', 'latex'], stdout=subprocess.PIPE, input=md.encode('utf-8'))
     assert result.returncode == 0
-    return result.stdout.decode('utf-8')
+    return result.stdout.decode('utf-8').replace("\\def\\labelenumi{\\arabic{enumi}.}\n", "") # hack to make web blueprint work
 
 def generate_latex_content(json_data):
     definitions = []
@@ -78,19 +78,21 @@ def generate_latex_content(json_data):
           processed_uses = (to_label(u) for u in proof_uses)
           proof_uses_content = "\\uses{" + ", ".join(processed_uses) + "}"
 
+        _backdash = "\\" # python3.10 workaround
+
         # \settitle command requires a patched version of plastexdepgraph:
         # https://github.com/WuProver/plastexdepgraph/tree/settitle.
         # it can be installed via
         # `pip install --force-reinstall https://github.com/WuProver/plastexdepgraph/archive/refs/heads/settitle.zip`
         content = f"""
-        \\begin{{definition}}[{{{to_label(name)}}}]\\label{{{to_label(name)}}}
+        \\begin{{definition}}[\\texttt{{{to_label(name).replace('_', _backdash+'_')}}}]\\label{{{to_label(name)}}}
           \\settitle{{{to_title(name)}}}
           {lean_ref}
           {statement_uses_content}
           {statement_lean_ok}
           {docstring if docstring else ""}
         \\end{{definition}}""" if not is_thm else f"""
-        \\begin{{lemma}}[{{{to_label(name)}}}]\\label{{{to_label(name)}}}
+        \\begin{{lemma}}[\\texttt{{{to_label(name).replace('_', _backdash+'_')}}}]\\label{{{to_label(name)}}}
           \\settitle{{{to_title(name)}}}
           {lean_ref}
           {statement_uses_content}

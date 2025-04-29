@@ -15,7 +15,7 @@ section Field
 set_option linter.unusedTactic false
 
 variable {σ : Type*} {m : MonomialOrder σ}
-variable {s : σ →₀ ℕ} {k : Type _} [Field k]
+variable {s : σ →₀ ℕ} {k : Type*} [Field k]
 variable (p : MvPolynomial σ k)
 variable (G': Finset (MvPolynomial σ k)) (I : Ideal (MvPolynomial σ k))
 

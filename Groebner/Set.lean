@@ -10,7 +10,7 @@ Let $f: \alpha \to \beta$ be a function and $s \subseteq \alpha$ a subset with f
 - $f(s') = f(s)$ (image equality)
 - $|s'| = |f(s)|$ (cardinality preservation)
 -/
-lemma finset_subset_preimage_of_finite_image {α : Type _} {β : Type _}
+lemma finset_subset_preimage_of_finite_image {α : Type*} {β : Type*}
     {s : Set α} {f : α → β} (h : (f '' s).Finite) :
     ∃ (s' : Finset α), s'.toSet ⊆ s ∧ f '' s' = f '' s ∧ s'.card = h.toFinset.card := by
   have := s.mem_image f
