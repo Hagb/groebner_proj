@@ -6,12 +6,6 @@ import Lean.Data.NameMap
 import Batteries.Data.NameSet
 import Batteries.Data.BinaryHeap
 import ImportGraph.RequiredModules
-import Groebner.Defs
-import Groebner.Ideal
-import Groebner.Basic
-import Groebner.Set
-import Groebner.Submodule
-def mods := #[`Groebner.Defs, `Groebner.Ideal, `Groebner.Basic, `Groebner.Set, `Groebner.Submodule]
 
 open Lean
 structure DefInfo where
@@ -49,16 +43,16 @@ partial def expandUses (range : NameSet) (excluded : NameSet) (env: Environment)
       match env.find? used with
       | some info =>
         let usedByUsed := if statement then info.type.getUsedConstantsAsSet else info.getUsedConstantsAsSet
-        let expanded := (usedByUsed \ range).union <| NameSet.ofList <|
-          ((usedByUsed ∩ range) \ excluded).toList.flatMap
-          fun x => (expandUses range excluded env x s statement).toList.append
-            <| if statement then (expandUses range excluded env x s false).toList else []
+        let expanded := (usedByUsed \ range).union <| NameSet.ofArray <|
+          ((usedByUsed ∩ range) \ excluded).toArray.flatMap
+          fun x => (expandUses range excluded env x s statement).toArray.append
+            <| if statement then (expandUses range excluded env x s false).toArray else #[]
         expanded
       | _ => panic! ""
     else
       NameSet.empty.insert original
 
-def defSort (a b : DefInfo) : Bool :=
+def defSort (a b : DefInfo) (mods : Array Name) : Bool :=
   match Ord.arrayOrd.compare
     #[mods.findIdx (a.module==·), (a.pos.map (·.line)).getD 0]
     #[mods.findIdx (b.module==·), (b.pos.map (·.line)).getD 0]
@@ -66,32 +60,35 @@ def defSort (a b : DefInfo) : Bool :=
     | Ordering.lt => true
     | _ => false
 
-run_meta do
-  enableInitializersExecution
-  let env ← getEnv
+def generateFromEnv (env : Environment) (mods : Array Name) : IO (Array DefInfo) := do
   let consts := env.constants
+  -- println! (consts.toList.map fun x ↦ x.fst)
 
   -- refer to https://leanprover.zulipchat.com/#narrow/channel/113489-new-members/topic/Listing.20all.20identifiers/near/513859402
   -- to exclude compiler constants like `instMonadOption._cstage1`
-  let safeConsts := consts.toList.filter fun info => !info.snd.isUnsafe
+  let safeConsts := consts.toList.toArray.filter fun info => !info.snd.isUnsafe
 
   let ourDefs := safeConsts.filter fun info =>
     match env.getModuleFor? info.fst with
     | some e => e ∈ mods
     | _ => false
 
-  let names := NameSet.ofList (ourDefs.map fun info => info.fst)
-  let defInfos : List DefInfo ←
+  let names := NameSet.ofArray (ourDefs.map fun info => info.fst)
+  let _ : MonadEnv IO := {
+    getEnv := do pure env,
+    modifyEnv := fun _ => do ←panic! ""; pure ()
+  }
+  let defInfos : Array DefInfo ←
     (ourDefs.filter fun x =>
       isOriginal x.fst && (x.snd.isDefinition || x.snd.isTheorem) && x.snd.value?.isSome
     ).mapM fun info => do
-      let proofUses := NameSet.ofList <|
-          (info.snd.getUsedConstantsAsSet ∩ names).toList.flatMap <|
-          fun x => (expandUses names {} env x info.fst false).toList
+      let proofUses := NameSet.ofArray <|
+          (info.snd.getUsedConstantsAsSet ∩ names).toArray.flatMap <|
+          fun x => (expandUses names {} env x info.fst false).toArray
       let proofSorry := (proofUses.find? ``sorryAx).isSome || (info.snd.getUsedConstantsAsSet.find? ``sorryAx).isSome
-      let statementUses := NameSet.ofList <|
-          (info.snd.type.getUsedConstantsAsSet ∩ names).toList.flatMap <|
-          fun x => (expandUses names {} env x info.fst true).toList
+      let statementUses := NameSet.ofArray <|
+          (info.snd.type.getUsedConstantsAsSet ∩ names).toArray.flatMap <|
+          fun x => (expandUses names {} env x info.fst true).toArray
       let statementSorry := (statementUses.find? ``sorryAx).isSome ||
         (info.snd.type.getUsedConstantsAsSet.find? ``sorryAx).isSome
       let ourStatementUses := statementUses ∩ names
@@ -105,11 +102,11 @@ run_meta do
         proofSorry := proofSorry
         statementSorry := statementSorry
         pos := (←Lean.findDeclarationRanges? info.fst).map (fun x => x.range.pos)
-
       }
+  pure (defInfos.heapSort <| fun a b => defSort a b mods)
 
-  let defInfosJson : Json := Json.arr <|
-    (defInfos.toArray.heapSort defSort).map <|
+def infosToJson (defInfos : Array DefInfo) : Json :=
+  Json.arr <| defInfos.map <|
     fun d =>
     Json.mkObj [
       ("name", Json.str d.name.toString),
@@ -123,6 +120,16 @@ run_meta do
       ("pos", match d.pos with | some p => Json.num p.line | _ => Json.null)
     ]
 
-  IO.FS.writeFile "scripts/defInfos.json" (toString defInfosJson)
+def main (args : List String) : IO Unit := do
+  initSearchPath <| ← findSysroot
+  let mods := match args with
+    | [] => #[`Groebner.Set, `Groebner.Submodule, `Groebner.Defs, `Groebner.Ideal, `Groebner.Basic]
+    | l => l.toArray.map String.toName
+  let env ← Lean.importModules (loadExts := false) (mods.map fun x ↦ {module:=x, runtimeOnly:=false}) {}
+  let infos ← generateFromEnv env <| mods
+  let json := infosToJson infos
+  IO.FS.writeFile "scripts/defInfos.json" (toString json)
+  println! json
 
-  println! defInfosJson
+-- run_meta do
+  -- batteriesLinterExt.getState (← getEnv)

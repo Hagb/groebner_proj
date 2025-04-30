@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 lake build &&
-lake lean scripts/PrintInfo.lean &&
+lake exe PrintInfo &&
 python3 scripts/printinfo.py &&
 cp scripts/content.tex blueprint/src/content.tex
