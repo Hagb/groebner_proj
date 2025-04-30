@@ -23,20 +23,25 @@ def generate_latex_content(json_data):
         name = item["name"]
         name_without_namespace = name.split('.')[-1]
         s = name_to_namespaces.get(name_without_namespace) or set()
-        s.add(name.rsplit('.', maxsplit=2)[0])
+        s.add(name)
         name_to_namespaces[name_without_namespace] = s
 
     # check namespace conflict
     def to_label(name):
         name_without_namespace = name.split('.')[-1]
-        if len(name_to_namespaces[name_without_namespace]) > 1:
-            label = name
-        else:
+        if len(name_to_namespaces[name_without_namespace]) == 1:
             label = name_without_namespace
+        else:
+            label = name
         return label.replace("'", "’") # a workaround to avoid invalid html anchor when there is `'` on the name
     
-    def to_title(name):
+    def to_title(name, is_lemma = None):
         # line break to avoid too long
+        name_without_namespace = name.split('.')[-1]
+        if len(name_to_namespaces[name_without_namespace]) == 1:
+            name = name_without_namespace
+        else:
+            name = name
         linebreak_seq = []
         buf = ""
         def handle_segment():
@@ -54,7 +59,11 @@ def generate_latex_content(json_data):
         if buf:
             linebreak_seq.append(buf)
         # line break via "HTML-Like Labels" https://www.graphviz.org/doc/info/shapes.html#html
-        label = "<BR/>".join(linebreak_seq)
+        label = '<BR ALIGN="CENTER"/>'.join(linebreak_seq)
+        if is_lemma:
+            label = f'<FONT COLOR="#000000b0" POINT-SIZE="12.0">{label}</FONT>'
+        elif is_lemma is False:
+            label = f'<B>{label}</B>'
         return f"<{label}>"
 
     def is_lemma(module, pos):
@@ -119,7 +128,7 @@ def generate_latex_content(json_data):
           {docstring if docstring else ""}
         \\end{{definition}}""" if not is_thm else f"""
         \\begin{{{"lemma" if lemma else "theorem"}}}[\\texttt{{{to_label(name).replace('_', _backdash+'_')}}}]\\label{{{to_label(name)}}}
-          \\settitle{{{to_title(name)}}}
+          \\settitle{{{to_title(name, lemma)}}}
           {lean_ref}
           {statement_uses_content}
           {statement_lean_ok}
