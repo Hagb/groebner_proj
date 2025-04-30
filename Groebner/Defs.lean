@@ -19,6 +19,9 @@ a \in Partially Ordered Set, a \geq 0
 @[simp]
 lemma zero_le (a : m.syn) : 0 ≤ a := bot_le
 
+lemma degree_mem_support_iff (f : MvPolynomial σ R) : m.degree f ∈ f.support ↔ f ≠ 0 :=
+  mem_support_iff.trans coeff_degree_ne_zero_iff
+
 /--
 Given a nonzero polynomial $f \in k[x]$, let
   $$
@@ -214,7 +217,7 @@ For any set of polynomials $G'' \subseteq R[\mathbf{X}]$ and monomial order $m$,
   $$
 -/
 lemma leadingTerm_image_sdiff_singleton_zero (G'' : Set (MvPolynomial σ R)) :
-  m.leadingTerm '' (G''\ {0}) = (m.leadingTerm '' G'') \ {0} := by
+  m.leadingTerm '' (G'' \ {0}) = (m.leadingTerm '' G'') \ {0} := by
   apply subset_antisymm
   · intro p
     simp
@@ -225,6 +228,15 @@ lemma leadingTerm_image_sdiff_singleton_zero (G'' : Set (MvPolynomial σ R)) :
     intro q hq hpq hp
     rw [←hpq, MonomialOrder.lm_eq_zero_iff] at hp
     exact ⟨q, ⟨hq, hp⟩, hpq⟩
+
+lemma leadingTerm_image_insert_zero (G'' : Set (MvPolynomial σ R)) :
+  m.leadingTerm '' (insert (0 : MvPolynomial σ R) G'') = insert 0 (m.leadingTerm '' G'') := by
+  unfold leadingTerm
+  apply subset_antisymm
+  · simp_intro' p hp
+    rwa [Eq.comm (a := p) (b := 0)]
+  · simp_intro' p hp
+    rwa [Eq.comm (a := 0) (b := p)]
 
 /--
 Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set of polynomials,
@@ -279,7 +291,7 @@ lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
     \mathsf{IsRemainder}_m\,p\,(G'' \setminus \{0\})\,r \iff \mathsf{IsRemainder}_m\,p\,G''\,r
   $$
 -/
-lemma isRemainder_of_singleton_zero_iff_isRemainder (p : MvPolynomial σ R)
+lemma isRemainder_sdiff_singleton_zero_iff_isRemainder (p : MvPolynomial σ R)
   (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
   m.IsRemainder p (G'' \ {0}) r ↔ m.IsRemainder p G'' r := by
   -- tips: refer to the proof of `Submodule.span_sdiff_singleton_zero` in `Submodule.lean`,
@@ -292,8 +304,20 @@ lemma isRemainder_of_singleton_zero_iff_isRemainder (p : MvPolynomial σ R)
       simp [h]
     rw [h']
 
-@[reducible]
-def leading_term_ideal : Ideal (MvPolynomial σ R) := Ideal.span (leadingTerm m '' (G' : Set (MvPolynomial σ R)))
+-- @[reducible]
+-- def leading_term_ideal : Ideal (MvPolynomial σ R) := Ideal.span (leadingTerm m '' (G' : Set (MvPolynomial σ R)))
+
+/--
+Fix a monomial order on the polynomial ring $k[x_1, \ldots, x_n]$.A finite subset $G = \{g_1, \ldots, g_t\}$ of an ideal $I \subseteq k[x_1, \ldots, x_n]$, with $I \ne \{0\}$, is said to be a **Gröbner basis** (or standard basis) if
+  $$
+  \langle \operatorname{LT}(g_1), \ldots, \operatorname{LT}(g_t) \rangle = \langle \operatorname{LT}(I) \rangle.
+  $$
+  Using the convention that $\langle \emptyset \rangle = \{0\}$, we define the empty set $\emptyset$ to be the Gröbner basis of the zero ideal $\{0\}$.
+-/
+def IsGroebnerBasis {R : Type*} [CommSemiring R] (G': Finset (MvPolynomial σ R)) (I : Ideal (MvPolynomial σ R)) :=
+  G'.toSet ⊆ I ∧
+  Ideal.span (m.leadingTerm '' ↑I)
+    = Ideal.span (m.leadingTerm '' G'.toSet)
 
 end CommSemiring
 
@@ -313,17 +337,7 @@ noncomputable def sPolynomial (f g : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree f - m.degree g) (m.leadingCoeff f) * g
 
 
-/--
-Fix a monomial order on the polynomial ring $k[x_1, \ldots, x_n]$.A finite subset $G = \{g_1, \ldots, g_t\}$ of an ideal $I \subseteq k[x_1, \ldots, x_n]$, with $I \ne \{0\}$, is said to be a **Gröbner basis** (or standard basis) if
-  $$
-  \langle \operatorname{LT}(g_1), \ldots, \operatorname{LT}(g_t) \rangle = \langle \operatorname{LT}(I) \rangle.
-  $$
-  Using the convention that $\langle \emptyset \rangle = \{0\}$, we define the empty set $\emptyset$ to be the Gröbner basis of the zero ideal $\{0\}$.
--/
-def IsGroebnerBasis (G': Finset (MvPolynomial σ R)) (I : Ideal (MvPolynomial σ R)) :=
-  G'.toSet ⊆ I ∧
-  Ideal.span (m.leadingTerm '' ↑I)
-    = Ideal.span (m.leadingTerm '' G'.toSet)
+
 
 /--
 the S-polynomial of $f$ and $g$ is antisymmetric:
@@ -377,7 +391,7 @@ lemma sPolynomial_eq_zero_of_right_eq_zero' (f : MvPolynomial σ R) :
 theorem div_set' {G'' : Set (MvPolynomial σ R)}
     (hG : ∀ g ∈ G'', (IsUnit (m.leadingCoeff g) ∨ g = 0)) (p : MvPolynomial σ R) :
     ∃ (r : MvPolynomial σ R), m.IsRemainder p G'' r := by
-  -- tips: use `isRemainder_of_singleton_zero_iff_isRemainder` and `MonomialOrder.div_set`
+  -- tips: use `isRemainder_sdiff_singleton_zero_iff_isRemainder` and `MonomialOrder.div_set`
   let G := G'' \ {0}
 
   have hG' : ∀ g ∈ G, IsUnit (m.leadingCoeff g) := by
@@ -388,7 +402,7 @@ theorem div_set' {G'' : Set (MvPolynomial σ R)}
     · contradiction
   obtain ⟨g, r, h⟩ := MonomialOrder.div_set hG' p
   exists r
-  refine (isRemainder_of_singleton_zero_iff_isRemainder m p G'' r).mp ?_
+  refine (isRemainder_sdiff_singleton_zero_iff_isRemainder m p G'' r).mp ?_
   rcases h with ⟨h₁, h₂, h₃⟩
   simp at *
   unfold IsRemainder
