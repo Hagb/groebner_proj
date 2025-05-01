@@ -17,15 +17,15 @@ namespace Ideal
 
 variable {R : Type*} [Semiring R]
 
-theorem mem_span_iff (A : Set R) (p : R) :
+lemma mem_span_iff (A : Set R) (p : R) :
 p ∈ Ideal.span A ↔ ∃ (s : Finset A)(f : R → R), p = ∑ m in s, f m * m
 :=by
   sorry
-theorem mem_span_iff' (A : Set R) (p : R) :
+lemma mem_span_iff' (A : Set R) (p : R) :
 p ∈ Ideal.span A ↔ ∃ (s : Finset A)(f : A → R), p = ∑ m in s, f m * m
 := by
   sorry
-theorem mem_span_iff'' (A : Set R) (p : R) :
+lemma mem_span_iff'' (A : Set R) (p : R) :
 p ∈ Ideal.span A ↔
 ∃ (s : Finset R) (f : R → R), s.toSet ⊆ A ∧ p = ∑ m in s, f m * m
 := by
@@ -35,7 +35,7 @@ p ∈ Ideal.span A ↔
 A subset $s \subseteq R$ has finitely generated span if and only if:
 $\exists$ finite $s' \subseteq s$ such that $\mathsf{span}(s) = \mathsf{span}(s')$
 -/
-theorem fg_span_iff_fg_span_finset_subset (s : Set R) :
+lemma fg_span_iff_fg_span_finset_subset (s : Set R) :
   (span s).FG ↔ ∃ (s' : Finset R), s'.toSet ⊆ s ∧ span s = span s' := by
   constructor
   ·
