@@ -138,9 +138,10 @@ theorem IsGroebnerBasis_iff :
       rcases h with ⟨h_G', h_span⟩
       exact h_G'
     · intro p h_p_in_I
-      unfold MonomialOrder.IsGroebnerBasis at h
-      rcases h with ⟨h_G', h_span⟩
-      sorry
+      rw[←groebner_basis_zero_isRemainder_iff_mem_span']
+      norm_cast
+      exact h
+      exact p
   · intro h
     rcases h with ⟨h_G', h_remainder⟩
     unfold MonomialOrder.IsGroebnerBasis

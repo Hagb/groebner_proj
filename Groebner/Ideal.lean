@@ -40,6 +40,9 @@ lemma fg_span_iff_fg_span_finset_subset (s : Set R) :
   constructor
   ·
     intro h
+    have: (span s).FG -> span s = ⊤ := by
+      intro h
+      sorry
     rcases h with ⟨t, ht⟩
     have : ∀ x ∈ t, x ∈ span s := by
       sorry
