@@ -28,3 +28,4 @@ scripts/*.tex
 /blueprint/lean_decls
 
 /blueprint/src/content.tex
+/blueprint/src/web.paux

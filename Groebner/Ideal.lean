@@ -36,21 +36,8 @@ A subset $s \subseteq R$ has finitely generated span if and only if:
 $\exists$ finite $s' \subseteq s$ such that $\mathsf{span}(s) = \mathsf{span}(s')$
 -/
 lemma fg_span_iff_fg_span_finset_subset (s : Set R) :
-  (span s).FG ↔ ∃ (s' : Finset R), s'.toSet ⊆ s ∧ span s = span s' := by
-  constructor
-  ·
-    intro h
-    have: (span s).FG -> span s = ⊤ := by
-      intro h
-      sorry
-    rcases h with ⟨t, ht⟩
-    have : ∀ x ∈ t, x ∈ span s := by
-      sorry
-    sorry
-  ·
-    rintro ⟨s', hsub, heq⟩
-    exact ⟨s', heq.symm⟩
-
+  (span s).FG ↔ ∃ (s' : Finset R), s'.toSet ⊆ s ∧ span s = span s' :=
+  Submodule.fg_span_iff_fg_span_finset_subset R s
 -- to Mathlib
 
 /--
