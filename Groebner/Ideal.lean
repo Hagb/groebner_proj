@@ -161,7 +161,21 @@ lemma IsGroebnerBasis_union_singleton_zero (G' : Finset (MvPolynomial σ R)) (I 
   m.IsGroebnerBasis (G' ∪ {0}) I ↔ m.IsGroebnerBasis G' I := by
   unfold IsGroebnerBasis
   congr! 1
-  · sorry
+  · constructor
+    · intro h x hx
+      apply h
+      refine mem_coe.mpr ?_
+      exact mem_union_left {0} hx
+    · have h: 0 ∈ I := by
+        exact Submodule.zero_mem I
+      intro hGI
+      push_cast
+      rw[Set.union_subset_iff]
+      constructor
+      · exact hGI
+      · exact Set.singleton_subset_iff.mpr h
+
+
   · simp [IsGroebnerBasis, m.leadingTerm_ideal_insert_zero]
 
 /--
