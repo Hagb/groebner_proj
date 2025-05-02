@@ -81,7 +81,7 @@ For any subset $s \subseteq R$ of a ring $R$, removing zero does not change the 
   $$
 -/
 @[simp]
-lemma span_sdiff_singleton_zero (s : Set R): span (s \ {0}) = span s := Submodule.span_sdiff_singleton_zero _ _
+lemma span_sdiff_singleton_zero (s : Set R): span (s \ {0}) = span s := Submodule.span_sdiff_singleton_zero
 
 end Ideal
 

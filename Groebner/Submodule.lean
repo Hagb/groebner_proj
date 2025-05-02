@@ -15,7 +15,7 @@ variable (s : Set M)
   $$
 -/
 @[simp]
-lemma span_sdiff_singleton_zero:
+lemma span_sdiff_singleton_zero._mathlib:
   span R (s \ {0}) = span R s := by
   by_cases h : 0 ∈ s
   ·rw [←span_insert_zero, (by simp [h] : insert 0 (s \ {0}) = s)]
