@@ -135,11 +135,18 @@ lemma groebner_basis_zero_isRemainder_iff_mem_span' {p : MvPolynomial σ k}
   {r : MvPolynomial σ k}
   (h : m.IsGroebnerBasis G' I) :
   p ∈ I ↔ m.IsRemainder p G' 0 := by
+  classical
   have _uses := @groebner_basis_isRemainder_zero_iff_mem_span.{0,0,0}
   have _uses := @IsGroebnerBasis_erase_zero.{0,0,0}
   have _uses := @isRemainder_sdiff_singleton_zero_iff_isRemainder.{0,0,0}
   constructor
-  · sorry
+  · intro hp
+    rw [← m.IsGroebnerBasis_erase_zero] at h
+    rw[← Finset.sdiff_singleton_eq_erase] at h
+    have h_unit: ∀ g ∈ ↑(G'\{0}), IsUnit (m.leadingCoeff g) := by
+      sorry
+
+    -- apply (groebner_basis_zero_isRemainder_iff_mem_span h_unit h).mp
   · sorry
 
 /--
