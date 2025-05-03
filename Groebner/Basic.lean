@@ -93,17 +93,24 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span {p : MvPolynomial σ R}
 theorem groebner_basis_isRemainder_zero_iff_mem_span' {p : MvPolynomial σ k}
   {G' : Finset (MvPolynomial σ k)} {I : Ideal (MvPolynomial σ k)}
   {r : MvPolynomial σ k}
-  (hG' : ∀ g ∈ G', IsUnit (m.leadingCoeff g))
   (h : m.IsGroebnerBasis G' I)
   (hr : m.IsRemainder p G' r)
   : r = 0 ↔ p ∈ I := by
+  classical
   rw [← m.IsGroebnerBasis_erase_zero] at h
+  rw[← Finset.sdiff_singleton_eq_erase] at h
+  rw [← isRemainder_sdiff_singleton_zero_iff_isRemainder] at hr
   have _uses := @IsGroebnerBasis_erase_zero.{0,0,0}
   have _uses := @isRemainder_sdiff_singleton_zero_iff_isRemainder.{0,0,0}
-  apply groebner_basis_isRemainder_zero_iff_mem_span
-  · exact hG'
-  · exact (IsGroebnerBasis_erase_zero G' I).mp h
-  · exact hr
+  apply groebner_basis_isRemainder_zero_iff_mem_span (G':= G'\{0})
+  · intro g hg
+    simp
+    rw [Finset.mem_sdiff] at hg
+    rcases hg with ⟨hg, h0⟩
+    exact List.ne_of_not_mem_cons h0
+  · exact h
+  · simp
+    exact hr
 
 
 
