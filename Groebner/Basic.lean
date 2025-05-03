@@ -100,8 +100,6 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span' {p : MvPolynomial σ k}
   rw [← m.IsGroebnerBasis_erase_zero] at h
   rw[← Finset.sdiff_singleton_eq_erase] at h
   rw [← isRemainder_sdiff_singleton_zero_iff_isRemainder] at hr
-  have _uses := @IsGroebnerBasis_erase_zero.{0,0,0}
-  have _uses := @isRemainder_sdiff_singleton_zero_iff_isRemainder.{0,0,0}
   apply groebner_basis_isRemainder_zero_iff_mem_span (G':= G'\{0})
   · intro g hg
     simp
@@ -112,17 +110,25 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span' {p : MvPolynomial σ k}
   · simp
     exact hr
 
-
-
 theorem groebner_basis_zero_isRemainder_iff_mem_span {p : MvPolynomial σ R}
   {G' : Finset (MvPolynomial σ R)} {I : Ideal (MvPolynomial σ R)}
   {r : MvPolynomial σ R}
   (hG' : ∀ g ∈ G', IsUnit (m.leadingCoeff g))
   (h : m.IsGroebnerBasis G' I)
   : m.IsRemainder p G' 0 ↔ p ∈ I := by
-  have _uses := @groebner_basis_isRemainder_zero_iff_mem_span.{0,0,0}
-  have _uses := @div_set'.{0,0,0}
-  sorry
+  constructor
+  · intro hr
+    apply (groebner_basis_isRemainder_zero_iff_mem_span hG' h hr).mp rfl
+  · intro hp
+    have hor: ∀ g ∈ G', IsUnit (m.leadingCoeff g) ∨ g = 0 := by
+      exact fun g a ↦ Or.symm (Or.inr (hG' g a))
+    have h₁:  ∃ (r : MvPolynomial σ R), m.IsRemainder p G' r := by
+      exact div_set' m hor p
+    obtain ⟨r, hr⟩ := h₁
+    have h₂: r = 0 := by
+      exact (groebner_basis_isRemainder_zero_iff_mem_span hG' h hr).mpr hp
+    rw [h₂] at hr
+    exact hr
 
 lemma groebner_basis_zero_isRemainder_iff_mem_span' {p : MvPolynomial σ k}
   {G' : Finset (MvPolynomial σ k)} {I : Ideal (MvPolynomial σ k)}
@@ -159,18 +165,26 @@ theorem IsGroebnerBasis_iff :
     unfold MonomialOrder.IsGroebnerBasis
     constructor
     · exact h_G'
-    · apply le_antisymm
-      · intro p h_p_in_I
+    · have hG' : I = Ideal.span G' := by
+        rw [←SetLike.coe_set_eq]
+        norm_cast
+        apply le_antisymm
+        · intro p hp
+          specialize h_remainder p hp
+          sorry
+
+        · exact Ideal.span_le.mpr h_G'
+        -- intro p hp'
+        -- rw [SetLike.mem_coe, ←rem_mem_ideal_iff subset_span (hp p hp')]
+        -- exact Ideal.zero_mem _
+      rw [hG', ←SetLike.coe_set_eq]
+      apply Set.eq_of_subset_of_subset
+      · intro p hp
         sorry
-      · sorry
+      · intro p hp'
+        sorry
 
 
-
-
-    -- · have h₁: Ideal.span (m.leadingTerm '' ↑I) ≤ Ideal.span (m.leadingTerm '' (↑G':Set (MvPolynomial σ k))) := by
-    --     sorry
-    --   have h₂: Ideal.span (m.leadingTerm '' (↑G':Set (MvPolynomial σ k))) ≤ Ideal.span (m.leadingTerm '' ↑I)  := by
-    --     sorry
 
 
 
