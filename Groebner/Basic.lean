@@ -100,7 +100,15 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span' {p : MvPolynomial σ k}
   rw [← m.IsGroebnerBasis_erase_zero] at h
   have _uses := @IsGroebnerBasis_erase_zero.{0,0,0}
   have _uses := @isRemainder_sdiff_singleton_zero_iff_isRemainder.{0,0,0}
-  sorry
+  -- constructor
+  -- · apply isRemainder_sdiff_singleton_zero_iff_isRemainder
+  -- · sorry
+  apply groebner_basis_isRemainder_zero_iff_mem_span
+  · exact hG'
+  · exact (IsGroebnerBasis_erase_zero G' I).mp h
+  · exact hr
+    
+
 
 theorem groebner_basis_zero_isRemainder_iff_mem_span {p : MvPolynomial σ R}
   {G' : Finset (MvPolynomial σ R)} {I : Ideal (MvPolynomial σ R)}
@@ -147,7 +155,20 @@ theorem IsGroebnerBasis_iff :
     unfold MonomialOrder.IsGroebnerBasis
     constructor
     · exact h_G'
-    · sorry
+    · apply le_antisymm
+      · intro p h_p_in_I
+        sorry
+      · intro p h_p_in_I
+
+
+
+
+    -- · have h₁: Ideal.span (m.leadingTerm '' ↑I) ≤ Ideal.span (m.leadingTerm '' (↑G':Set (MvPolynomial σ k))) := by
+    --     sorry
+    --   have h₂: Ideal.span (m.leadingTerm '' (↑G':Set (MvPolynomial σ k))) ≤ Ideal.span (m.leadingTerm '' ↑I)  := by
+    --     sorry
+
+
 
 -- theorem IsGroebnerBasis_iff' :
 --   m.IsGroebnerBasis G' I ↔
