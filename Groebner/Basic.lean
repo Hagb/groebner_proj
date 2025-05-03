@@ -155,7 +155,7 @@ theorem IsGroebnerBasis_iff :
     · apply le_antisymm
       · intro p h_p_in_I
         sorry
-      · intro p h_p_in_I
+      · sorry
 
 
 
