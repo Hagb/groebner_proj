@@ -138,9 +138,9 @@ lemma groebner_basis_zero_isRemainder_iff_mem_span' {p : MvPolynomial σ k}
   have _uses := @groebner_basis_isRemainder_zero_iff_mem_span.{0,0,0}
   have _uses := @IsGroebnerBasis_erase_zero.{0,0,0}
   have _uses := @isRemainder_sdiff_singleton_zero_iff_isRemainder.{0,0,0}
-  sorry
-
-
+  constructor
+  · sorry
+  · sorry
 
 /--
 Let $G = \{g_1, \ldots, g_t\}$ be a finite subset of $k[x_1, \ldots, x_n]$. Then $G$ is a Gröbner basis for the ideal $I = \langle G \rangle$ if and only if  for every $f \in I$, the remainder of $f$ on division by $G$ is zero.
@@ -162,7 +162,6 @@ theorem IsGroebnerBasis_iff :
       exact p
   · intro h
     rcases h with ⟨h_G', h_remainder⟩
-    unfold MonomialOrder.IsGroebnerBasis
     constructor
     · exact h_G'
     · have hG' : I = Ideal.span G' := by
@@ -171,8 +170,9 @@ theorem IsGroebnerBasis_iff :
         apply le_antisymm
         · intro p hp
           specialize h_remainder p hp
+          have: ↑(Ideal.span G') ≤ ↑(I):= by
+            sorry
           sorry
-
         · exact Ideal.span_le.mpr h_G'
         -- intro p hp'
         -- rw [SetLike.mem_coe, ←rem_mem_ideal_iff subset_span (hp p hp')]
@@ -183,9 +183,6 @@ theorem IsGroebnerBasis_iff :
         sorry
       · intro p hp'
         sorry
-
-
-
 
 
 -- theorem IsGroebnerBasis_iff' :
