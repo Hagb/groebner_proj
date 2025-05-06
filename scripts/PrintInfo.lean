@@ -79,9 +79,14 @@ def generateFromEnv (env : Environment) (mods : Array Name) : IO (Array DefInfo)
     modifyEnv := fun _ => do ←panic! ""; pure ()
   }
   let defInfos : Array DefInfo ←
-    (ourDefs.filter fun x =>
-      isOriginal x.fst && (x.snd.isDefinition || x.snd.isTheorem) && x.snd.value?.isSome
-    ).mapM fun info => do
+    ourDefs.filterMapM fun info ↦ do
+      if ! isOriginal info.fst || ! info.snd.value?.isSome then return none
+
+      let isThm ← match Lean.getOriginalConstKind? env info.fst with
+        | some .thm => pure true
+        | some .defn => pure false
+        | _ => return none
+
       let proofUses := NameSet.ofArray <|
           (info.snd.getUsedConstantsAsSet ∩ names).toArray.flatMap <|
           fun x => (expandUses names {} env x info.fst false).toArray
@@ -92,17 +97,18 @@ def generateFromEnv (env : Environment) (mods : Array Name) : IO (Array DefInfo)
       let statementSorry := (statementUses.find? ``sorryAx).isSome ||
         (info.snd.type.getUsedConstantsAsSet.find? ``sorryAx).isSome
       let ourStatementUses := statementUses ∩ names
-      pure {
+      pure <| some {
         name := info.fst,
         docstring := ← findDocString? env info.fst,
         statementUses := ourStatementUses,
         proofUses := (proofUses ∩ names) \ ourStatementUses,
-        isThm := info.snd.isTheorem,
+        isThm := isThm,
         module := (env.getModuleFor? info.fst).get!,
         proofSorry := proofSorry
         statementSorry := statementSorry
         pos := (←Lean.findDeclarationRanges? info.fst).map (fun x => x.range.pos)
       }
+
   pure (defInfos.heapSort <| fun a b => defSort a b mods)
 
 def infosToJson (defInfos : Array DefInfo) : Json :=
@@ -125,7 +131,8 @@ def main (args : List String) : IO Unit := do
   let mods := match args with
     | [] => #[`Groebner.Set, `Groebner.Submodule, `Groebner.Defs, `Groebner.Ideal, `Groebner.Basic]
     | l => l.toArray.map String.toName
-  let env ← Lean.importModules (loadExts := false) (mods.map fun x ↦ {module:=x, runtimeOnly:=false}) {}
+  let env ← Lean.importModules (loadExts := false)
+    (mods.map fun x ↦ {module:=x, importAll:=false, isExported:=false}) {}
   let infos ← generateFromEnv env <| mods
   let json := infosToJson infos
   IO.FS.writeFile "scripts/defInfos.json" (toString json)
