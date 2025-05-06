@@ -191,18 +191,30 @@ theorem IsGroebnerBasis_iff :
         · intro p hp
           specialize h_remainder p hp
           have: ↑(Ideal.span G') ≤ ↑(I):= by
-            sorry
-          sorry
+            apply Ideal.span_le.mpr
+            intro p hp'
+            rw [SetLike.mem_coe]
+            exact h_G' hp'
+          have h1: ↑(G': Set (MvPolynomial σ k)) ⊆ ↑(Ideal.span ↑G': Ideal (MvPolynomial σ k)) := by
+            exact Ideal.subset_span
+          apply (remainder_mem_ideal_iff h1 h_remainder).mp
+          simp
         · exact Ideal.span_le.mpr h_G'
-        -- intro p hp'
-        -- rw [SetLike.mem_coe, ←rem_mem_ideal_iff subset_span (hp p hp')]
-        -- exact Ideal.zero_mem _
       rw [hG', ←SetLike.coe_set_eq]
       apply Set.eq_of_subset_of_subset
-      · intro p hp
-        sorry
-      · intro p hp'
-        sorry
+      · have h₁: Ideal.span (α:=MvPolynomial σ k) (m.leadingTerm '' (↑(Ideal.span (↑G':Set (MvPolynomial σ k))): Set (MvPolynomial σ k))) ≤  Ideal.span (m.leadingTerm '' ↑(G':Set (MvPolynomial σ k) )) := by
+          apply Ideal.span_le.mpr
+          intro p' hp
+          rcases hp with ⟨ p,hp', hp'₁⟩
+          rw [←hp'₁]
+          rw [SetLike.mem_coe]
+          -- apply mem_span_set'
+          sorry
+        exact h₁
+      · rw[←hG']
+        apply Ideal.span_mono
+        exact Set.image_mono h_G'
+
 
 
 -- theorem IsGroebnerBasis_iff' :
@@ -216,7 +228,36 @@ Let $G = \{g_1, \ldots, g_t\}$ be a Gröbner basis for an ideal $I \subseteq k[x
 theorem span_groebner_basis (h : m.IsGroebnerBasis G' I) : I = Ideal.span G' := by
   -- uses IsGroebnerBasis_iff
   have _uses := @IsGroebnerBasis_iff.{0,0,0}
-  sorry
+  apply le_antisymm
+  · intro p hp
+    have h_remainder: m.IsRemainder p G' 0 := by
+      exact (groebner_basis_zero_isRemainder_iff_mem_span' h).mp hp
+    obtain ⟨⟨f, h_eq, h_deg⟩, h_remain⟩ := h_remainder
+    rw[h_eq]
+    simp
+    rw [Finsupp.linearCombination_apply]
+    apply Ideal.sum_mem
+    intro g hg
+    rcases g with ⟨g, gG'⟩
+    -- have hG' : G'.toSet ⊆ I := by
+    --   exact h.1
+    simp
+    have : g ∈ Ideal.span G':= by
+      apply Ideal.subset_span
+      exact gG'
+    apply Ideal.mul_mem_left
+    exact this
+
+  · intro p hp
+    have hG' : G'.toSet ⊆ I := by
+      exact h.1
+    have hI : Ideal.span ↑G' ≤ I := by
+      apply Ideal.span_le.mpr
+      intro p hp'
+      rw [SetLike.mem_coe]
+      exact hG' hp'
+    exact hI hp
+
 
 /--
 A basis $G = \{ g_1, \ldots, g_t \}$ for an ideal $I$ is a Gröbner basis if and only if $S(g_i, g_j) \to_G 0$ for all $i \neq j$.
