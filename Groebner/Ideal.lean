@@ -164,8 +164,6 @@ lemma IsGroebnerBasis_union_singleton_zero (G' : Finset (MvPolynomial σ R)) (I 
       constructor
       · exact hGI
       · exact Set.singleton_subset_iff.mpr h
-
-
   · simp [IsGroebnerBasis, m.leadingTerm_ideal_insert_zero]
 
 /--

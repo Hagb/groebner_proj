@@ -136,18 +136,36 @@ lemma groebner_basis_zero_isRemainder_iff_mem_span' {p : MvPolynomial σ k}
   (h : m.IsGroebnerBasis G' I) :
   p ∈ I ↔ m.IsRemainder p G' 0 := by
   classical
-  have _uses := @groebner_basis_isRemainder_zero_iff_mem_span.{0,0,0}
-  have _uses := @IsGroebnerBasis_erase_zero.{0,0,0}
-  have _uses := @isRemainder_sdiff_singleton_zero_iff_isRemainder.{0,0,0}
+  -- have _uses := @groebner_basis_isRemainder_zero_iff_mem_span.{0,0,0}
+  -- have _uses := @IsGroebnerBasis_erase_zero.{0,0,0}
+  -- have _uses := @isRemainder_sdiff_singleton_zero_iff_isRemainder.{0,0,0}
+  have h_unit: ∀ g ∈ ↑(G'\{0}), IsUnit (m.leadingCoeff g) := by
+      intro g hg
+      rw [Finset.mem_sdiff] at hg
+      rcases hg with ⟨hg, h0⟩
+      simp
+      exact List.ne_of_not_mem_cons h0
   constructor
   · intro hp
     rw [← m.IsGroebnerBasis_erase_zero] at h
     rw[← Finset.sdiff_singleton_eq_erase] at h
-    have h_unit: ∀ g ∈ ↑(G'\{0}), IsUnit (m.leadingCoeff g) := by
-      sorry
-
-    -- apply (groebner_basis_zero_isRemainder_iff_mem_span h_unit h).mp
-  · sorry
+    have h_remainder: m.IsRemainder p ↑(G'\{0}) 0 := by
+      apply (groebner_basis_zero_isRemainder_iff_mem_span h_unit h).mpr hp
+      exact p
+    refine (isRemainder_sdiff_singleton_zero_iff_isRemainder m p (↑G') 0).mp ?_
+    push_cast at h_remainder
+    exact h_remainder
+  · intro hr
+    rw [← m.IsGroebnerBasis_erase_zero] at h
+    rw[← Finset.sdiff_singleton_eq_erase] at h
+    have h_remainder: m.IsRemainder p ↑(G'\{0}) 0 := by
+      refine (isRemainder_of_insert_zero_iff_isRemainder m p (↑(G' \ {0})) 0).mp ?_
+      push_cast
+      simp
+      exact (isRemainder_of_insert_zero_iff_isRemainder m p (↑G') 0).mpr hr
+    apply (groebner_basis_zero_isRemainder_iff_mem_span h_unit h).mp
+    exact h_remainder
+    exact p
 
 /--
 Let $G = \{g_1, \ldots, g_t\}$ be a finite subset of $k[x_1, \ldots, x_n]$. Then $G$ is a Gröbner basis for the ideal $I = \langle G \rangle$ if and only if  for every $f \in I$, the remainder of $f$ on division by $G$ is zero.
