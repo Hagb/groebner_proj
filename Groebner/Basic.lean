@@ -112,7 +112,6 @@ theorem groebner_basis_isRemainder_zero_iff_mem_span' {p : MvPolynomial σ k}
 
 theorem groebner_basis_zero_isRemainder_iff_mem_span {p : MvPolynomial σ R}
   {G' : Finset (MvPolynomial σ R)} {I : Ideal (MvPolynomial σ R)}
-  {r : MvPolynomial σ R}
   (hG' : ∀ g ∈ G', IsUnit (m.leadingCoeff g))
   (h : m.IsGroebnerBasis G' I)
   : m.IsRemainder p G' 0 ↔ p ∈ I := by
@@ -132,7 +131,6 @@ theorem groebner_basis_zero_isRemainder_iff_mem_span {p : MvPolynomial σ R}
 
 lemma groebner_basis_zero_isRemainder_iff_mem_span' {p : MvPolynomial σ k}
   {G' : Finset (MvPolynomial σ k)} {I : Ideal (MvPolynomial σ k)}
-  {r : MvPolynomial σ k}
   (h : m.IsGroebnerBasis G' I) :
   p ∈ I ↔ m.IsRemainder p G' 0 := by
   have _uses := @groebner_basis_isRemainder_zero_iff_mem_span.{0,0,0}
@@ -159,7 +157,6 @@ theorem IsGroebnerBasis_iff :
       rw[←groebner_basis_zero_isRemainder_iff_mem_span']
       norm_cast
       exact h
-      exact p
   · intro h
     rcases h with ⟨h_G', h_remainder⟩
     constructor
