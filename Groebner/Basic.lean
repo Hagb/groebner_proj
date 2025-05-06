@@ -149,7 +149,6 @@ lemma groebner_basis_zero_isRemainder_iff_mem_span' {p : MvPolynomial σ k}
     rw[← Finset.sdiff_singleton_eq_erase] at h
     have h_remainder: m.IsRemainder p ↑(G'\{0}) 0 := by
       apply (groebner_basis_zero_isRemainder_iff_mem_span h_unit h).mpr hp
-      exact p
     refine (isRemainder_sdiff_singleton_zero_iff_isRemainder m p (↑G') 0).mp ?_
     push_cast at h_remainder
     exact h_remainder
@@ -163,7 +162,6 @@ lemma groebner_basis_zero_isRemainder_iff_mem_span' {p : MvPolynomial σ k}
       exact (isRemainder_of_insert_zero_iff_isRemainder m p (↑G') 0).mpr hr
     apply (groebner_basis_zero_isRemainder_iff_mem_span h_unit h).mp
     exact h_remainder
-    exact p
 
 /--
 Let $G = \{g_1, \ldots, g_t\}$ be a finite subset of $k[x_1, \ldots, x_n]$. Then $G$ is a Gröbner basis for the ideal $I = \langle G \rangle$ if and only if  for every $f \in I$, the remainder of $f$ on division by $G$ is zero.
