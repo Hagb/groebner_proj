@@ -2,7 +2,7 @@
 
 The goal of this project is formalization of Gröbner basis theory in the Lean 4 theorem prover, establishing the mathematical infrastructure required for computational algebra in Lean. Based on it, we aim to bridge the gap between Lean and some computational algebra problems, such as solving systems of multivariate polynomial equations, ideal membership problems, and so on.
 
-This project is still work in process. There may be errors on our documents and unproved statements. Any fix and suggestions will be welcomed.
+This project is still work in process. There are some errors and out-of-date information on our documents and maybe even unproved statements. Any fix and suggestions will be welcomed.
 
 ## Introduction
 

@@ -82,7 +82,7 @@ open Classical
 
 variable {σ : Type*} {m : MonomialOrder σ} {s : σ →₀ ℕ}
 variable {k : Type*} [Field k] variable (p p₁ p₂ : MvPolynomial σ k)
-variable (G': Finset (MvPolynomial σ k)) (G'': Set (MvPolynomial σ k))
+variable (B' G: Finset (MvPolynomial σ k)) (B: Set (MvPolynomial σ k))
 variable (I I₁ I₂ : Ideal (MvPolynomial σ k))
 variable {R : Type*} [CommSemiring R]
 
@@ -102,53 +102,47 @@ $$
 \left\langle \operatorname{lt}(G'') \right\rangle = \left\langle x^{\deg(p)} \mid p \in G'' \right\rangle,
 $$
 -/
-lemma leadingTerm_ideal_span_monomial {G'': Set (MvPolynomial σ R)}
-  (hG'' : ∀ p ∈ G'', IsUnit (m.leadingCoeff p)) :
-  span (m.leadingTerm '' G'') = span ((fun p => MvPolynomial.monomial (m.degree p) (1 : R)) '' G'') := by
+lemma leadingTerm_ideal_span_monomial {B: Set (MvPolynomial σ R)}
+  (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p)) :
+  span (m.leadingTerm '' B) = span ((fun p => MvPolynomial.monomial (m.degree p) (1 : R)) '' B) := by
   apply le_antisymm
   <;> rintro p hl
-  <;> simp only [MonomialOrder.leadingTerm, ← submodule_span_eq, mem_span_image_iff_exists_fun] at *
+  <;> simp_rw [MonomialOrder.leadingTerm, ← submodule_span_eq, mem_span_image_iff_exists_fun] at *
   <;> rcases hl with ⟨t, ht, c, hc⟩
   <;> rw [←hc]
   <;> use t
   · split_ands
     · exact ht
-    ·
-      use fun (p : _) => (MvPolynomial.C (m.leadingCoeff ↑p : R) : MvPolynomial σ R) • c ↑p
-      -- simp?
+    · use fun (p : _) => (MvPolynomial.C (m.leadingCoeff ↑p : R) : MvPolynomial σ R) • c ↑p
       apply Finset.sum_congr rfl
       simp
       intro a ha
       rw [mul_assoc, mul_left_comm, MvPolynomial.C_mul_monomial, mul_one]
   · split_ands
     · exact ht
-    ·
-      use fun (p : _) => if hp : ↑p ∈ G'' then ((hG'' (↑p) (hp)).unit)⁻¹ • c ↑p else 0
+    · use fun (p : _) => if hp : ↑p ∈ B then ((hB (↑p) (hp)).unit)⁻¹ • c ↑p else 0
       apply Finset.sum_congr rfl
-      ·
-        -- simp?
-        simp only [univ_eq_attach, mem_attach, smul_eq_mul, Algebra.smul_mul_assoc, forall_const,
-          Subtype.forall]
+      · simp
         intro a ha
         simp [Set.mem_of_mem_of_subset ha ht]
         rw [smul_mul_assoc, ←mul_smul_comm, MvPolynomial.smul_monomial, IsUnit.inv_smul]
 
-lemma leadingTerm_ideal_sdiff_singleton_zero (G'': Set (MvPolynomial σ R)) :
-  span (m.leadingTerm '' (G'' \ {0})) = span (m.leadingTerm '' G'') :=
-  m.leadingTerm_image_sdiff_singleton_zero G'' ▸ Ideal.span_sdiff_singleton_zero _
+lemma leadingTerm_ideal_sdiff_singleton_zero (B: Set (MvPolynomial σ R)) :
+  span (m.leadingTerm '' (B \ {0})) = span (m.leadingTerm '' B) :=
+  m.leadingTerm_image_sdiff_singleton_zero B ▸ Ideal.span_sdiff_singleton_zero _
 
-lemma leadingTerm_ideal_insert_zero (G'': Set (MvPolynomial σ R)) :
-  span (m.leadingTerm '' (insert 0 G'')) = span (m.leadingTerm '' G'') := by
-  by_cases h : 0 ∈ G''
+lemma leadingTerm_ideal_insert_zero (B: Set (MvPolynomial σ R)) :
+  span (m.leadingTerm '' (insert 0 B)) = span (m.leadingTerm '' B) := by
+  by_cases h : 0 ∈ B
   · rw [Set.insert_eq_of_mem h]
   · simp [leadingTerm_image_insert_zero]
 
-lemma IsGroebnerBasis_erase_zero (G' : Finset (MvPolynomial σ R)) (I : Ideal (MvPolynomial σ R)) :
-  m.IsGroebnerBasis (G'.erase 0) I ↔ m.IsGroebnerBasis G' I := by
+lemma IsGroebnerBasis_erase_zero (G : Finset (MvPolynomial σ R)) (I : Ideal (MvPolynomial σ R)) :
+  m.IsGroebnerBasis (G.erase 0) I ↔ m.IsGroebnerBasis G I := by
   simp [IsGroebnerBasis, m.leadingTerm_ideal_sdiff_singleton_zero]
 
-lemma IsGroebnerBasis_union_singleton_zero (G' : Finset (MvPolynomial σ R)) (I : Ideal (MvPolynomial σ R)) :
-  m.IsGroebnerBasis (G' ∪ {0}) I ↔ m.IsGroebnerBasis G' I := by
+lemma IsGroebnerBasis_union_singleton_zero (G : Finset (MvPolynomial σ R)) (I : Ideal (MvPolynomial σ R)) :
+  m.IsGroebnerBasis (G ∪ {0}) I ↔ m.IsGroebnerBasis G I := by
   unfold IsGroebnerBasis
   congr! 1
   · constructor
@@ -171,11 +165,11 @@ $$
 \langle \mathrm{lt}(G) \rangle = \left\langle \left\{ x^t : t \in \{ \mathrm{multideg}(p) : p \in G \setminus \{0\} \} \right\} \right\rangle
 $$
 -/
-lemma leadingTerm_ideal_span_monomial' : span (m.leadingTerm '' G'') =
-  span ((fun p => MvPolynomial.monomial (m.degree p) (1 : k)) '' (G'' \ {(0 : MvPolynomial σ k)})) := by
+lemma leadingTerm_ideal_span_monomial' : span (m.leadingTerm '' B) =
+  span ((fun p => MvPolynomial.monomial (m.degree p) (1 : k)) '' (B \ {(0 : MvPolynomial σ k)})) := by
   calc
-    _ = span (m.leadingTerm '' G'' \ {0}) := (Ideal.span_sdiff_singleton_zero _).symm
-    _ = span (m.leadingTerm '' (G'' \ {0})) := by rw [m.leadingTerm_image_sdiff_singleton_zero]
+    _ = span (m.leadingTerm '' B \ {0}) := (Ideal.span_sdiff_singleton_zero _).symm
+    _ = span (m.leadingTerm '' (B \ {0})) := by rw [m.leadingTerm_image_sdiff_singleton_zero]
     _ = _ := by
       apply leadingTerm_ideal_span_monomial
       simp
@@ -193,18 +187,17 @@ $$
 p \in I.
 $$
 -/
-lemma mem_ideal_of_remainder_mem_ideal {G'': Set (MvPolynomial σ R)} {r : MvPolynomial σ R}
+lemma mem_ideal_of_remainder_mem_ideal {B: Set (MvPolynomial σ R)} {r : MvPolynomial σ R}
   {I : Ideal (MvPolynomial σ R)} {p : MvPolynomial σ R}
-  (hG''I : G'' ⊆ I) (hpG''r : m.IsRemainder p G'' r) (hr : r ∈ I) :
+  (hBI : B ⊆ I) (hpBr : m.IsRemainder p B r) (hr : r ∈ I) :
   p ∈ I := by
-  obtain ⟨⟨f, h_eq, h_deg⟩, h_remain⟩ := hpG''r
+  obtain ⟨⟨f, h_eq, h_deg⟩, h_remain⟩ := hpBr
   rw[h_eq]
   refine Ideal.add_mem _ ?_ ?_
-  ·
-    rw [Finsupp.linearCombination_apply]
+  · rw [Finsupp.linearCombination_apply]
     apply Ideal.sum_mem
-    intro g hg
-    exact mul_mem_left _ _ (Set.mem_of_mem_of_subset (by simp) hG''I)
+    intro b hb
+    exact mul_mem_left _ _ (Set.mem_of_mem_of_subset (by simp) hBI)
   · exact hr
 
 /--
@@ -219,19 +212,19 @@ $$
 r \in I \quad \Longleftrightarrow \quad p \in I.
 $$
 -/
-lemma remainder_mem_ideal_iff {R : Type*} [CommRing R] {G'': Set (MvPolynomial σ R)}
+lemma remainder_mem_ideal_iff {R : Type*} [CommRing R] {B: Set (MvPolynomial σ R)}
   {r : MvPolynomial σ R} {I : Ideal (MvPolynomial σ R)} {p : MvPolynomial σ R}
-  (hG''I : G'' ⊆ I) (hpG''r : m.IsRemainder p G'' r) :
+  (hBI : B ⊆ I) (hpBr : m.IsRemainder p B r) :
   r ∈ I ↔ p ∈ I := by
-  refine ⟨mem_ideal_of_remainder_mem_ideal hG''I hpG''r, ?_⟩
-  obtain ⟨⟨f, h_eq, h_deg⟩, h_remain⟩ := hpG''r
+  refine ⟨mem_ideal_of_remainder_mem_ideal hBI hpBr, ?_⟩
+  obtain ⟨⟨f, h_eq, h_deg⟩, h_remain⟩ := hpBr
   intro hp
   rw [← sub_eq_of_eq_add' h_eq]
   apply Ideal.sub_mem I hp
   -- (optional) to make it clearer: `rw [Finsupp.linearCombination_apply]`
   apply Ideal.sum_mem
-  intro g hg
-  exact mul_mem_left I _ (Set.mem_of_mem_of_subset (by simp) hG''I)
+  intro b hb
+  exact mul_mem_left I _ (Set.mem_of_mem_of_subset (by simp) hBI)
 
 /--
 Let $I \subseteq k[x_i : i \in \sigma]$ be an ideal, and let $G \subseteq I$ be a finite subset.
@@ -242,8 +235,8 @@ r_1 - r_2 \in I.
 $$
 -/
 lemma remainder_sub_remainder_mem_ideal {R : Type*} [CommRing R]
-  {G'': Set (MvPolynomial σ R)} {I : Ideal (MvPolynomial σ R)} {p r₁ r₂ : MvPolynomial σ R}
-  (hG''I : G'' ⊆ I) (hr₁ : m.IsRemainder p G'' r₁) (hr₂ : m.IsRemainder p G'' r₂) :
+  {B: Set (MvPolynomial σ R)} {I : Ideal (MvPolynomial σ R)} {p r₁ r₂ : MvPolynomial σ R}
+  (hBI : B ⊆ I) (hr₁ : m.IsRemainder p B r₁) (hr₂ : m.IsRemainder p B r₂) :
   r₁-r₂ ∈ I := by
   obtain ⟨⟨f₁, h_eq₁, h_deg₁⟩, h_remain₁⟩ := hr₁
   obtain ⟨⟨f₂, h_eq₂, h_deg₂⟩, h_remain₂⟩ := hr₂
@@ -252,7 +245,7 @@ lemma remainder_sub_remainder_mem_ideal {R : Type*} [CommRing R]
   apply Ideal.sub_mem I
   <;> apply Ideal.sum_mem
   <;> intro g hg
-  <;> exact mul_mem_left I _ (Set.mem_of_mem_of_subset (by simp) hG''I)
+  <;> exact mul_mem_left I _ (Set.mem_of_mem_of_subset (by simp) hBI)
 
 -- lemma monomial_not_mem_leading_term_ideal{r : MvPolynomial σ k}
 --   {G' : Set (MvPolynomial σ k)}
@@ -274,27 +267,27 @@ lemma remainder_sub_remainder_mem_ideal {R : Type*} [CommRing R]
 --  sorry
 
 lemma IsRemainder_term_not_mem_leading_term_ideal {p r : MvPolynomial σ R}
-  {G'' : Set (MvPolynomial σ R)}
-  (hG'' : ∀ p ∈ G'', IsUnit (m.leadingCoeff p))
-  (h : m.IsRemainder p G'' r):
-∀ s ∈ r.support, monomial s (r.coeff s) ∉ Ideal.span (m.leadingTerm '' G'') := by
+  {B : Set (MvPolynomial σ R)}
+  (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p))
+  (h : m.IsRemainder p B r):
+∀ s ∈ r.support, monomial s (r.coeff s) ∉ Ideal.span (m.leadingTerm '' B) := by
   intro s hs
-  rw [leadingTerm_ideal_span_monomial hG'', ← Set.image_image (monomial · 1) _ _, mem_ideal_span_monomial_image]
+  rw [leadingTerm_ideal_span_monomial hB, ← Set.image_image (monomial · 1) _ _, mem_ideal_span_monomial_image]
   have h1ne0: (1 : R) ≠ 0 := by
     by_contra h1eq0
     rw [MvPolynomial.mem_support_iff, ← mul_one <| r.coeff s, h1eq0, mul_zero] at hs
     exact hs rfl
   simp [MvPolynomial.mem_support_iff.mp hs]
-  intro q hq
+  intro b hb
   unfold MonomialOrder.IsRemainder at h
-  apply h.2 s hs q hq
+  apply h.2 s hs b hb
   by_contra hq0
-  specialize hG'' q hq
-  simp [hq0, h1ne0.symm] at hG''
+  specialize hB b hb
+  simp [hq0, h1ne0.symm] at hB
 
 lemma IsRemainder_term_not_mem_leading_term_ideal' {p r : MvPolynomial σ k}
-  {G'' : Set (MvPolynomial σ k)} (h : m.IsRemainder p G'' r):
-∀ s ∈ r.support, monomial s (r.coeff s) ∉ Ideal.span (m.leadingTerm '' G'') := by
+  {B : Set (MvPolynomial σ k)} (h : m.IsRemainder p B r):
+∀ s ∈ r.support, monomial s (r.coeff s) ∉ Ideal.span (m.leadingTerm '' B) := by
   rw [←Ideal.span_sdiff_singleton_zero, ← m.leadingTerm_image_sdiff_singleton_zero]
   apply IsRemainder_term_not_mem_leading_term_ideal
   simp
@@ -302,27 +295,27 @@ lemma IsRemainder_term_not_mem_leading_term_ideal' {p r : MvPolynomial σ k}
 
 
 lemma IsRemainder_monomial_not_mem_leading_term_ideal {p r : MvPolynomial σ R}
-  {G'' : Set (MvPolynomial σ R)}
-  (hG'' : ∀ p ∈ G'', IsUnit (m.leadingCoeff p))
-  (h : m.IsRemainder p G'' r):
-∀ s ∈ r.support, monomial s 1 ∉ Ideal.span (m.leadingTerm '' G'') := by
+  {B : Set (MvPolynomial σ R)}
+  (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p))
+  (h : m.IsRemainder p B r):
+∀ s ∈ r.support, monomial s 1 ∉ Ideal.span (m.leadingTerm '' B) := by
   intro s hs
-  rw [leadingTerm_ideal_span_monomial hG'', ← Set.image_image (monomial · 1) _ _, mem_ideal_span_monomial_image]
+  rw [leadingTerm_ideal_span_monomial hB, ← Set.image_image (monomial · 1) _ _, mem_ideal_span_monomial_image]
   have h1ne0: (1 : R) ≠ 0 := by
     by_contra h1eq0
     rw [MvPolynomial.mem_support_iff, ← mul_one <| r.coeff s, h1eq0, mul_zero] at hs
     exact hs rfl
   simp [h1ne0]
-  intro q hq
+  intro b hb
   unfold MonomialOrder.IsRemainder at h
-  apply h.2 s hs q hq
+  apply h.2 s hs b hb
   by_contra hq0
-  specialize hG'' q hq
-  simp [hq0, h1ne0.symm] at hG''
+  specialize hB b hb
+  simp [hq0, h1ne0.symm] at hB
 
 lemma IsRemainder_monomial_not_mem_leading_term_ideal' {p r : MvPolynomial σ k}
-  {G'' : Set (MvPolynomial σ k)} (h : m.IsRemainder p G'' r):
-∀ s ∈ r.support, monomial s 1 ∉ Ideal.span (m.leadingTerm '' G'') := by
+  {B : Set (MvPolynomial σ k)} (h : m.IsRemainder p B r):
+∀ s ∈ r.support, monomial s 1 ∉ Ideal.span (m.leadingTerm '' B) := by
   rw [←Ideal.span_sdiff_singleton_zero, ← m.leadingTerm_image_sdiff_singleton_zero]
   apply IsRemainder_monomial_not_mem_leading_term_ideal
   simp
