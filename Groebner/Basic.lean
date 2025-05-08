@@ -320,15 +320,18 @@ Let $f, h_1, \dots, h_m \in k[\mathbf{x}] \setminus \{0\}$, and suppose $$f = c_
 -/
 lemma sPolynomial_decomposition (f: MvPolynomial σ k) (d: σ →₀ ℕ)
     (B: Finset (MvPolynomial σ k)) (c: MvPolynomial σ k → k) (hd: ∀ b ∈ B, (m.degree b) = d) (hfd: m.degree f ≺[m] d) (hf : f = ∑ b in B, c b • b):
-    ∃ (c': MvPolynomial σ k → MvPolynomial σ k → k), f = ∑ b₁ in B, ∑ b₂ in B, (c' b₁ b₂) • m.sPolynomial b₁ b₂ := by
+    ∃ (c': MvPolynomial σ k → MvPolynomial σ k → k), f = ∑ b₁ ∈  B, ∑ b₂ ∈  B, (c' b₁ b₂) • m.sPolynomial b₁ b₂ := by
   sorry
 
 /--
-h_1, h_2 \in k[\mathbf{x}], lm(h_1) = lm(h_2), S(h_1, h_2) \ne 0, then lm(S(h_1, h_2)) < lm(h_1).
+$h_1, h_2 \in k[\mathbf{x}], lm(h_1) = lm(h_2), S(h_1, h_2) \ne 0$, then $lm(S(h_1, h_2)) < lm(h_1)$.
 -/
-lemma sPolynomial_degree_lt (h₁ h₂: MvPolynomial σ k) (h: m.degree h₁= m.degree h₂) (hs: m.sPolynomial h₁ h₂ ≠ 0) : m.degree (m.sPolynomial h₁ h₂) ≺[m] m.degree h₁ := by
+lemma sPolynomial_degree_lt (h₁ h₂: MvPolynomial σ k) (h: m.degree h₁ = m.degree h₂) (hs: m.sPolynomial h₁ h₂ ≠ 0) : m.degree (m.sPolynomial h₁ h₂) ≺[m] m.degree h₁ := by
+  unfold MonomialOrder.sPolynomial
+  simp [h]
+  unfold MonomialOrder.sPolynomial at hs
+  simp [h] at hs
   sorry
-
 
 /--
 A basis $G = \{ g_1, \ldots, g_t \}$ for an ideal $I$ is a Gröbner basis if and only if $S(g_i, g_j) \to_G 0$ for all $i \neq j$.
