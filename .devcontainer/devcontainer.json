@@ -1,5 +1,5 @@
 {
-  "name": "Mathlib4 dev container",
+  "name": "Dev container",
 
   "build": {
     "dockerfile": "Dockerfile"
