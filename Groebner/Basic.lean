@@ -315,6 +315,19 @@ theorem span_groebner_basis (h : m.IsGroebnerBasis G' I) : I = Ideal.span G' := 
       exact hG' hp'
     exact hI hp
 
+/--
+Let $f, h_1, \dots, h_m \in k[\mathbf{x}] \setminus \{0\}$, and suppose \[f = c_1 h_1 + \cdots + c_m h_m, \quad \text{with } c_i \in k.\]If\[\mathrm{lm}(h_1) = \mathrm{lm}(h_2) = \cdots = \mathrm{lm}(h_i) > \mathrm{lm}(f),\]then\[f = \sum_{1 \leq i < j \leq m} c_{i,j} S(h_i, h_j), \quad c_{i,j} \in k.\]Furthermore, if $S(h_i, h_j) \ne 0$, then $\mathrm{lm}(h_i) > \mathrm{lm}(S(h_i, h_j))$.
+-/
+lemma sPolynomial_decomposition (f: MvPolynomial σ k) (d: σ →₀ ℕ)
+    (B: Finset (MvPolynomial σ k)) (c: MvPolynomial σ k → k) (hd: ∀ b ∈ B, (m.degree b) = d) (hfd: m.degree f ≺[m] d) (hf : f = ∑ b in B, c b • b):
+    ∃ (c': MvPolynomial σ k → MvPolynomial σ k → k), f = ∑ b₁ in B, ∑ b₂ in B, (c' b₁ b₂) • m.sPolynomial b₁ b₂ := by
+  sorry
+
+/--
+h_1, h_2 \in k[\mathbf{x}], lm(h_1) = lm(h_2), S(h_1, h_2) \ne 0, then lm(S(h_1, h_2)) < lm(h_1).
+-/
+lemma sPolynomial_degree_lt (h₁ h₂: MvPolynomial σ k) (h: m.degree h₁= m.degree h₂) (hs: m.sPolynomial h₁ h₂ ≠ 0) : m.degree (m.sPolynomial h₁ h₂) ≺[m] m.degree h₁ := by
+  sorry
 
 /--
 A basis $G = \{ g_1, \ldots, g_t \}$ for an ideal $I$ is a Gröbner basis if and only if $S(g_i, g_j) \to_G 0$ for all $i \neq j$.
@@ -324,4 +337,6 @@ theorem buchberger_criterion {g₁ g₂ : MvPolynomial σ k}
   m.IsGroebnerBasis G' (Ideal.span G') := by
   have _uses := @groebner_basis_isRemainder_zero_iff_mem_span.{0,0,0}
   have _uses := @IsGroebnerBasis_iff.{0,0,0}
+  have _uses := @sPolynomial_decomposition.{0,0,0}
+  have _uses := @sPolynomial_degree_lt.{0,0,0}
   sorry
