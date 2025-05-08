@@ -11,7 +11,7 @@ variable {σ : Type*} (m : MonomialOrder σ)
 
 section CommSemiring
 variable {R : Type*} [CommSemiring R]
-variable (G': Set (MvPolynomial σ R))
+variable (f p: MvPolynomial σ R) (B: Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
 
 /--
 a \in Partially Ordered Set, a \geq 0
@@ -45,11 +45,11 @@ Fix a monomial order $>$ on $\mathbb{Z}_{\geq 0}^n$, and let
   where $a_i, r \in k[x_1, \ldots, x_n]$, and either $r = 0$ or $r$ is a linear combination, with coefficients in $k$, of monomials, none of which is divisible by any of $\mathrm{LT}(f_1), \ldots, \mathrm{LT}(f_s)$.
   We will call $r$ a **remainder** of $f$ on division by $F$.
 -/
-def IsRemainder (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
-  := (∃ (g : G'' →₀ (MvPolynomial σ R)),
-      p = Finsupp.linearCombination _ (fun (g' : G'') ↦ (g' : MvPolynomial σ R)) g + r ∧
-      ∀ (g' : G''), m.degree ((g' : MvPolynomial σ R) * (g g')) ≼[m] m.degree p) ∧
-      ∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c)
+def IsRemainder :=
+  (∃ (g : B →₀ MvPolynomial σ R),
+    p = Finsupp.linearCombination _ (fun (b : B) ↦ (b : MvPolynomial σ R)) g + r ∧
+    ∀ (b : B), m.degree ((b : MvPolynomial σ R) * (g b)) ≼[m] m.degree p) ∧
+  ∀ c ∈ r.support, ∀ b ∈ B, b ≠ 0 → ¬ (m.degree b ≤ c)
 
 open Classical
 
@@ -69,23 +69,19 @@ Let $p \in R[\mathbf{X}]$, $G'' \subseteq R[\mathbf{X}]$ be a set of polynomials
         is bounded by $\deg_m(p)$
   4. No term of $r$ is divisible by any leading term of non-zero elements in $G''$
 -/
-lemma IsRemainder_def' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
-  : m.IsRemainder p G'' r ↔ (∃ (g : (MvPolynomial σ R) →₀ (MvPolynomial σ R)),
-      ↑g.support ⊆ G'' ∧
+lemma IsRemainder_def' (p : MvPolynomial σ R) (B : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
+  : m.IsRemainder p B r ↔ (∃ (g : MvPolynomial σ R →₀ MvPolynomial σ R),
+      ↑g.support ⊆ B ∧
       p = Finsupp.linearCombination _ id g + r ∧
-      ∀ g' ∈ G'', m.degree ((g' : MvPolynomial σ R) * (g g')) ≼[m] m.degree p) ∧
-      ∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c) := by
-  -- probably many tech details
-  -- (technologically but not mathematically) normal or hard
+      ∀ b ∈ B, m.degree ((b : MvPolynomial σ R) * (g b)) ≼[m] m.degree p) ∧
+      ∀ c ∈ r.support, ∀ g' ∈ B, g' ≠ 0 → ¬ (m.degree g' ≤ c) := by
   unfold IsRemainder
   constructor
-  ·
-    intro ⟨⟨g, h₁, h₂⟩, h₃⟩
+  · intro ⟨⟨g, h₁, h₂⟩, h₃⟩
     split_ands
-    ·
-      use {
+    · use {
         support := g.support,
-        toFun := fun x => if hx : x ∈ G'' then g.toFun (⟨x, hx⟩) else 0,
+        toFun := fun b => if hb : b ∈ B then g.toFun (⟨b, hb⟩) else 0,
         mem_support_toFun := by intro; simp; rfl
       }
       split_ands
@@ -94,17 +90,15 @@ lemma IsRemainder_def' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (
         congr 1
         simp [Finsupp.linearCombination_apply, Finsupp.sum]
         rfl
-      · simp_intro' g' hg'
-        convert h₂ ⟨g', hg'⟩
+      · simp_intro' b hb
+        convert h₂ ⟨b, hb⟩
     · exact h₃
   ·
     intro ⟨⟨g, hg, h₁, h₂⟩, h₃⟩
     split_ands
     ·
       use {
-        support := g.support.filterMap
-          (fun x => if hx : x ∈ G'' then some (⟨x, hx⟩ : ↑G'') else none)
-          (by simp_intro' ..),
+        support := (g.support.subtype (· ∈ B)),
         toFun := (g.toFun ·),
         mem_support_toFun := by intro; simp; rfl
       }
@@ -114,16 +108,11 @@ lemma IsRemainder_def' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (
         simp [Finsupp.linearCombination_apply, Finsupp.sum]
         apply Finset.sum_nbij (↑·)
         · simp_intro' ..
-        ·  -- if I use `simp_intro' x _ a _ h`, then how to deal with coe?
-          intro q
-          simp
-          intro _ _ _ _ hqs
-          simp [←hqs]
-        · simp_intro' q hq
-          exact Set.mem_of_subset_of_mem hg <| Finsupp.mem_support_iff.mpr hq
+        · simp_intro' b _ b₁ _ h [Subtype.eq_iff]
+        · simp_intro' b hb
+          exact Set.mem_of_subset_of_mem hg <| Finsupp.mem_support_iff.mpr hb
         · simp [DFunLike.coe]
-      · simp
-        exact h₂
+      · simpa
     · exact h₃
 
 /--
@@ -146,13 +135,13 @@ We say that $r$ is a _generalized remainder_ of $p$ upon division by $G'$ if the
           p = \sum_{g \in G'} q(g)g + r.
           $$
 -/
-lemma IsRemainder_def'' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
-  : m.IsRemainder p G'' r ↔
-  (∃ (g : (MvPolynomial σ R) → (MvPolynomial σ R))(G' : Finset (MvPolynomial σ R)),
-      ↑G' ⊆ G'' ∧
-      p = G'.sum (fun x => g x * x) + r ∧
-      ∀ g' ∈ G', m.degree ((g' : MvPolynomial σ R) * (g g')) ≼[m] m.degree p) ∧
-      ∀ c ∈ r.support, ∀ g' ∈ G'', g' ≠ 0 → ¬ (m.degree g' ≤ c) := by
+lemma IsRemainder_def'' (p : MvPolynomial σ R) (B : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
+  : m.IsRemainder p B r ↔
+  (∃ (g : MvPolynomial σ R → MvPolynomial σ R) (B' : Finset (MvPolynomial σ R)),
+      ↑B' ⊆ B ∧
+      p = B'.sum (fun x => g x * x) + r ∧
+      ∀ b' ∈ B', m.degree ((b' : MvPolynomial σ R) * (g b')) ≼[m] m.degree p) ∧
+      ∀ c ∈ r.support, ∀ b ∈ B, b ≠ 0 → ¬ (m.degree b ≤ c) := by
   rw [IsRemainder_def']
   constructor
   · intro ⟨⟨g, h₁, h₂, h₃⟩, h₄⟩
@@ -161,22 +150,21 @@ lemma IsRemainder_def'' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) 
     refine ⟨h₁, by rwa [Finsupp.linearCombination_apply, Finsupp.sum] at h₂, ?_⟩
     intro g' hg'
     exact h₃ g' (Set.mem_of_mem_of_subset hg' h₁)
-  · intro ⟨⟨g, G', h₁, h₂, h₃⟩, h₄⟩
+  · intro ⟨⟨g, B', h₁, h₂, h₃⟩, h₄⟩
     split_ands
-    ·
-      use Finsupp.onFinset G' (fun x => if x ∈ G' then g x else 0) (by simp; intro _ ha _; exact ha)
+    · use Finsupp.onFinset B' (fun b' => if b' ∈ B' then g b' else 0) (by simp_intro' ..)
       split_ands
-      · simp_intro' x hx
-        exact Set.mem_of_mem_of_subset hx.1 h₁
+      · simp_intro' b' hb'
+        exact Set.mem_of_mem_of_subset hb'.1 h₁
       · rw [Finsupp.linearCombination_apply, Finsupp.sum, h₂, Finsupp.support_onFinset]
         congr 1
         simp
-        have h : G' = ({a ∈ G' | a ∈ G' ∧ ¬g a = 0} ∩ G') ∪ ({a ∈ G' | g a = 0}) := by
+        have h : B' = ({b' ∈ B' | b' ∈ B' ∧ ¬g b' = 0} ∩ B') ∪ ({b' ∈ B' | g b' = 0}) := by
           apply subset_antisymm
           · simp_intro' x hx [em']
           · simp_intro' x
             rintro (⟨_, hx⟩ | ⟨hx,_⟩) <;> exact hx
-        have h' : Disjoint ({a ∈ G' | a ∈ G' ∧ ¬g a = 0} ∩ G')  ({a ∈ G' | g a = 0}) := by
+        have h' : Disjoint ({b' ∈ B' | b' ∈ B' ∧ ¬g b' = 0} ∩ B')  ({b' ∈ B' | g b' = 0}) := by
           unfold Disjoint
           simp_intro' s hs hs'
           by_contra h
@@ -192,10 +180,10 @@ lemma IsRemainder_def'' (p : MvPolynomial σ R) (G'' : Set (MvPolynomial σ R)) 
         expose_names
         simp at h_1
         simp [h_1.2]
-      · intro g'' hg''
-        by_cases hg''G' : g'' ∈ G'
-        · simp [hg''G', h₃]
-        · simp [hg''G']
+      · intro b hb
+        by_cases hbB' : b ∈ B'
+        · simp [hbB', h₃]
+        · simp [hbB']
     · exact h₄
 
 /--
@@ -216,8 +204,8 @@ For any set of polynomials $G'' \subseteq R[\mathbf{X}]$ and monomial order $m$,
     \LT_m(G'' \setminus \{0\}) = \LT_m(G'') \setminus \{0\}
   $$
 -/
-lemma leadingTerm_image_sdiff_singleton_zero (G'' : Set (MvPolynomial σ R)) :
-  m.leadingTerm '' (G'' \ {0}) = (m.leadingTerm '' G'') \ {0} := by
+lemma leadingTerm_image_sdiff_singleton_zero (B : Set (MvPolynomial σ R)) :
+  m.leadingTerm '' (B \ {0}) = (m.leadingTerm '' B) \ {0} := by
   apply subset_antisymm
   · intro p
     simp
@@ -229,8 +217,8 @@ lemma leadingTerm_image_sdiff_singleton_zero (G'' : Set (MvPolynomial σ R)) :
     rw [←hpq, MonomialOrder.lm_eq_zero_iff] at hp
     exact ⟨q, ⟨hq, hp⟩, hpq⟩
 
-lemma leadingTerm_image_insert_zero (G'' : Set (MvPolynomial σ R)) :
-  m.leadingTerm '' (insert (0 : MvPolynomial σ R) G'') = insert 0 (m.leadingTerm '' G'') := by
+lemma leadingTerm_image_insert_zero (B : Set (MvPolynomial σ R)) :
+  m.leadingTerm '' (insert (0 : MvPolynomial σ R) B) = insert 0 (m.leadingTerm '' B) := by
   unfold leadingTerm
   apply subset_antisymm
   · simp_intro' p hp
@@ -247,28 +235,28 @@ Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set o
   $$
 -/
 lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
-  (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
-  m.IsRemainder p (insert 0 G'') r ↔ m.IsRemainder p G'' r := by
+  (B : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
+  m.IsRemainder p (insert 0 B) r ↔ m.IsRemainder p B r := by
   constructor
-  · by_cases hG'' : 0 ∈ G''; simp only [Set.insert_eq_of_mem hG'', imp_self]
+  · by_cases hB : 0 ∈ B; simp only [Set.insert_eq_of_mem hB, imp_self]
     rw [IsRemainder_def'', IsRemainder_def'']
-    intro ⟨⟨g, G', hG', h₁, h₂⟩, h₃⟩
+    intro ⟨⟨g, B', hB', h₁, h₂⟩, h₃⟩
     split_ands
-    · use g, (G'.erase 0)
+    · use g, (B'.erase 0)
       split_ands
-      · simp [hG']
+      · simp [hB']
       · rw [h₁]
         congr 1
-        by_cases hG'0 : 0 ∈ G'
-        · nth_rw 1 [← Finset.insert_erase hG'0]
+        by_cases hB'0 : 0 ∈ B'
+        · nth_rw 1 [← Finset.insert_erase hB'0]
           rw [Finset.sum_insert_zero (a:=0)]
           simp
-        · rw [Finset.erase_eq_self.mpr hG'0]
-      · intro g' hg'
-        simp at hg'
-        exact h₂ g' hg'.2
-    · intro n hn g' hg'G' hg'
-      exact h₃ n hn g' (by simp [hg'G']) hg'
+        · rw [Finset.erase_eq_self.mpr hB'0]
+      ·
+        simp_intro' b' hb'
+        exact h₂ b' hb'.2
+    · intro c hc b hbB hb
+      exact h₃ c hc b (by simp [hbB]) hb
   · rw [IsRemainder_def', IsRemainder_def']
     intro ⟨⟨g, hg, h₁, h₂⟩, h₃⟩
     split_ands
@@ -276,12 +264,12 @@ lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
       split_ands
       · exact subset_trans hg (Set.subset_insert _ _)
       · exact h₁
-      · intro g' hg'
-        by_cases hg'₁ : g' = 0
-        · simp only [hg'₁, zero_mul, degree_zero, map_zero, zero_le]
-        · exact h₂ g' ((Set.mem_insert_iff.mp hg').resolve_left hg'₁)
-    · intro c hc g' hg' hg'₁
-      exact h₃ c hc g' ((Set.mem_insert_iff.mp hg').resolve_left hg'₁) hg'₁
+      · intro b hb
+        by_cases hb0 : b = 0
+        · simp [hb0]
+        · exact h₂ b ((Set.mem_insert_iff.mp hb).resolve_left hb0)
+    · intro c hc b hb hbne0
+      exact h₃ c hc b ((Set.mem_insert_iff.mp hb).resolve_left hbne0) hbne0
 
 /--
   Let $p \in R[\mathbf{X}]$ be a polynomial, $G'' \subseteq R[\mathbf{X}]$ a set of polynomials,
@@ -292,17 +280,11 @@ lemma isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
   $$
 -/
 lemma isRemainder_sdiff_singleton_zero_iff_isRemainder (p : MvPolynomial σ R)
-  (G'' : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
-  m.IsRemainder p (G'' \ {0}) r ↔ m.IsRemainder p G'' r := by
-  -- tips: refer to the proof of `Submodule.span_sdiff_singleton_zero` in `Submodule.lean`,
-  -- and use `isRemainder_of_insert_zero_iff_isRemainder`.
-  by_cases h : 0 ∈ G''
-  · rw[←isRemainder_of_insert_zero_iff_isRemainder,
-        (by simp [h] : insert 0 (G'' \ {0}) = G'')]
-  · have h' : G'' \ {0} = G'' := by
-      ext x
-      simp [h]
-    rw [h']
+  (B : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
+  m.IsRemainder p (B \ {0}) r ↔ m.IsRemainder p B r := by
+  by_cases h : 0 ∈ B
+  · rw [←isRemainder_of_insert_zero_iff_isRemainder, show insert 0 (B \ {0}) = B by simp [h]]
+  · simp [h]
 
 -- @[reducible]
 -- def leading_term_ideal : Ideal (MvPolynomial σ R) := Ideal.span (leadingTerm m '' (G' : Set (MvPolynomial σ R)))
@@ -335,9 +317,6 @@ The $S$-polynomial of $f$ and $g$ is the combination
 noncomputable def sPolynomial (f g : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree g - m.degree f) (m.leadingCoeff g) * f -
   monomial (m.degree f - m.degree g) (m.leadingCoeff f) * g
-
-
-
 
 /--
 the S-polynomial of $f$ and $g$ is antisymmetric:
@@ -388,38 +367,25 @@ lemma sPolynomial_eq_zero_of_right_eq_zero' (f : MvPolynomial σ R) :
   $$
   where $\LC_m(g)$ denotes the leading coefficient of $g$ under monomial order $m$.
 -/
-theorem div_set' {G'' : Set (MvPolynomial σ R)}
-    (hG : ∀ g ∈ G'', (IsUnit (m.leadingCoeff g) ∨ g = 0)) (p : MvPolynomial σ R) :
-    ∃ (r : MvPolynomial σ R), m.IsRemainder p G'' r := by
-  -- tips: use `isRemainder_sdiff_singleton_zero_iff_isRemainder` and `MonomialOrder.div_set`
-  let G := G'' \ {0}
-
-  have hG' : ∀ g ∈ G, IsUnit (m.leadingCoeff g) := by
-    intro g hg
-    obtain ⟨hg₁, hg₂⟩ := hg  -- hg₁: g ∈ G'', hg₂: g ≠ 0
-    obtain (h1 | h2) := hG g hg₁
+theorem div_set' {B : Set (MvPolynomial σ R)}
+    (hB : ∀ b ∈ B, (IsUnit (m.leadingCoeff b) ∨ b = 0)) (p : MvPolynomial σ R) :
+    ∃ (r : MvPolynomial σ R), m.IsRemainder p B r := by
+  have hB₁ : ∀ b ∈ B \ {0}, IsUnit (m.leadingCoeff b) := by
+    intro b hb
+    obtain ⟨hb₁, hb₂⟩ := hb
+    obtain (h1 | h2) := hB b hb₁
     · exact h1
     · contradiction
-  obtain ⟨g, r, h⟩ := MonomialOrder.div_set hG' p
+  obtain ⟨g, r, h⟩ := MonomialOrder.div_set hB₁ p
   exists r
-  refine (isRemainder_sdiff_singleton_zero_iff_isRemainder m p G'' r).mp ?_
+  refine (isRemainder_sdiff_singleton_zero_iff_isRemainder m p B r).mp ?_
   rcases h with ⟨h₁, h₂, h₃⟩
-  simp at *
   unfold IsRemainder
+  simp at *
   split_ands
   · use g
-    split_ands
-    · exact h₁
-    · exact fun g' ↦ h₂ (↑g') g'.property
-  · intro c hc g hg g_neq0
-    have hg' : g ∈ G := by
-      obtain ⟨hg₁, hg₂⟩ := hg
-      exact ⟨hg₁, hg₂⟩
-    have hc': ¬coeff c r = 0 := by
-      exact mem_support_iff.mp hc
-    have h₃_applied := h₃ c hc'
-    have h₃_g := h₃_applied g hg'
-    exact h₃_g
+  · exact h₃
+
 end CommRing
 
 section Field
@@ -428,9 +394,9 @@ section Field
 Let $k$ be a field, and let $G'' \subseteq k[x_i : i \in \sigma]$ be a set of polynomials.
 Then for any $p \in k[x_i : i \in \sigma]$, there exists a generalized remainder $r$ of $p$ upon division by $G''$.
 -/
-theorem div_set'' {k : Type*} [Field k] {G'' : Set (MvPolynomial σ k)}
+theorem div_set'' {k : Type*} [Field k] {B : Set (MvPolynomial σ k)}
     (p : MvPolynomial σ k) :
-    ∃ (r : MvPolynomial σ k), m.IsRemainder p G'' r := by
+    ∃ (r : MvPolynomial σ k), m.IsRemainder p B r := by
   apply div_set'
   simp [em']
 
