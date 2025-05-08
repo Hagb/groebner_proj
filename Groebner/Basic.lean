@@ -163,6 +163,46 @@ lemma groebner_basis_zero_isRemainder_iff_mem_span' {p : MvPolynomial σ k}
     apply (groebner_basis_zero_isRemainder_iff_mem_span h_unit h).mp
     exact h_remainder
 
+lemma remainder_zero (p : MvPolynomial σ k) (hp : p ≠ 0) (B : Set (MvPolynomial σ k))
+  (h : m.IsRemainder p B 0) : ∃ b ∈ B, b ≠ 0 ∧ m.degree b ≤ m.degree p := by
+  classical
+  rw [IsRemainder_def''] at h
+  rcases h with ⟨⟨g, B', h₁, hsum, h₃⟩, h₄⟩
+  simp at hsum
+  have : m.degree p ∈ p.support := m.degree_mem_support hp
+  rw [hsum] at this
+  obtain ⟨b, hb⟩ := Finset.mem_biUnion.mp <| hsum.symm ▸ Finset.mem_of_subset support_sum this
+  use b
+  constructor
+  · exact h₁ hb.1
+  · rcases hb with ⟨hb₁, hb₂⟩
+    have := h₃ b hb₁
+    obtain ⟨hgbne0, hbne0⟩ : g b ≠ 0 ∧ b ≠ 0 := by
+      refine mul_ne_zero_iff.mp ?_
+      contrapose! hb₂
+      simp [hb₂]
+    apply le_degree (m:=m) at hb₂
+    rw [mul_comm b] at this
+    apply le_antisymm this at hb₂
+    simp at hb₂
+    rw [degree_mul hgbne0 hbne0] at hb₂
+    exact ⟨hbne0, le_of_add_le_right (le_of_eq hb₂)⟩
+
+-- lemma remainder_degree_ne_iff (p r : MvPolynomial σ k) (hp : p ≠ 0) (B : Set (MvPolynomial σ k)) (hr : m.IsRemainder p B r) :
+--   (m.degree r ≠ m.degree p ∨ r = 0) ↔ ∃ b ∈ B, m.degree b ≤ m.degree p := by
+--   constructor
+--   · intro h
+--     rw [IsRemainder_def''] at hr
+--     rcases hr with ⟨⟨g, B', h₁, hsum, h₃⟩, h₄⟩
+--     --
+--     rw [hsum] at h
+--     have :
+--     -- unfold IsRemainder at hr
+
+--     sorry
+--   ·
+--     sorry
+
 /--
 Let $G = \{g_1, \ldots, g_t\}$ be a finite subset of $k[x_1, \ldots, x_n]$. Then $G$ is a Gröbner basis for the ideal $I = \langle G \rangle$ if and only if  for every $f \in I$, the remainder of $f$ on division by $G$ is zero.
 -/
@@ -170,6 +210,7 @@ theorem IsGroebnerBasis_iff :
   m.IsGroebnerBasis G' I ↔ G'.toSet ⊆ I ∧ ∀ p ∈ I, m.IsRemainder p G' 0 := by
   -- uses groebner_basis_zero_isRemainder_iff_mem_span'
   have _uses := @groebner_basis_zero_isRemainder_iff_mem_span'.{0,0,0}
+  classical
   constructor
   · intro h
     constructor
@@ -202,14 +243,30 @@ theorem IsGroebnerBasis_iff :
         · exact Ideal.span_le.mpr h_G'
       rw [hG', ←SetLike.coe_set_eq]
       apply Set.eq_of_subset_of_subset
-      · have h₁: Ideal.span (α:=MvPolynomial σ k) (m.leadingTerm '' (↑(Ideal.span (↑G':Set (MvPolynomial σ k))): Set (MvPolynomial σ k))) ≤  Ideal.span (m.leadingTerm '' ↑(G':Set (MvPolynomial σ k) )) := by
+      · have h₁: Ideal.span (m.leadingTerm '' Ideal.span (α := MvPolynomial σ k) G')
+          ≤ Ideal.span (α := MvPolynomial σ k) (m.leadingTerm '' G') := by
           apply Ideal.span_le.mpr
           intro p' hp
-          rcases hp with ⟨ p,hp', hp'₁⟩
-          rw [←hp'₁]
+          rcases hp with ⟨p, hp', hp'₁⟩
+          rw [←hp'₁, leadingTerm]
+
+          have hG' : I = Ideal.span G' := by
+            rw [←SetLike.coe_set_eq]
+            norm_cast
+          rw [←hG'] at hp'
+          have hr: m.IsRemainder p (↑G') 0 := by
+            exact h_remainder p hp'
+
           rw [SetLike.mem_coe]
-          -- apply mem_span_set'
-          sorry
+
+          rw [leadingTerm_ideal_span_monomial', ← Set.image_image (monomial · 1) _ _, mem_ideal_span_monomial_image]
+          intro j hj
+          simp [MonomialOrder.leadingCoeff_eq_zero_iff] at hj
+          simp [MonomialOrder.leadingCoeff_eq_zero_iff]
+          obtain ⟨b, hbB, hb, hp⟩ := hj.1.symm ▸ m.remainder_zero p hj.2 G' hr
+          rw [Finset.mem_coe] at hbB
+          use b
+
         exact h₁
       · rw[←hG']
         apply Ideal.span_mono
