@@ -12,4 +12,4 @@ tasks:
         git --git-dir=$i.git --work-tree=$i checkout -- .
       done
       lake exe cache unpack
-      curl https://WuProver.github.io/groebner_proj/$(git rev-parse --short HEAD)-cache.tar -L -o cache.tar --fail && tar -xf cache.tar || lake build
+      curl https://WuProver.github.io/groebner_proj/$(git rev-parse --short HEAD)-cache.tar -L -o .cache.tar --fail && tar -xf .cache.tar || lake build
