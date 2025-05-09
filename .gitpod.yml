@@ -8,5 +8,8 @@ vscode:
 tasks:
   - init: |
       ln -s ~/.lake/
+      for i in .lake/packages/*/; do
+        git --git-dir=$i.git --work-tree=$i checkout -- .
+      done
       lake exe cache unpack
       lake build
