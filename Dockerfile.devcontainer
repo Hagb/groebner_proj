@@ -10,6 +10,6 @@ COPY lean-toolchain lake-manifest.json lakefile.toml .
 # once dependencies are updated, the elan will be reinstalled too
 RUN curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
 
-RUN . ~/.profile && lake exe cache get
+RUN . ~/.profile && lake exe cache get-
 
 ENV PATH="/home/vscode/.elan/bin:${PATH}"
