@@ -2,7 +2,7 @@
   "name": "Dev container",
 
   "build": {
-    "dockerfile": "Dockerfile"
+    "dockerfile": "../Dockerfile.devcontainer"
   },
 
   "onCreateCommand": "lake exe cache get!",
