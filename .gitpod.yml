@@ -8,4 +8,5 @@ vscode:
 tasks:
   - init: |
       elan self update
-      lake exe cache get
+      ln -s ~/.lake/
+      lake build

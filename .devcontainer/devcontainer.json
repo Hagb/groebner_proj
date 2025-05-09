@@ -5,7 +5,7 @@
     "dockerfile": "../Dockerfile.devcontainer"
   },
 
-  "onCreateCommand": "lake exe cache get!",
+  "onCreateCommand": "ln -s ~/.lake/ && lake build",
 
   "hostRequirements": {
      "cpus": 4
