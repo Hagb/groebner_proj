@@ -29,3 +29,5 @@ scripts/*.tex
 
 /blueprint/src/content.tex
 /blueprint/src/web.paux
+
+.cache.tar
