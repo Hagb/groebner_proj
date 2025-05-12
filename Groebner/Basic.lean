@@ -319,7 +319,7 @@ theorem span_groebner_basis (h : m.IsGroebnerBasis G' I) : I = Ideal.span G' := 
 Let $f, h_1, \dots, h_m \in k[\mathbf{x}] \setminus \{0\}$, and suppose $$f = c_1 h_1 + \cdots + c_m h_m, \quad \text{with } c_i \in k.$$ If $$\mathrm{lm}(h_1) = \mathrm{lm}(h_2) = \cdots = \mathrm{lm}(h_i) > \mathrm{lm}(f),$$ then $$f = \sum_{1 \leq i < j \leq m} c_{i,j} S(h_i, h_j), \quad c_{i,j} \in k.$$ Furthermore, if $S(h_i, h_j) \ne 0$, then $\mathrm{lm}(h_i) > \mathrm{lm}(S(h_i, h_j))$.
 -/
 lemma sPolynomial_decomposition (f: MvPolynomial σ k) (d: σ →₀ ℕ)
-    (B: Finset (MvPolynomial σ k)) (c: MvPolynomial σ k → k) (hd: ∀ b ∈ B, (m.degree b) = d) (hfd: m.degree f ≺[m] d) (hf : f = ∑ b in B, c b • b):
+    (B: Finset (MvPolynomial σ k)) (c: MvPolynomial σ k → k) (hd: ∀ b ∈ B, (m.degree b) = d) (hfd: m.degree f ≺[m] d) (hf : f = ∑ b ∈  B, c b • b):
     ∃ (c': MvPolynomial σ k → MvPolynomial σ k → k), f = ∑ b₁ ∈  B, ∑ b₂ ∈  B, (c' b₁ b₂) • m.sPolynomial b₁ b₂ := by
   sorry
 
@@ -331,7 +331,77 @@ lemma sPolynomial_degree_lt (h₁ h₂: MvPolynomial σ k) (h: m.degree h₁ = m
   simp [h]
   unfold MonomialOrder.sPolynomial at hs
   simp [h] at hs
-  sorry
+
+  have h1: (m.degree (h₁ - m.leadingTerm h₁)) ≺[m]  m.degree (h₁) := by
+    unfold leadingTerm
+    have : (h₁ - (monomial (m.degree h₁)) (m.leadingCoeff h₁)).coeff (m.degree h₁) = 0 := by
+      simp [coeff_sub]
+      simp [leadingCoeff]
+      simp [coeff]
+      sorry
+    have h: m.degree h₁ ∉ (h₁ - (monomial (m.degree h₁)) (m.leadingCoeff h₁)).support := by
+      exact not_mem_support_iff.mpr this
+    have hleq: (m.degree (h₁ - m.leadingTerm h₁)) ≼[m]  m.degree (h₁) := by
+      sorry
+
+
+  have : (m.degree (h₂ - m.leadingTerm h₂)) ≺[m]  m.degree (h₂) := by
+    sorry
+
+  have : (m.degree (h₁ - m.leadingTerm h₁)) ≺[m]  m.degree (h₂) := by
+    exact lt_of_lt_of_eq h1 (congrArg (⇑m.toSyn) h)
+
+  have h': (m.degree ((m.leadingCoeff h₁)•(h₂ - m.leadingTerm h₂) - (m.leadingCoeff h₂)•(h₁ - m.leadingTerm h₁))) ≺[m]  m.degree (h₁) := by
+    sorry
+  simp at h'
+
+  have: m.toSyn (m.degree (m.leadingCoeff h₁ • (h₂ - m.leadingTerm h₂) - m.leadingCoeff h₂ • (h₁ - m.leadingTerm h₁))) ≤ m.toSyn (m.degree ((m.leadingCoeff h₁) • (h₂ - m.leadingTerm h₂))) ⊔  m.toSyn (m.degree ((m.leadingCoeff h₂) • (h₁ - m.leadingTerm h₁))) := by
+    exact degree_sub_le
+
+  have heq: m.toSyn (m.degree (m.leadingCoeff h₁ • (h₂ - m.leadingTerm h₂) - m.leadingCoeff h₂ • (h₁ - m.leadingTerm h₁))) = m.toSyn (m.degree (C (m.leadingCoeff h₂) * h₁ - C (m.leadingCoeff h₁) * h₂)) := by
+    have : m.leadingCoeff h₁ • (h₂ - m.leadingTerm h₂) - m.leadingCoeff h₂ • (h₁ - m.leadingTerm h₁) = -C (m.leadingCoeff h₂)* h₁ + C (m.leadingCoeff h₁)*h₂ := by
+      simp only[HSMul.hSMul]
+      have r1: SMul.smul (m.leadingCoeff h₁) (h₂ - m.leadingTerm h₂) = C (m.leadingCoeff h₁)*(h₂ - m.leadingTerm h₂)  := by
+        apply MvPolynomial.smul_eq_C_mul
+      have r2: SMul.smul (m.leadingCoeff h₂) (h₁ - m.leadingTerm h₁) = C (m.leadingCoeff h₂)*(h₁ - m.leadingTerm h₁)  := by
+        apply MvPolynomial.smul_eq_C_mul
+      rw [r1, r2]
+      simp [leadingCoeff]
+      simp [coeff]
+      ring_nf
+      sorry
+    have h: m.toSyn (m.degree (m.leadingCoeff h₁ • (h₂ - m.leadingTerm h₂) - m.leadingCoeff h₂ • (h₁ - m.leadingTerm h₁))) = m.toSyn (m.degree (-C (m.leadingCoeff h₂) * h₁ + C (m.leadingCoeff h₁) * h₂)) := by
+      exact congrArg (⇑m.toSyn) (congrArg m.degree this)
+    rw[h]
+    have: -C (m.leadingCoeff h₂) * h₁ + C (m.leadingCoeff h₁) * h₂ = -(C (m.leadingCoeff h₂) * h₁ - C (m.leadingCoeff h₁) * h₂) := by
+      ring
+    rw[this]
+    have: m.degree (-C (m.leadingCoeff h₂) * h₁ + C (m.leadingCoeff h₁) * h₂) = m.degree (-(C (m.leadingCoeff h₂) * h₁ - C (m.leadingCoeff h₁) * h₂)) := by
+      exact congrArg m.degree this
+
+    sorry
+
+
+  have hle: m.toSyn (m.degree ((m.leadingCoeff h₁) • (h₂ - m.leadingTerm h₂))) ⊔  m.toSyn (m.degree ((m.leadingCoeff h₂) • (h₁ - m.leadingTerm h₁))) <  m.toSyn (m.degree h₂) := by
+    simp
+    constructor
+    · have l1: m.toSyn (m.degree ((m.leadingCoeff h₁) • (h₂ - m.leadingTerm h₂))) ≤ m.toSyn (m.degree (h₂ - m.leadingTerm h₂)) := by
+        exact degree_smul_le
+      (expose_names; exact lt_of_le_of_lt l1 this_1)
+    · have l2: m.toSyn (m.degree ((m.leadingCoeff h₂) • (h₁ - m.leadingTerm h₁))) ≤ m.toSyn (m.degree (h₁ - m.leadingTerm h₁)) := by
+        exact degree_smul_le
+      (expose_names; exact lt_of_le_of_lt l2 this_2)
+  rw[heq] at this
+  apply lt_of_le_of_lt this hle
+
+
+
+
+
+  -- have hl: max (m.toSyn (m.degree (C (m.leadingCoeff h₂) * h₁))) (m.toSyn (m.degree (C (m.leadingCoeff h₁) * h₂))) < m.toSyn (m.degree h₂) := by
+
+  -- exact lt_of_le_of_lt this hl
+
 
 /--
 A basis $G = \{ g_1, \ldots, g_t \}$ for an ideal $I$ is a Gröbner basis if and only if $S(g_i, g_j) \to_G 0$ for all $i \neq j$.
